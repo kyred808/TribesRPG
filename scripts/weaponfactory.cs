@@ -3,6 +3,8 @@
 // Weapon "IS A" Equipment
 // Equipment "IS A" Item
 
+// Unused
+
 function RPGAddMeleeWeapon(%tag,%weaponType,%skillType,%atkPower,%weight,%info,%special)
 {
     $SkillType[%tag] = %skillType;
