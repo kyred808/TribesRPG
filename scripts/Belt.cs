@@ -31,6 +31,20 @@
 // Menu Functions      //
 // ------------------- //
 
+function BeltMenu::GetUpperLowerBounds(%numElements,%page)
+{
+    %numLines = 6;
+    %numFullPages = floor(%numElements / %numLines);
+    
+    %lowerBound = (%page * %numLines) - (%numLines-1);
+    %upperBound = %lowerBound + (%numLines-1);
+    
+    if(%upperBound > %numElements)
+        %upperBound = %numElements;
+        
+    return %numFullPages@" "@ %lowerBound @" "@ %upperBound;
+}
+
 function MenuViewBelt(%clientId, %page)
 {
 	Client::buildMenu(%clientId, "Belt:", "ViewBelt", true);
@@ -42,6 +56,7 @@ function MenuViewBelt(%clientId, %page)
 	Client::addMenuItem(%clientId, "xDone", "done");
 	return;
 }
+
 
 function processMenuViewBelt(%clientId, %opt)
 {
@@ -75,17 +90,15 @@ function MenuBeltGear(%clientid, %type, %page)
 
 	Client::buildMenu(%clientId, %disp@":", "BeltGear", true);
 	%clientId.bulkNum = "";
+    
+    %nf = Belt::GetNS(%clientid,%type);
+    %numItems = GetWord(%nf,0);
+    %menuULB = BeltMenu::GetUpperLowerBounds(%numItems,%page);
 
-	%l = 6;
-	%nx = $Belt::ItemGroupItemCount[%type];
-	%nf = Belt::GetNS(%clientid,%type);
-	%ns = GetWord(%nf,0);
-	%np = floor(%ns / %l);
-	%lb = (%page * %l) - (%l-1);
-	%ub = %lb + (%l-1);
-	if(%ub > %ns)
-		%ub = %ns;
-
+    %numFullPages = getWord(%menuULB,0);
+    %lb = getWord(%menuULB,1);
+    %ub = getWord(%menuULB,2);
+    
 	%x = %lb - 1;
 	for(%i = %lb; %i <= %ub; %i++)
 	{
@@ -97,10 +110,10 @@ function MenuBeltGear(%clientid, %type, %page)
 
 	if(%page == 1)
 	{
-		if(%ns > 6) Client::addMenuItem(%clientId, "nNext >>", "page " @ %page+1 @" "@%type);
+		if(%numItems > 6) Client::addMenuItem(%clientId, "nNext >>", "page " @ %page+1 @" "@%type);
 		Client::addMenuItem(%clientId, "xDone", "done");
 	}
-	else if(%page == %np+1)
+	else if(%page == %numFullPages+1)
 	{
 		Client::addMenuItem(%clientId, "p<< Prev", "page " @ %page-1 @" "@%type);
 		Client::addMenuItem(%clientId, "xDone", "done");
@@ -252,20 +265,17 @@ function processMenuBuyOrSellBelt(%clientId, %opt)
     return;
 }
 
-//WIP
 function MenuBuyBelt(%clientId, %npc, %page)
 {
     Client::buildMenu(%clientId, "Belt buy:", "BuyBelt", true);
     %cnt = 0;
-
-    %lines = 6;
     %numGroups = $Belt::NumberOfBeltGroups;
-	%numPages = floor(%numGroups / %lines); //Number of full pages
-	%lowerBound = (%page * %lines) - (%lines-1);
-	%upperBound = %lowerBound + (%lines-1);
     
-    if(%upperBound > %numGroups)
-        %upperBound = %numGroups;
+    // Calculate upper and lower bound indexes for paged menu
+    %menuULB = BeltMenu::GetUpperLowerBounds(%numGroups,%page);
+    %numPages = getWord(%menuULB,0);
+    %lowerBound = getWord(%menuULB,1);
+    %upperBound = getWord(%menuULB,2);
     
     for(%i = %lowerBound; %i <= %upperBound; %i++)
 	{
@@ -280,7 +290,7 @@ function MenuBuyBelt(%clientId, %npc, %page)
     
     if(%page == 1)
 	{
-		if(%ns > 6) Client::addMenuItem(%clientId, "nNext >>", "page " @ %page+1 @" "@%npc);
+		if(%numGroups > 6) Client::addMenuItem(%clientId, "nNext >>", "page " @ %page+1 @" "@%npc);
 		Client::addMenuItem(%clientId, "xDone", "done");
 	}
     else if(%page == %numPages+1)
@@ -366,24 +376,24 @@ function MenuBuyBeltItem(%clientId,%npc,%typeIdx,%page)
     
     %beltItemIdxs = $BotInfo[%npc.name,BELTSHOP,%type];
     
-	%l = 6;
-	//%nx = $Belt::ItemGroupItemCount[%type];
-    
     %numBeltItems = GetWordCount(%beltItemIdxs);
     
 	%nf = %numBeltItems @ " " @ %beltItemIdxs;
-	//%ns = GetWord(%nf,0);
-	%np = floor(%numBeltItems / %l);
-	%lb = (%page * %l) - (%l-1);
-	%ub = %lb + (%l-1);
-	if(%ub > %numBeltItems)
-		%ub = %numBeltItems;
+        
+    // Calculate upper and lower bound indexes for paged menu
+    %menuULB = BeltMenu::GetUpperLowerBounds(%numBeltItems,%page);
+    %numPages = getWord(%menuULB,0);
+    %lb = getWord(%menuULB,1);
+    %ub = getWord(%menuULB,2);
 
-	%x = %lb - 1;
+    // Subtract 2
+    //   1.) Because %lb (lowerBound) starts at 1, not 0
+    //   2.) X is incremented at the start of the loop
+	%x = %lb - 2;
 	for(%i = %lb; %i <= %ub; %i++)
 	{
 		%x++;
-		%itemIdx = getword(%nf,%x);
+		%itemIdx = getword(%beltItemIdxs,%x);
         %item = $BeltShopIndexItem[%itemIdx];
         
 		Client::addMenuItem(%clientId, %cnt++ @ $beltitem[%item, "Name"] @": $"@ Belt::GetBuyCost(%clientId,%item), "item "@ %item @ " " @ %page @" "@%typeIdx);
@@ -394,7 +404,7 @@ function MenuBuyBeltItem(%clientId,%npc,%typeIdx,%page)
 		if(%numBeltItems > 6) Client::addMenuItem(%clientId, "nNext >>", "page " @ %page+1 @" "@%npc@" "@%typeIdx);
 		Client::addMenuItem(%clientId, "xDone", "done");
 	}
-	else if(%page == %np+1)
+	else if(%page == %numPages+1)
 	{
 		Client::addMenuItem(%clientId, "p<< Prev", "page " @ %page-1 @" "@%npc@" "@%typeIdx);
 		Client::addMenuItem(%clientId, "xDone", "done");
@@ -508,15 +518,14 @@ function MenuSellBeltItem(%clientid, %type, %page)
 	Client::buildMenu(%clientId, %disp@" sell:", "SellBeltItem", true);
 	%clientId.bulkNum = "";
 
-	%l = 6;
-	%nx = $Belt::ItemGroupItemCount[%type];
+
 	%nf = Belt::GetNS(%clientid,%type);
-	%ns = GetWord(%nf,0);
-	%np = floor(%ns / %l);
-	%lb = (%page * %l) - (%l-1);
-	%ub = %lb + (%l-1);
-	if(%ub > %ns)
-		%ub = %ns;
+	%numBeltItems = GetWord(%nf,0);
+
+    %menuULB = BeltMenu::GetUpperLowerBounds(%numBeltItems,%page);
+    %numPages = getWord(%menuULB,0);
+    %lb = getWord(%menuULB,1);
+    %ub = getWord(%menuULB,2);
 
 	%x = %lb - 1;
 	for(%i = %lb; %i <= %ub; %i++)
@@ -529,10 +538,10 @@ function MenuSellBeltItem(%clientid, %type, %page)
 
 	if(%page == 1)
 	{
-		if(%ns > 6) Client::addMenuItem(%clientId, "nNext >>", "page " @ %page+1 @" "@%type);
+		if(%numBeltItems > 6) Client::addMenuItem(%clientId, "nNext >>", "page " @ %page+1 @" "@%type);
 		Client::addMenuItem(%clientId, "xDone", "done");
 	}
-	else if(%page == %np+1)
+	else if(%page == %numPages+1)
 	{
 		Client::addMenuItem(%clientId, "p<< Prev", "page " @ %page-1 @" "@%type);
 		Client::addMenuItem(%clientId, "xDone", "done");
@@ -730,7 +739,6 @@ function MenuBeltWithdrawThisItem(%clientid, %type, %page, %mode)
 	%clientId.bulkNum = "";
 
 	%l = 6;
-	%nx = $Belt::ItemGroupItemCount[%type];
 	%nf = Belt::GetNS(%clientid,%type);
 	%ns = GetWord(%nf,0);
 	%np = floor(%ns / %l);
@@ -796,8 +804,8 @@ function MenuBeltStoreThisItem(%clientid, %type, %page, %mode)
 	Client::buildMenu(%clientId, %disp@":", "BeltStoreThisItem", true);
 	%clientId.bulkNum = "";
 
+    // Leaving old method here, just to annoy people
 	%l = 6;
-	%nx = $Belt::ItemGroupItemCount[%type];
 	%nf = Belt::GetNS(%clientid,%type);
 	%ns = GetWord(%nf,0);
 	%np = floor(%ns / %l);
@@ -910,7 +918,6 @@ function Belt::CheckForBadSpacing(%clientId)
 		}
 }
 
-$Belt::NumberOfBeltGroups = 0;
 function BeltItem::AddBeltItemGroup(%name,%shortName,%index)
 {
     $Belt::ItemGroup[%index] = %name;
@@ -1419,12 +1426,12 @@ function Belt::refreshFullBeltList(%clientId)
 //$ItemList[Badge, 3] = "quarterpoundoherb";
 
 
-ItemData Belt
-{
-	description = "Belt";
-	className = "Belt";
-	shapeFile = "ammo2";
-	heading = "eMiscellany";
-	shadowDetailMask = 4;
-	price = 0;
-};
+//ItemData Belt
+//{
+//	description = "Belt";
+//	className = "Belt";
+//	shapeFile = "ammo2";
+//	heading = "eMiscellany";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
