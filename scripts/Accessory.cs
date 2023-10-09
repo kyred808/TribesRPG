@@ -725,240 +725,240 @@ ItemData Lootbag
 //$AccessoryVar[Keldrinite, $MiscInfo] = "Keldrinite is a very rare magical gem that, when in the hands of a skilled blacksmith, can give items magical properties.";
 
 $HardcodedItemCost[SmallRock] = 13;
-$HardcodedItemCost[Quartz] = 100;
-$HardcodedItemCost[Granite] = 180;
-$HardcodedItemCost[Opal] = 300;
-$HardcodedItemCost[Jade] = 550;
-$HardcodedItemCost[Turquoise] = 850;
-$HardcodedItemCost[Ruby] = 1200;
-$HardcodedItemCost[Topaz] = 1604;
-$HardcodedItemCost[Sapphire] = 2930;
-$HardcodedItemCost[Gold] = 4680;
-$HardcodedItemCost[Emerald] = 9702;
-$HardcodedItemCost[Diamond] = 16575;
-$HardcodedItemCost[Keldrinite] = 125200;
+//$HardcodedItemCost[Quartz] = 100;
+//$HardcodedItemCost[Granite] = 180;
+//$HardcodedItemCost[Opal] = 300;
+//$HardcodedItemCost[Jade] = 550;
+//$HardcodedItemCost[Turquoise] = 850;
+//$HardcodedItemCost[Ruby] = 1200;
+//$HardcodedItemCost[Topaz] = 1604;
+//$HardcodedItemCost[Sapphire] = 2930;
+//$HardcodedItemCost[Gold] = 4680;
+//$HardcodedItemCost[Emerald] = 9702;
+//$HardcodedItemCost[Diamond] = 16575;
+//$HardcodedItemCost[Keldrinite] = 125200;
 
 %f = 43;
 $ItemList[Mining, 1] = "SmallRock " @ round($HardcodedItemCost[SmallRock] / %f)+2;
-$ItemList[Mining, 2] = "Quartz " @ round($HardcodedItemCost[Quartz] / %f)+2;
-$ItemList[Mining, 3] = "Granite " @ round($HardcodedItemCost[Granite] / %f)+2;
-$ItemList[Mining, 4] = "Opal " @ round($HardcodedItemCost[Opal] / %f)+2;
-$ItemList[Mining, 5] = "Jade " @ round($HardcodedItemCost[Jade] / %f)+2;
-$ItemList[Mining, 6] = "Turquoise " @ round($HardcodedItemCost[Turquoise] / %f)+2;
-$ItemList[Mining, 7] = "Ruby " @ round($HardcodedItemCost[Ruby] / %f)+2;
-$ItemList[Mining, 8] = "Topaz " @ round($HardcodedItemCost[Topaz] / %f)+2;
-$ItemList[Mining, 9] = "Sapphire " @ round($HardcodedItemCost[Sapphire] / %f)+2;
-$ItemList[Mining, 10] = "Gold " @ round($HardcodedItemCost[Gold] / %f)+2;
-$ItemList[Mining, 11] = "Emerald " @ round($HardcodedItemCost[Emerald] / %f)+2;
-$ItemList[Mining, 12] = "Diamond " @ round($HardcodedItemCost[Diamond] / %f)+2;
-$ItemList[Mining, 13] = "Keldrinite " @ round($HardcodedItemCost[Keldrinite] / %f)+2;
+//$ItemList[Mining, 2] = "Quartz " @ round($HardcodedItemCost[Quartz] / %f)+2;
+//$ItemList[Mining, 3] = "Granite " @ round($HardcodedItemCost[Granite] / %f)+2;
+//$ItemList[Mining, 4] = "Opal " @ round($HardcodedItemCost[Opal] / %f)+2;
+//$ItemList[Mining, 5] = "Jade " @ round($HardcodedItemCost[Jade] / %f)+2;
+//$ItemList[Mining, 6] = "Turquoise " @ round($HardcodedItemCost[Turquoise] / %f)+2;
+//$ItemList[Mining, 7] = "Ruby " @ round($HardcodedItemCost[Ruby] / %f)+2;
+//$ItemList[Mining, 8] = "Topaz " @ round($HardcodedItemCost[Topaz] / %f)+2;
+//$ItemList[Mining, 9] = "Sapphire " @ round($HardcodedItemCost[Sapphire] / %f)+2;
+//$ItemList[Mining, 10] = "Gold " @ round($HardcodedItemCost[Gold] / %f)+2;
+//$ItemList[Mining, 11] = "Emerald " @ round($HardcodedItemCost[Emerald] / %f)+2;
+//$ItemList[Mining, 12] = "Diamond " @ round($HardcodedItemCost[Diamond] / %f)+2;
+//$ItemList[Mining, 13] = "Keldrinite " @ round($HardcodedItemCost[Keldrinite] / %f)+2;
 
-ItemData Quartz
-{
-	description = "Quartz";
-	className = "Accessory";
-	shapeFile = "quartz";
-	heading = "eMiscellany";
-	shadowDetailMask = 4;
-	price = 0;
-};
-ItemData Granite
-{
-	description = "Granite";
-	className = "Accessory";
-	shapeFile = "granite";
-	heading = "eMiscellany";
-	shadowDetailMask = 4;
-	price = 0;
-};
-ItemData Opal
-{
-	description = "Opal";
-	className = "Accessory";
-	shapeFile = "opal";
-	heading = "eMiscellany";
-	shadowDetailMask = 4;
-	price = 0;
-};
-ItemData Jade
-{
-	description = "Jade";
-	className = "Accessory";
-	shapeFile = "jade";
-	heading = "eMiscellany";
-	shadowDetailMask = 4;
-	price = 0;
-};
-ItemData Turquoise
-{
-	description = "Turquoise";
-	className = "Accessory";
-	shapeFile = "turquoise";
-	heading = "eMiscellany";
-	shadowDetailMask = 4;
-	price = 0;
-};
-ItemData Ruby
-{
-	description = "Ruby";
-	className = "Accessory";
-	shapeFile = "ruby";
-	heading = "eMiscellany";
-	shadowDetailMask = 4;
-	price = 0;
-};
-ItemData Topaz
-{
-	description = "Topaz";
-	className = "Accessory";
-	shapeFile = "topaz";
-	heading = "eMiscellany";
-	shadowDetailMask = 4;
-	price = 0;
-};
-ItemData Sapphire
-{
-	description = "Sapphire";
-	className = "Accessory";
-	shapeFile = "saphire";
-	heading = "eMiscellany";
-	shadowDetailMask = 4;
-	price = 0;
-};
-ItemData Gold
-{
-	description = "Gold";
-	className = "Accessory";
-	shapeFile = "gold";
-	heading = "eMiscellany";
-	shadowDetailMask = 4;
-	price = 0;
-};
-ItemData Emerald
-{
-	description = "Emerald";
-	className = "Accessory";
-	shapeFile = "Emerald";
-	heading = "eMiscellany";
-	shadowDetailMask = 4;
-	price = 0;
-};
-ItemData Diamond
-{
-	description = "Diamond";
-	className = "Accessory";
-	shapeFile = "diamond";
-	heading = "eMiscellany";
-	shadowDetailMask = 4;
-	price = 0;
-};
-ItemData Keldrinite
-{
-	description = "Keldrinite";
-	className = "Accessory";
-	shapeFile = "keldrinite";
-	heading = "eMiscellany";
-	shadowDetailMask = 4;
-	price = 0;
-};
-
-$AccessoryVar[BlackStatue, $Weight] = 1;
-$AccessoryVar[BlackStatue, $MiscInfo] = "A black statue";
-
-ItemData BlackStatue
-{
-	description = "Black Statue";
-	className = "Accessory";
-	shapeFile = "mineammo";
-	heading = "eMiscellany";
-	shadowDetailMask = 4;
-	price = 0;
-};
-
-$AccessoryVar[SkeletonBone, $Weight] = 1;
-$AccessoryVar[SkeletonBone, $MiscInfo] = "A skeleton bone";
-
-ItemData SkeletonBone
-{
-	description = "Skeleton Bone";
-	className = "Accessory";
-	shapeFile = "grenade";
-	heading = "eMiscellany";
-	shadowDetailMask = 4;
-	price = 0;
-};
-
-$AccessoryVar[EnchantedStone, $Weight] = 5;
-$AccessoryVar[EnchantedStone, $MiscInfo] = "An enchanted stone";
-
-ItemData EnchantedStone
-{
-	description = "Enchanted Stone";
-	className = "Accessory";
-	shapeFile = "granite";
-	heading = "eMiscellany";
-	shadowDetailMask = 4;
-	price = 0;
-};
-
-$AccessoryVar[DragonScale, $Weight] = 8;
-$AccessoryVar[DragonScale, $MiscInfo] = "A dragon scale";
-
-ItemData DragonScale
-{
-	description = "Dragon Scale";
-	className = "Accessory";
-	shapeFile = "granite";
-	heading = "eMiscellany";
-	shadowDetailMask = 4;
-	price = 0;
-};
+//ItemData Quartz
+//{
+//	description = "Quartz";
+//	className = "Accessory";
+//	shapeFile = "quartz";
+//	heading = "eMiscellany";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//ItemData Granite
+//{
+//	description = "Granite";
+//	className = "Accessory";
+//	shapeFile = "granite";
+//	heading = "eMiscellany";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//ItemData Opal
+//{
+//	description = "Opal";
+//	className = "Accessory";
+//	shapeFile = "opal";
+//	heading = "eMiscellany";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//ItemData Jade
+//{
+//	description = "Jade";
+//	className = "Accessory";
+//	shapeFile = "jade";
+//	heading = "eMiscellany";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//ItemData Turquoise
+//{
+//	description = "Turquoise";
+//	className = "Accessory";
+//	shapeFile = "turquoise";
+//	heading = "eMiscellany";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//ItemData Ruby
+//{
+//	description = "Ruby";
+//	className = "Accessory";
+//	shapeFile = "ruby";
+//	heading = "eMiscellany";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//ItemData Topaz
+//{
+//	description = "Topaz";
+//	className = "Accessory";
+//	shapeFile = "topaz";
+//	heading = "eMiscellany";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//ItemData Sapphire
+//{
+//	description = "Sapphire";
+//	className = "Accessory";
+//	shapeFile = "saphire";
+//	heading = "eMiscellany";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//ItemData Gold
+//{
+//	description = "Gold";
+//	className = "Accessory";
+//	shapeFile = "gold";
+//	heading = "eMiscellany";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//ItemData Emerald
+//{
+//	description = "Emerald";
+//	className = "Accessory";
+//	shapeFile = "Emerald";
+//	heading = "eMiscellany";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//ItemData Diamond
+//{
+//	description = "Diamond";
+//	className = "Accessory";
+//	shapeFile = "diamond";
+//	heading = "eMiscellany";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//ItemData Keldrinite
+//{
+//	description = "Keldrinite";
+//	className = "Accessory";
+//	shapeFile = "keldrinite";
+//	heading = "eMiscellany";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//
+//$AccessoryVar[BlackStatue, $Weight] = 1;
+//$AccessoryVar[BlackStatue, $MiscInfo] = "A black statue";
+//
+//ItemData BlackStatue
+//{
+//	description = "Black Statue";
+//	className = "Accessory";
+//	shapeFile = "mineammo";
+//	heading = "eMiscellany";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//
+//$AccessoryVar[SkeletonBone, $Weight] = 1;
+//$AccessoryVar[SkeletonBone, $MiscInfo] = "A skeleton bone";
+//
+//ItemData SkeletonBone
+//{
+//	description = "Skeleton Bone";
+//	className = "Accessory";
+//	shapeFile = "grenade";
+//	heading = "eMiscellany";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//
+//$AccessoryVar[EnchantedStone, $Weight] = 5;
+//$AccessoryVar[EnchantedStone, $MiscInfo] = "An enchanted stone";
+//
+//ItemData EnchantedStone
+//{
+//	description = "Enchanted Stone";
+//	className = "Accessory";
+//	shapeFile = "granite";
+//	heading = "eMiscellany";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//
+//$AccessoryVar[DragonScale, $Weight] = 8;
+//$AccessoryVar[DragonScale, $MiscInfo] = "A dragon scale";
+//
+//ItemData DragonScale
+//{
+//	description = "Dragon Scale";
+//	className = "Accessory";
+//	shapeFile = "granite";
+//	heading = "eMiscellany";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
 
 //===================
 //  LORE ITEMS
 //===================
-$ItemList[Lore, 1] = "Parchment";
-$ItemList[Lore, 2] = "MagicDust";
+//$ItemList[Lore, 1] = "Parchment";
+//$ItemList[Lore, 2] = "MagicDust";
+//
+//$AccessoryVar[Parchment, $Weight] = 0.2;
+//$AccessoryVar[Parchment, $MiscInfo] = "A parchment";
+//$LoreItem[Parchment] = True;
+//
+//ItemData Parchment
+//{
+//	description = "Parchment";
+//	className = "Accessory";
+//	shapeFile = "grenade";
+//	heading = "eMiscellany";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
 
-$AccessoryVar[Parchment, $Weight] = 0.2;
-$AccessoryVar[Parchment, $MiscInfo] = "A parchment";
-$LoreItem[Parchment] = True;
-
-ItemData Parchment
-{
-	description = "Parchment";
-	className = "Accessory";
-	shapeFile = "grenade";
-	heading = "eMiscellany";
-	shadowDetailMask = 4;
-	price = 0;
-};
-
-$AccessoryVar[MagicDust, $Weight] = 0.2;
-$AccessoryVar[MagicDust, $MiscInfo] = "A small bag containing magic dust";
-$LoreItem[MagicDust] = True;
-
-ItemData MagicDust
-{
-	description = "Magic Dust";
-	className = "Accessory";
-	shapeFile = "grenade";
-	heading = "eMiscellany";
-	shadowDetailMask = 4;
-	price = 0;
-};
-function MagicDust::onUse(%player, %item)
-{
-	Player::decItemCount(%player, %item);
-
-	%list = GetEveryoneIdList();
-	for(%i = 0; (%id = GetWord(%list, %i)) != -1; %i++)
-	{
-		%pl = Client::getOwnedObject(%clientId);
-		if(Vector::getDistance(GameBase::getPosition(%player), GameBase::getPosition(%pl)) <= 20)
-			Player::applyImpulse(%pl, "0 0 500");
-	}
-}
+//$AccessoryVar[MagicDust, $Weight] = 0.2;
+//$AccessoryVar[MagicDust, $MiscInfo] = "A small bag containing magic dust";
+//$LoreItem[MagicDust] = True;
+//
+//ItemData MagicDust
+//{
+//	description = "Magic Dust";
+//	className = "Accessory";
+//	shapeFile = "grenade";
+//	heading = "eMiscellany";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//function MagicDust::onUse(%player, %item)
+//{
+//	Player::decItemCount(%player, %item);
+//
+//	%list = GetEveryoneIdList();
+//	for(%i = 0; (%id = GetWord(%list, %i)) != -1; %i++)
+//	{
+//		%pl = Client::getOwnedObject(%clientId);
+//		if(Vector::getDistance(GameBase::getPosition(%player), GameBase::getPosition(%pl)) <= 20)
+//			Player::applyImpulse(%pl, "0 0 500");
+//	}
+//}
 
 //===================
 // Badges

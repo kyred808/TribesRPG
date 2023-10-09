@@ -16,12 +16,16 @@
 // It has been written for Salmons MoS
 // and may not be compatible with other
 // mods.
+// 
+// 10/9/23
+// Now adapted and extended for Kyred's
+// TRPG mod.
+//
 // ---------------------------------------
 // I take no responsibility for any damage
 // this script may do to your server or
 // computer, although it shouldnt do any..
 // ---------------------------------------
-
 
 // ------------------- //
 // Menu Functions      //
@@ -578,7 +582,17 @@ function MenuSellBeltItemFinal(%clientid, %item, %type, %mode)
 
 	Client::buildMenu(%clientId, %name@" ("@%cmnt@")", "SellBeltItemFinal", true);
 
-	Client::addMenuItem(%clientId, %cnt++ @ %mode @ " " @%amnt, %type@" " @%mode@" "@%item@" "@%amnt);
+	Client::addMenuItem(%clientId, %cnt++ @ %mode @ " " @%amnt @" ($"@ Belt::GetSellCost(%clientId,%item)*%amnt @")", %type@" " @%mode@" "@%item@" "@%amnt);
+    // Suggested bulk sells
+    //if(%cmnt >= 5)
+    //{
+    //
+    //    if(%cmnt >= 10)
+    //    {
+    //    
+    //    }
+    //    
+    //}
 	Client::addMenuItem(%clientId, "xCancel", "ineedanextrawordsothisisithaha done");
 	return;
 }
@@ -905,11 +919,6 @@ function BeltItem::AddBeltItemGroup(%name,%shortName,%index)
     $Belt::ItemGroupItemCount[%index] = 0;
     $Belt::NumberOfBeltGroups++;
 }
-
-BeltItem::AddBeltItemGroup("RareItems","Rares",1);
-BeltItem::AddBeltItemGroup("KeyItems","Keys",2);
-BeltItem::AddBeltItemGroup("GemItems","Gems",3);
-BeltItem::AddBeltItemGroup("LoreItems","Lore",4);
 
 function Belt::GetBuyCost(%clientid,%item)
 {
@@ -1246,6 +1255,7 @@ function Belt::GetNS(%clientid,%type)
 
 	return %bn@%list;
 }
+
 function BeltItem::Add(%name,%item,%type,%weight,%cost,%shopIndex)
 {
 
@@ -1408,116 +1418,6 @@ function Belt::refreshFullBeltList(%clientId)
 //$ItemList[Badge, 2] = "darkknightinsignia";
 //$ItemList[Badge, 3] = "quarterpoundoherb";
 
-//===================
-//  LORE ITEMS
-//===================
-
-BeltItem::Add("Parchment","parchment","LoreItems",0.2,1);
-BeltItem::Add("Magic Dust","magicdust","LoreItems",0.2,1);
-BeltItem::Add("The Holy Grail","holygrail","LoreItems",40,1);
-BeltItem::Add("Mithril Brooch","mithrilbrooch","LoreItems",0.2,1);
-BeltItem::Add("Gemmed Statue","gemmedstatue","LoreItems",1,1);
-BeltItem::Add("Spell Book","spellbook","LoreItems",1.5,1);
-
-
-$ItemList[Lore, 1] = "parchment";
-$ItemList[Lore, 2] = "magicdust";
-$ItemList[Lore, 3] = "holygrail";
-$ItemList[Lore, 4] = "mithrilbrooch";
-$ItemList[Lore, 5] = "gemmedstatue";
-$ItemList[Lore, 6] = "spellbook";
-
-$LoreItem[Parchment] = True;
-$LoreItem[MagicDust] = True;
-$LoreItem[MithrilBrooch] = True;
-$LoreItem[GemmedStatue] = True;
-$LoreItem[SpellBook] = True;
-$LoreItem[HolyGrail] = True;
-
-$AccessoryVar[Parchment, $MiscInfo] = "A parchment";
-$AccessoryVar[MagicDust, $MiscInfo] = "A small bag containing magic dust";
-$AccessoryVar[MithrilBrooch, $MiscInfo] = "A Mithril Brooch";
-$AccessoryVar[GemmedStatue, $MiscInfo] = "A Gemmed Statue";
-$AccessoryVar[SpellBook, $MiscInfo] = "A SpellBook";
-$AccessoryVar[HolyGrail, $MiscInfo] = "<f2>I fart in you general direction! -Monty Python";
-
-//===================
-//  Gems
-//===================
-
-BeltItem::Add("Quartz","quartz","GemItems",0.2,250,1);
-BeltItem::Add("Granite","granite","GemItems",0.2,480,2);
-BeltItem::Add("Opal","opal","GemItems",0.2,600,3);
-BeltItem::Add("Jade","jade","GemItems",0.25,750,4);
-BeltItem::Add("Turquoise","turquoise","GemItems",0.3,1350,5);
-BeltItem::Add("Ruby","ruby","GemItems",0.3,1600,6);
-BeltItem::Add("Topaz","topaz","GemItems",0.3,3004,7);
-BeltItem::Add("Sapphire","sapphire","GemItems",0.3,4930,8);
-BeltItem::Add("Gold","gold","GemItems",3.5,9680,9);
-BeltItem::Add("Emerald","emerald","GemItems",0.2,15702,10);
-BeltItem::Add("Diamond","diamond","GemItems",0.1,28575,11);
-BeltItem::Add("Keldrinite","keldrinite","GemItems",5.0,225200,12);
-
-
-//=======================
-// Rares and Quest Items
-//=======================
-
-BeltItem::Add("Vial of Goo","vialofgoo","RareItems",1,1);
-BeltItem::Add("Ogre Brain","ogrebrain","RareItems",1,1);
-BeltItem::Add("Red Herb","redherb","RareItems",1,1);
-BeltItem::Add("Green Herb","greenherb","RareItems",1,1);
-BeltItem::Add("Black Statue","BlackStatue","RareItems",3,1);
-BeltItem::Add("Skeleton Bone","SkeletonBone","RareItems",1,1);
-BeltItem::Add("Enchanted Stone","EnchantedStone","RareItems",2,1);
-BeltItem::Add("Dragon Scale","DragonScale","RareItems",8,245310);
-BeltItem::Add("Minotaur Steak","MinotaurSteak","RareItems",2,1);
-BeltItem::Add("Minotaur Rib","MinotaurRib","RareItems",2,1);
-BeltItem::Add("Minotaur Horn","MinotaurHorn","RareItems",2,1);
-BeltItem::Add("Dracos Tooth","Dracostooth","RareItems",2,1);
-BeltItem::Add("Dracos Claw","Dracosclaw","RareItems",2,1);
-BeltItem::Add("Book Page","BookPage","RareItems",2,1);
-BeltItem::Add("Book of Life","BookpfLife","RareItems",5,1);
-BeltItem::Add("SoulStone","SoulStone","RareItems",4,1);
-BeltItem::Add("Manuscript Piece","ManuscriptPiece","RareItems",1,1);
-BeltItem::Add("Rose","Rose","RareItems",1,1);
-BeltItem::Add("Pearl","pearl","RareItems",1,1);
-BeltItem::Add("Brooch Sliver","BroochSliver","RareItems",1,1);
-BeltItem::Add("Silver Brooch","SilverBrooch","RareItems",6,1);
-BeltItem::Add("Mithril Shard","mithrilshard","RareItems",1,1);
-BeltItem::Add("Mithril","Mithril","RareItems",6,1);
-BeltItem::Add("Shield Receipt","ShieldReceipt","RareItems",2,1);
-BeltItem::Add("Gnoll Eye","GnollEye","RareItems",1,1);
-BeltItem::Add("Fish Scale","FishScale","RareItems",1,1);
-BeltItem::Add("Fishermens Knife","FishermensKnife","RareItems",5,1);
-
-$AccessoryVar[vialofgoo, $MiscInfo] = "A vial of strange orange goo.";
-$AccessoryVar[ogrebrain, $MiscInfo] = "A smelly lump of shit that comes from an ogres skull.";
-$AccessoryVar[redherb, $MiscInfo] = "A red herb.";
-$AccessoryVar[greenherb, $MiscInfo] = "A green herb.";
-$AccessoryVar[blackstatue, $MiscInfo] = "A strage black statue.";
-$AccessoryVar[skeletonbone, $MiscInfo] = "A bone from an old skeleton.";
-$AccessoryVar[EnchantedStone, $MiscInfo] = "A weird glowing stone.";
-$AccessoryVar[DragonScale, $MiscInfo] = "A dragon scale.";
-$AccessoryVar[MinotaurSteak, $MiscInfo] = "A fat chunk of meat from a minotaur.";
-$AccessoryVar[MinotaurRib, $MiscInfo] = "A rack of mino ribs.";
-$AccessoryVar[MinotaurHorn, $MiscInfo] = "Ripped right from a minotaurs skull.";
-$AccessoryVar[DracosTooth, $MiscInfo] = "A dracos tooth.";
-$AccessoryVar[DracosClaw, $MiscInfo] = "A dracos claw.";
-$AccessoryVar[BookPage, $MiscInfo] = "A page from the book of life.";
-$AccessoryVar[BookofLife, $MiscInfo] = "The Book of Life.";
-$AccessoryVar[SoulStone, $MiscInfo] = "An ancient stone.";
-$AccessoryVar[ManuscriptPiece, $MiscInfo] = "A piece from an ancient Manuscript that dates back to the beginning of religion.";
-$AccessoryVar[Rose, $MiscInfo] = "A rose.";
-$AccessoryVar[pearl, $MiscInfo] = "A pearl.";
-$AccessoryVar[BroochSliver, $MiscInfo] = "A sliver from a silver brooch.";
-$AccessoryVar[SilverBrooch, $MiscInfo] = "An old silver brooch.";
-$AccessoryVar[MithrilShard, $MiscInfo] = "A shard of mithril.";
-$AccessoryVar[Mithril, $MiscInfo] = "A nice sized chunk of mithril.";
-$AccessoryVar[ShieldReceipt, $MiscInfo] = "A receipt for a well made shield.";
-$AccessoryVar[GnollEye, $MiscInfo] = "Fish seem to enjoy the juices from gnoll eyes.";
-$AccessoryVar[FishScale, $MiscInfo] = "A big scale from a guppy.";
-$AccessoryVar[FishermensKnife, $MiscInfo] = "A knife only used by fishermen.";
 
 ItemData Belt
 {

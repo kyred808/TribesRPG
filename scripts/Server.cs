@@ -164,6 +164,7 @@ function createServer(%mission, %dedicated)
 	exec(plugs);
 	exec(version);
     exec(belt);
+    exec(BeltItemDefs);
 	exec(fix);
     exec(admin_defs);
 	$Server::Info = "Running RPG Mod - www.tribesrpg.org\n" @ $extrainfo;
