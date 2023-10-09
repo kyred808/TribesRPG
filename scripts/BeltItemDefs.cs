@@ -26,6 +26,7 @@ deleteVariables("beltitem*");
 // (InternalName,DisplayName,ID)
 
 // IDs must have contiguous (no gaps) or they will not process right
+$Belt::NumberOfBeltGroups = 0;
 BeltItem::AddBeltItemGroup("RareItems","Rares",1);
 BeltItem::AddBeltItemGroup("KeyItems","Keys",2);
 BeltItem::AddBeltItemGroup("GemItems","Gems",3);
