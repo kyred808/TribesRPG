@@ -5,57 +5,62 @@ function delayedban(%id)
 	net::kick(%id, "You have been banned indefinately for that.");
 	BanList::add(%hisip, 9999);
 }
+
+//Replaced by mem plugin
 //rewrote String::len from scratch, which is now approximately 6.5 times faster than the previous one i had from PSS.
-function String::len(%string)
-{
-	//dbecho($dbechoMode, "String::len(" @ %string @ ")");
+//function String::len(%string)
+//{
+//	//dbecho($dbechoMode, "String::len(" @ %string @ ")");
+//
+//	%chunk = 10;
+//	%length = 0;
+//
+//	for(%i = 0; String::getSubStr(%string, %i, 1) != ""; %i += %chunk)
+//		%length += %chunk;
+//	%length -= %chunk;
+//
+//	%checkstr = String::getSubStr(%string, %length, 99999);
+//	for(%k = 0; String::getSubStr(%checkstr, %k, 1) != ""; %k++)
+//		%length++;
+//
+//	if(%length == -%chunk)
+//		%length = 0;
+//
+//	return %length;
+//}
 
-	%chunk = 10;
-	%length = 0;
 
-	for(%i = 0; String::getSubStr(%string, %i, 1) != ""; %i += %chunk)
-		%length += %chunk;
-	%length -= %chunk;
+//Replaced by mem plugin
+//function String::replace(%string, %search, %replace)
+//{
+//	dbecho($dbechoMode, "String::replace(" @ %string @ ", " @ %search @ ", " @ %replace @ ")");
+//
+//	%loc = String::findSubStr(%string, %search);
+//
+//	if(%loc != -1)
+//	{
+//		%ls = String::len(%search);
+//
+//		%part1 = String::NEWgetSubStr(%string, 0, %loc);
+//		%part2 = String::NEWgetSubStr(%string, %loc + %ls, 99999);
+//
+//		%string = %part1 @ %replace @ %part2;
+//	}
+//
+//	return %string;
+//}
 
-	%checkstr = String::getSubStr(%string, %length, 99999);
-	for(%k = 0; String::getSubStr(%checkstr, %k, 1) != ""; %k++)
-		%length++;
-
-	if(%length == -%chunk)
-		%length = 0;
-
-	return %length;
-}
-
-function String::replace(%string, %search, %replace)
-{
-	dbecho($dbechoMode, "String::replace(" @ %string @ ", " @ %search @ ", " @ %replace @ ")");
-
-	%loc = String::findSubStr(%string, %search);
-
-	if(%loc != -1)
-	{
-		%ls = String::len(%search);
-
-		%part1 = String::NEWgetSubStr(%string, 0, %loc);
-		%part2 = String::NEWgetSubStr(%string, %loc + %ls, 99999);
-
-		%string = %part1 @ %replace @ %part2;
-	}
-
-	return %string;
-}
-
-function String::create(%c, %len)
-{
-	dbecho($dbechoMode, "String::create(" @ %c @ ", " @ %len @ ")");
-
-	%f = "";
-	for(%i = 1; %i <= %len; %i++)
-		%f = %f @ %c;
-
-	return %f;
-}
+// Replaced by mem plugin
+//function String::create(%c, %len)
+//{
+//	dbecho($dbechoMode, "String::create(" @ %c @ ", " @ %len @ ")");
+//
+//	%f = "";
+//	for(%i = 1; %i <= %len; %i++)
+//		%f = %f @ %c;
+//
+//	return %f;
+//}
 
 function String::ofindSubStr(%s, %f, %o)
 {
@@ -932,17 +937,20 @@ function clipTrailingNumbers(%str)
 {
 	dbecho($dbechoMode, "clipTrailingNumbers(" @ %str @ ")");
 
-	for(%i=0; %i <= String::len(%str); %i++)
-	{
-		%a = String::getSubStr(%str, %i, 1);
-		%b = (%a+1-1);
-
-		if(String::ICompare(%b, %a) == 0)
-			break;
-	}
-	%pos = %i;
-
-	return String::getSubStr(%str, 0, %pos);
+    return String::clipTrailing(%str, "1234567890");
+    
+    //Mem dll fixes replaces this
+	//for(%i=0; %i <= String::len(%str); %i++)
+	//{
+	//	%a = String::getSubStr(%str, %i, 1);
+	//	%b = (%a+1-1);
+    //
+	//	if(String::ICompare(%b, %a) == 0)
+	//		break;
+	//}
+	//%pos = %i;
+    //
+	//return String::getSubStr(%str, 0, %pos);
 }
 
 function UpdateAppearance(%clientId)
@@ -2232,28 +2240,30 @@ function IsStuffStringEquiv(%s1, %s2, %dblCheck)
 //$tst = "I am typing a whole bunch of bullshit on this screen so I can fix this stupid bug concerning the storage. The string::getsubstr function can only get two-hundred fifty five (255) characters from a string, so whenever this function was performed on the storage stuff string, alot of info would get lost. Players were actually capable of spawning items that aren't normally supposed to be spawned, like the Deployable Base for example. This is a big problem, but with this NEWgetSubStr function that I wrote, which splits up strings into chunks of 255 in order to get the string portion properly, the storage bug should go away and there should be a hell of a lot less cheating.";
 function String::NEWgetSubStr(%s, %x, %y)
 {
-	dbecho($dbechoMode, "String::NEWgetSubStr(" @ %s @ ", " @ %x @ ", " @ %y @ ")");
-
-	%len = %y;
-	%chunks = floor(%len / 255) + 1;
-
-	%q = %len;
-	%nx = %x;
-	%final = "";
-
-	for(%i = 1; %i <= %chunks; %i++)
-	{
-		%q = %q - 255;
-		if(%q <= 0)
-			%chunkLen = %q+255;
-		else
-			%chunkLen = 255;
-
-		%final = %final @ String::getSubStr(%s, %nx, %chunkLen);
-		%nx = %nx + %chunkLen;
-	}
-
-	return %final;
+    // Mem.dll plugin fixes the 255 len limit that this function tries to fix
+    return String::getSubStr(%s,%x,%y);
+	//dbecho($dbechoMode, "String::NEWgetSubStr(" @ %s @ ", " @ %x @ ", " @ %y @ ")");
+    //
+	//%len = %y;
+	//%chunks = floor(%len / 255) + 1;
+    //
+	//%q = %len;
+	//%nx = %x;
+	//%final = "";
+    //
+	//for(%i = 1; %i <= %chunks; %i++)
+	//{
+	//	%q = %q - 255;
+	//	if(%q <= 0)
+	//		%chunkLen = %q+255;
+	//	else
+	//		%chunkLen = 255;
+    //
+	//	%final = %final @ String::getSubStr(%s, %nx, %chunkLen);
+	//	%nx = %nx + %chunkLen;
+	//}
+    //
+	//return %final;
 }
 
 function GetRoll(%roll, %optionalMinMax)

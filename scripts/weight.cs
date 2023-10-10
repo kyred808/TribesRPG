@@ -41,7 +41,6 @@ function GetWeight(%clientId)
     while(%currentItem != -1)
     {
         %count = getWord(%beltList,%i+1);
-        echo(%currentItem @": "@ %count);
         %weight = GetAccessoryVar(%currentItem, $Weight);
         if(%weight != "" && %weight != False)
             %total += %weight * %count;
@@ -55,7 +54,6 @@ function GetWeight(%clientId)
     {
         %slotName = $BeltEquip::Slot[%i,Name];
         %item = Player::GetEquippedBeltItem(%clientId,%slotName);
-        echo(%item @" "@ %slotName);
         if(%item != "")
         {
             %weight = GetAccessoryVar(%item, $Weight);

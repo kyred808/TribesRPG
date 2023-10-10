@@ -606,14 +606,15 @@ function processMenuSellBelt(%clientId, %opt)
 	return;
 }
 
-function GetWordCount(%string)
-{
-    for(%i = 0; GetWord(%string,%i) != -1; %i++)
-    {
-        //Just countin'
-    }
-    return %i;
-}
+//Replaced in mem
+//function GetWordCount(%string)
+//{
+//    for(%i = 0; GetWord(%string,%i) != -1; %i++)
+//    {
+//        //Just countin'
+//    }
+//    return %i;
+//}
 
 function MenuBuyBeltItem(%clientId,%npc,%typeIdx,%page)
 {
