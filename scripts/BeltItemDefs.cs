@@ -31,6 +31,7 @@ BeltItem::AddBeltItemGroup("RareItems","Rares",1);
 BeltItem::AddBeltItemGroup("KeyItems","Keys",2);
 BeltItem::AddBeltItemGroup("GemItems","Gems",3);
 BeltItem::AddBeltItemGroup("LoreItems","Lore",4);
+BeltItem::AddBeltItemGroup("EquipItems","Equip",5);
 
 // =============================
 // End Belt Groups

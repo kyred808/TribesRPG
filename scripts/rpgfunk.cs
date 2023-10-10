@@ -368,7 +368,13 @@ function SaveCharacter(%clientId)
 	$funk::var["[\"" @ %name @ "\", 0, 30]"] = GetHouseNumber(fetchData(%clientId, "MyHouse"));
 	$funk::var["[\"" @ %name @ "\", 0, 31]"] = fetchData(%clientId, "RankPoints");
     $funk::var["[\"" @ %name @ "\", 0, 32]"] = fetchData(%clientId, "GemItems");
-    $funk::var["[\"" @ %name @ "\", 0, 33]"] = fetchData(%clientId, "StoredGemItems");
+    $funk::var["[\"" @ %name @ "\", 0, 33]"] = fetchData(%clientId, "RareItems");
+    $funk::var["[\"" @ %name @ "\", 0, 34]"] = fetchData(%clientId, "LoreItems");
+    $funk::var["[\"" @ %name @ "\", 0, 35]"] = fetchData(%clientId, "EquipItems");
+    $funk::var["[\"" @ %name @ "\", 0, 36]"] = fetchData(%clientId, "StoredGemItems");
+    $funk::var["[\"" @ %name @ "\", 0, 37]"] = fetchData(%clientId, "StoredRareItems");
+    $funk::var["[\"" @ %name @ "\", 0, 38]"] = fetchData(%clientId, "StoredLoreItems");
+    $funk::var["[\"" @ %name @ "\", 0, 39]"] = fetchData(%clientId, "StoredEquipItems");
 
 
 	//Key binds
@@ -411,6 +417,12 @@ function SaveCharacter(%clientId)
 		$funk::var["[\"" @ %name @ "\", 4, " @ %cnt++ @ "]"] = $PlayerSkill[%clientId, %i];
 		$funk::var["[\"" @ %name @ "\", 4, " @ %cnt++ @ "]"] = $SkillCounter[%clientId, %i];
 	}
+    
+    for(%i = 0; $BeltEquip::Slot[%i,Name] != ""; %i++)
+    {
+        %slotName = $BeltEquip::Slot[%i,Name];
+        $funk::var["[\"" @ %name @ "\", 8, "@%i@"]"] = $ClientData::BeltEquip[%clientId,%slotName];
+    }
 
 	//IP dump, for server admin look-up purposes
 	$funk::var["[\"" @ %name @ "\", 0, 666]"] = Client::getTransportAddress(%clientId);
@@ -522,8 +534,14 @@ function LoadCharacter(%clientId)
 		storeData(%clientId, "MyHouse", $HouseName[$funk::var[%name, 0, 30]]);
 		storeData(%clientId, "RankPoints", $funk::var[%name, 0, 31]);
         storeData(%clientId, "GemItems", $funk::var[%name, 0, 32]);
-        storeData(%clientId, "StoredGemItems", $funk::var[%name, 0, 33]);
-
+        storeData(%clientId, "RareItems", $funk::var[%name, 0, 33]);
+        storeData(%clientId, "LoreItems", $funk::var[%name, 0, 34]);
+        storeData(%clientId, "EquipItems", $funk::var[%name, 0, 35]);
+        storeData(%clientId, "StoredGemItems", $funk::var[%name, 0, 36]);
+        storeData(%clientId, "StoredRareItems", $funk::var[%name, 0, 37]);
+        storeData(%clientId, "StoredLoreItems", $funk::var[%name, 0, 38]);
+        storeData(%clientId, "StoredEquipItems", $funk::var[%name, 0, 39]);
+        
         Belt::refreshFullBeltList(%clientId);
 
 		$numMessage[%clientId, 1] = $funk::var[%name, 7, 1];
@@ -557,6 +575,12 @@ function LoadCharacter(%clientId)
 		$numMessage[%clientId, "numpad-"] = $funk::var[%name, 7, "numpad-"];
 		$numMessage[%clientId, "numpad+"] = $funk::var[%name, 7, "numpad+"];
 
+        //Belt Equip
+        for(%i = 0; $BeltEquip::Slot[%i,Name] != ""; %i++)
+        {
+            %slotName = $BeltEquip::Slot[%i,Name];
+            $ClientData::BeltEquip[%clientId,%slotName] = $funk::var[%name,8,%i];
+        }
 
 		//skill variables
 		%cnt = 0;
