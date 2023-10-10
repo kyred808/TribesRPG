@@ -76,6 +76,7 @@ function createServer(%mission, %dedicated)
 	deleteVariables("LoadOut*");
     deleteVariables("Belt::*");
     deleteVariables("beltitem*");
+    deleteVariables("BeltEquip::*");
 	$PetList = "";
 	$DISlist = "";
 	$SpawnPackList = "";
@@ -165,6 +166,7 @@ function createServer(%mission, %dedicated)
 	exec(version);
     exec(belt);
     exec(BeltItemDefs);
+    exec(BeltEquipment);
 	exec(fix);
     exec(admin_defs);
 	$Server::Info = "Running RPG Mod - www.tribesrpg.org\n" @ $extrainfo;
