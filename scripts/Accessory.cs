@@ -90,12 +90,12 @@ $HardcodedItemCost[CheetaursPaws] = 3500;
 $HardcodedItemCost[BootsOfGliding] = 8000;
 $HardcodedItemCost[WindWalkers] = 45000;
 
-$HardcodedItemCost[BlackStatue] = 180;
-$HardcodedItemCost[EnchantedStone] = 2450;
-$HardcodedItemCost[SkeletonBone] = 5860;
-$HardcodedItemCost[Parchment] = 1000000;
-$HardcodedItemCost[MagicDust] = 1000000;
-$HardcodedItemCost[DragonScale] = 245310;
+//$HardcodedItemCost[BlackStatue] = 180;
+//$HardcodedItemCost[EnchantedStone] = 2450;
+//$HardcodedItemCost[SkeletonBone] = 5860;
+//$HardcodedItemCost[Parchment] = 1000000;
+//$HardcodedItemCost[MagicDust] = 1000000;
+//$HardcodedItemCost[DragonScale] = 245310;
 $HardcodedItemCost[BadgeOfFriendship] = 1;
 $HardcodedItemCost[BadgeOfLoyalty] = 1;
 $HardcodedItemCost[BadgeOfHonor] = 1;
@@ -724,7 +724,7 @@ ItemData Lootbag
 //$AccessoryVar[Diamond, $MiscInfo] = "Diamond";
 //$AccessoryVar[Keldrinite, $MiscInfo] = "Keldrinite is a very rare magical gem that, when in the hands of a skilled blacksmith, can give items magical properties.";
 
-$HardcodedItemCost[SmallRock] = 13;
+//$HardcodedItemCost[SmallRock] = 13;
 //$HardcodedItemCost[Quartz] = 100;
 //$HardcodedItemCost[Granite] = 180;
 //$HardcodedItemCost[Opal] = 300;
@@ -738,8 +738,8 @@ $HardcodedItemCost[SmallRock] = 13;
 //$HardcodedItemCost[Diamond] = 16575;
 //$HardcodedItemCost[Keldrinite] = 125200;
 
-%f = 43;
-$ItemList[Mining, 1] = "SmallRock " @ round($HardcodedItemCost[SmallRock] / %f)+2;
+//%f = 43;
+//$ItemList[Mining, 1] = "SmallRock " @ round($HardcodedItemCost[SmallRock] / %f)+2;
 //$ItemList[Mining, 2] = "Quartz " @ round($HardcodedItemCost[Quartz] / %f)+2;
 //$ItemList[Mining, 3] = "Granite " @ round($HardcodedItemCost[Granite] / %f)+2;
 //$ItemList[Mining, 4] = "Opal " @ round($HardcodedItemCost[Opal] / %f)+2;

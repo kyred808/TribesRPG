@@ -372,14 +372,23 @@ function SaveCharacter(%clientId)
 	//$funk::var["[\"" @ %name @ "\", 0, 29]"] = "";
 	$funk::var["[\"" @ %name @ "\", 0, 30]"] = GetHouseNumber(fetchData(%clientId, "MyHouse"));
 	$funk::var["[\"" @ %name @ "\", 0, 31]"] = fetchData(%clientId, "RankPoints");
-    $funk::var["[\"" @ %name @ "\", 0, 32]"] = fetchData(%clientId, "GemItems");
-    $funk::var["[\"" @ %name @ "\", 0, 33]"] = fetchData(%clientId, "RareItems");
-    $funk::var["[\"" @ %name @ "\", 0, 34]"] = fetchData(%clientId, "LoreItems");
-    $funk::var["[\"" @ %name @ "\", 0, 35]"] = fetchData(%clientId, "EquipItems");
-    $funk::var["[\"" @ %name @ "\", 0, 36]"] = fetchData(%clientId, "StoredGemItems");
-    $funk::var["[\"" @ %name @ "\", 0, 37]"] = fetchData(%clientId, "StoredRareItems");
-    $funk::var["[\"" @ %name @ "\", 0, 38]"] = fetchData(%clientId, "StoredLoreItems");
-    $funk::var["[\"" @ %name @ "\", 0, 39]"] = fetchData(%clientId, "StoredEquipItems");
+    
+    %idx = 32;
+    for(%i = 0; %i < $Belt::NumberOfBeltGroups; %i++)
+    {
+        $funk::var["[\"" @ %name @ "\", 0, "@%idx+%i@"]"] = fetchData(%clientId, $Belt::ItemGroup[%i]);
+        $funk::var["[\"" @ %name @ "\", 0, "@%idx+%i+$Belt::NumberOfBeltGroups@"]"] = fetchData(%clientId, "Stored"@$Belt::ItemGroup[%i]);
+    }
+    
+   //$funk::var["[\"" @ %name @ "\", 0, 32]"] = fetchData(%clientId, "GemItems");
+   //$funk::var["[\"" @ %name @ "\", 0, 33]"] = fetchData(%clientId, "RareItems");
+   //$funk::var["[\"" @ %name @ "\", 0, 34]"] = fetchData(%clientId, "LoreItems");
+   //$funk::var["[\"" @ %name @ "\", 0, 35]"] = fetchData(%clientId, "EquipItems");
+   
+    //$funk::var["[\"" @ %name @ "\", 0, 36]"] = fetchData(%clientId, "StoredGemItems");
+    //$funk::var["[\"" @ %name @ "\", 0, 37]"] = fetchData(%clientId, "StoredRareItems");
+    //$funk::var["[\"" @ %name @ "\", 0, 38]"] = fetchData(%clientId, "StoredLoreItems");
+    //$funk::var["[\"" @ %name @ "\", 0, 39]"] = fetchData(%clientId, "StoredEquipItems");
 
 
 	//Key binds
@@ -538,14 +547,22 @@ function LoadCharacter(%clientId)
 		//$funk::var[%name, 0, 29]);
 		storeData(%clientId, "MyHouse", $HouseName[$funk::var[%name, 0, 30]]);
 		storeData(%clientId, "RankPoints", $funk::var[%name, 0, 31]);
-        storeData(%clientId, "GemItems", $funk::var[%name, 0, 32]);
-        storeData(%clientId, "RareItems", $funk::var[%name, 0, 33]);
-        storeData(%clientId, "LoreItems", $funk::var[%name, 0, 34]);
-        storeData(%clientId, "EquipItems", $funk::var[%name, 0, 35]);
-        storeData(%clientId, "StoredGemItems", $funk::var[%name, 0, 36]);
-        storeData(%clientId, "StoredRareItems", $funk::var[%name, 0, 37]);
-        storeData(%clientId, "StoredLoreItems", $funk::var[%name, 0, 38]);
-        storeData(%clientId, "StoredEquipItems", $funk::var[%name, 0, 39]);
+        
+        %idx = 32;
+        for(%i = 0; %i < $Belt::NumberOfBeltGroups; %i++)
+        {
+            storeData(%clientId, $Belt::ItemGroup[%i], $funk::var[%name, 0, %idx+%i]);
+            storeData(%clientId, "Stored"@$Belt::ItemGroup[%i], $funk::var[%name, 0, %idx+%i+$Belt::NumberOfBeltGroups]);
+        }
+        
+        //storeData(%clientId, "GemItems", $funk::var[%name, 0, 32]);
+        //storeData(%clientId, "RareItems", $funk::var[%name, 0, 33]);
+        //storeData(%clientId, "LoreItems", $funk::var[%name, 0, 34]);
+        //storeData(%clientId, "EquipItems", $funk::var[%name, 0, 35]);
+        //storeData(%clientId, "StoredGemItems", $funk::var[%name, 0, 36]);
+        //storeData(%clientId, "StoredRareItems", $funk::var[%name, 0, 37]);
+        //storeData(%clientId, "StoredLoreItems", $funk::var[%name, 0, 38]);
+        //storeData(%clientId, "StoredEquipItems", $funk::var[%name, 0, 39]);
         
         Belt::refreshFullBeltList(%clientId);
 
@@ -2137,36 +2154,36 @@ function FellOffMap(%id)
 	}
 }
 
-function SetStuffString(%stuff, %item, %amount)
+
+function SetStuffString(%stuff,%item,%amount)
 {
-	dbecho($dbechoMode, "SetStuffString(" @ %stuff @ ", " @ %item @ ", " @ %amount @ ")");
-
-	//replaces both Add and Remove stuff string functions by enabling negative values for %amount
-
-	%stuff = FixStuffString(%stuff);
-
-	%pos = String::findSubStr(%stuff, " " @ %item @ " ");
-
-	if(%pos != -1)
-	{
-		%a = String::NEWgetSubStr(%stuff, %pos+1, 99999);
-		%amt = GetWord(%a, 1);	//getword 0 would be the item, so getword 1 is the amount (which follows the item)
-
-		%part1 = String::NEWgetSubStr(%stuff, 0, %pos+1);
-		%part2 = String::NEWgetSubStr(%stuff, %pos+String::len(%item)+String::len(%amt)+3, 99999);
-
-		%b = %amt + %amount;
-		if(%b <= 0)
-			%part3 = "";
-		else
-			%part3 = %item @ " " @ %b @ " ";
-
-		%final = %part1 @ %part2 @ %part3;
-	}
-	else
-		%final = %stuff @ %item @ " " @ %amount @ " ";
-
-	return %final;
+    %stuff = FixStuffString(%stuff);
+    echo(%stuff);
+    %w = Word::FindWord(%stuff,%item);
+    echo(%w != -1);
+    if(%w < 0)
+    {
+        %ret = %stuff;
+        if(%amount > 0)
+            %ret = %ret @ %item @ " " @ %amount @ " ";
+        return %ret;
+    }
+    else
+    {
+        %entry = Word::getSubWord(%stuff,%w,2);
+        %newAmount = getWord(%entry,1) + %amount;
+        
+        if(%newAmount > 0)
+            %new = %item @" "@ %newAmount @ " ";
+        else
+            %new = "";
+        
+        %ret = String::Replace(%stuff,%entry,%new);
+        echo("Ret: "@%ret);
+        if(String::left(%ret,1) != " ")
+            %ret = " " @ %ret;
+        return %ret;
+    }
 }
 
 function GetStuffStringCount(%stuff, %item)

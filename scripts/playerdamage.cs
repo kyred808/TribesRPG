@@ -165,23 +165,27 @@ function Player::onKilled(%this)
 				}
 			}
 		}
-
-        if(fetchdata(%clientId, "AllBelt") != "")
-        {
-            %a[1] = "RareItems";
-            %a[1] = "KeyItems";
-            %a[1] = "GemItems";
-            %a[1] = "LoreItems";
-            %b = 1;
-            Belt::TossBelt(%clientId, 0, "*", 300);
-            for(%i=0; (%item=getword(fetchdata(%clientId, %a[%b]), %i)) != -1; %i+=2)
-            {
-                %amnt = getword(fetchdata(%clientId, "AllBelt"), %i+1);
-                Belt::TakeThisStuff(%clientId, %item, %amnt);
-                if(getword(fetchdata(%clientId, %a[%b]), %i+2) == -1)
-                    %b++;
-            }
-        }
+        
+        %beltItems = Belt::getDeathItems(%clientid);
+        
+        %tmploot = %tmploot @ %beltItems; 
+        echo("Death Loot: "@ %tmploot);
+        //if(fetchdata(%clientId, "AllBelt") != "")
+        //{
+        //    %a[1] = "RareItems";
+        //    %a[1] = "KeyItems";
+        //    %a[1] = "GemItems";
+        //    %a[1] = "LoreItems";
+        //    %b = 1;
+        //    Belt::TossBelt(%clientId, 0, "*", 300);
+        //    for(%i=0; (%item=getword(fetchdata(%clientId, %a[%b]), %i)) != -1; %i+=2)
+        //    {
+        //        %amnt = getword(fetchdata(%clientId, "AllBelt"), %i+1);
+        //        Belt::TakeThisStuff(%clientId, %item, %amnt);
+        //        if(getword(fetchdata(%clientId, %a[%b]), %i+2) == -1)
+        //            %b++;
+        //    }
+        //}
         
 		if(%tmploot != "")
 		{

@@ -27,10 +27,11 @@ deleteVariables("beltitem*");
 
 // IDs must have contiguous (no gaps) or they will not process right
 $Belt::NumberOfBeltGroups = 0;
-BeltItem::AddBeltItemGroup("RareItems","Rares",1);
-BeltItem::AddBeltItemGroup("KeyItems","Keys",2);
-BeltItem::AddBeltItemGroup("GemItems","Gems",3);
-BeltItem::AddBeltItemGroup("LoreItems","Lore",4);
+BeltItem::AddBeltItemGroup("RareItems","Rares",0);
+BeltItem::AddBeltItemGroup("KeyItems","Keys",1);
+BeltItem::AddBeltItemGroup("GemItems","Gems",2);
+BeltItem::AddBeltItemGroup("LoreItems","Lore",3);
+BeltItem::AddBeltItemGroup("AmmoItems","Ammo",4);
 BeltItem::AddBeltItemGroup("EquipItems","Equip",5);
 
 // =============================
@@ -62,8 +63,7 @@ BeltItem::Add("Diamond","diamond","GemItems",0.1,28575,11);
 BeltItem::Add("Keldrinite","keldrinite","GemItems",5.0,225200,12);
 
 %f = 43;
-// Small rock is still defined in accessory.cs for now
-//$ItemList[Mining, 1] = "SmallRock " @ round($HardcodedItemCost[SmallRock] / %f)+2;
+$ItemList[Mining, 1] = "SmallRock " @ round($HardcodedItemCost[SmallRock] / %f)+2;
 $ItemList[Mining, 2] = "Quartz " @ round($HardcodedItemCost[Quartz] / %f)+2;
 $ItemList[Mining, 3] = "Granite " @ round($HardcodedItemCost[Granite] / %f)+2;
 $ItemList[Mining, 4] = "Opal " @ round($HardcodedItemCost[Opal] / %f)+2;
@@ -77,6 +77,53 @@ $ItemList[Mining, 11] = "Emerald " @ round($HardcodedItemCost[Emerald] / %f)+2;
 $ItemList[Mining, 12] = "Diamond " @ round($HardcodedItemCost[Diamond] / %f)+2;
 $ItemList[Mining, 13] = "Keldrinite " @ round($HardcodedItemCost[Keldrinite] / %f)+2;
 
+
+// Equip Items
+BeltEquip::AddEquipmentItem("Ring of Power","ringofpower","EquipItems",0.2,5000,13,"6 150","finger");
+BeltEquip::AddEquipmentItem("Necklace of Defence","necklaceofdef","EquipItems",0.2,5000,14,"7 150","neck");
+BeltEquip::AddEquipmentItem("Armband of Hurt","armbandofhurt","EquipItems",0.2,5000,15,"6 250","arm");
+
+
+//Ammo Items
+BeltItem::Add("Small Rock","SmallRock","AmmoItems",0.2,13,16);
+BeltItem::Add("Basic Arrow","BasicArrow","AmmoItems",0.1,GenerateItemCost(BasicArrow),17);
+BeltItem::Add("Sheaf Arrow","SheafArrow","AmmoItems",0.1,GenerateItemCost(SheafArrow),18);
+BeltItem::Add("Bladed Arrow","BladedArrow","AmmoItems",0.1,GenerateItemCost(BladedArrow),19);
+BeltItem::Add("Light Quarrel","LightQuarrel","AmmoItems",0.1,GenerateItemCost(LightQuarrel),20);
+BeltItem::Add("Heavy Quarrel","HeavyQuarrel","AmmoItems",0.1,GenerateItemCost(HeavyQuarrel),21);
+BeltItem::Add("Short Quarrel","ShortQuarrel","AmmoItems",0.1,GenerateItemCost(ShortQuarrel),22);
+BeltItem::Add("Stone Feather","StoneFeather","AmmoItems",0.1,GenerateItemCost(StoneFeather),23);
+BeltItem::Add("Metal Feather","MetalFeather","AmmoItems",0.1,GenerateItemCost(MetalFeather),24);
+BeltItem::Add("Talon","Talon","AmmoItems",0.1,GenerateItemCost(Talon),25);
+BeltItem::Add("Ceraphum's Feather","CeraphumsFeather","AmmoItems",0.1,GenerateItemCost(CeraphumsFeather),26);
+//BeltItem::Add("Poison Arrow","PoisonArrow","AmmoItems",0.1,200,27);
+
+$SkillType[SmallRock] = $SkillArchery;
+$SkillType[BasicArrow] = $SkillArchery;
+$SkillType[SheafArrow] = $SkillArchery;
+$SkillType[BladedArrow] = $SkillArchery;
+$SkillType[LightQuarrel] = $SkillArchery;
+$SkillType[HeavyQuarrel] = $SkillArchery;
+$SkillType[ShortQuarrel] = $SkillArchery;
+$SkillType[CastingBlade] = $SkillPiercing;
+$SkillType[KeldriniteLS] = $SkillSlashing;
+$SkillType[AeolusWing] = $SkillArchery;
+$SkillType[StoneFeather] = $SkillArchery;
+$SkillType[MetalFeather] = $SkillArchery;
+$SkillType[Talon] = $SkillArchery;
+$SkillType[CeraphumsFeather] = $SkillArchery;
+
+$ProjRestrictions[SmallRock] = ",Sling,";
+$ProjRestrictions[BasicArrow] = ",ShortBow,LongBow,ElvenBow,CompositeBow,RShortBow,";
+$ProjRestrictions[SheafArrow] = ",ShortBow,LongBow,ElvenBow,CompositeBow,RShortBow,";
+$ProjRestrictions[BladedArrow] = ",ShortBow,LongBow,ElvenBow,CompositeBow,RShortBow,";
+$ProjRestrictions[LightQuarrel] = ",LightCrossbow,HeavyCrossbow,RLightCrossbow,";
+$ProjRestrictions[HeavyQuarrel] = ",LightCrossbow,HeavyCrossbow,RLightCrossbow,";
+$ProjRestrictions[ShortQuarrel] = ",RepeatingCrossbow,";
+$ProjRestrictions[StoneFeather] = ",AeolusWing,";
+$ProjRestrictions[MetalFeather] = ",AeolusWing,";
+$ProjRestrictions[Talon] = ",AeolusWing,";
+$ProjRestrictions[CeraphumsFeather] = ",AeolusWing,";
 
 // Lore Items
 
@@ -107,7 +154,6 @@ $AccessoryVar[blackstatue, $MiscInfo] = "A strage black statue.";
 $AccessoryVar[skeletonbone, $MiscInfo] = "A bone from an old skeleton.";
 $AccessoryVar[EnchantedStone, $MiscInfo] = "A weird glowing stone.";
 $AccessoryVar[DragonScale, $MiscInfo] = "A dragon scale.";
-
 
 // =============================
 // Other items for Salmon's server

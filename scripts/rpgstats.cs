@@ -607,7 +607,8 @@ function Game::refreshClientScore(%clientId)
 		%lvl = GetLevel(fetchData(%clientId, "EXP"), %clientId);
 		%rcheck = $ClassName[1, fetchData(%clientId, "RemortStep")+1];
 		%cr = fetchData(%clientId, "currentlyRemorting");
-		if(%lvl >= 125 && %rcheck != "" && !%cr && !Player::isAiControlled(%clientId))
+		%maxlvl = 125 + fetchData(%clientId, "RemortStep");
+		if(%lvl >= %maxlvl && %rcheck != "" && !%cr && !Player::isAiControlled(%clientId))
 		{
 			//FORCE REMORT!!!
 

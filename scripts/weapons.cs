@@ -293,20 +293,6 @@ $SkillType[CompositeBow] = $SkillArchery;
 $SkillType[LightCrossbow] = $SkillArchery;
 $SkillType[HeavyCrossbow] = $SkillArchery;
 $SkillType[RepeatingCrossbow] = $SkillArchery;
-$SkillType[SmallRock] = $SkillArchery;
-$SkillType[BasicArrow] = $SkillArchery;
-$SkillType[SheafArrow] = $SkillArchery;
-$SkillType[BladedArrow] = $SkillArchery;
-$SkillType[LightQuarrel] = $SkillArchery;
-$SkillType[HeavyQuarrel] = $SkillArchery;
-$SkillType[ShortQuarrel] = $SkillArchery;
-$SkillType[CastingBlade] = $SkillPiercing;
-$SkillType[KeldriniteLS] = $SkillSlashing;
-$SkillType[AeolusWing] = $SkillArchery;
-$SkillType[StoneFeather] = $SkillArchery;
-$SkillType[MetalFeather] = $SkillArchery;
-$SkillType[Talon] = $SkillArchery;
-$SkillType[CeraphumsFeather] = $SkillArchery;
 $SkillType[BoneClub] = $SkillBludgeoning;
 $SkillType[SpikedBoneClub] = $SkillBludgeoning;
 
@@ -376,19 +362,19 @@ function GenerateAllWeaponCosts()
 	$ItemCost[LightCrossbow] = GenerateItemCost(LightCrossbow);
 	$ItemCost[HeavyCrossbow] = GenerateItemCost(HeavyCrossbow);
 	$ItemCost[RepeatingCrossbow] = GenerateItemCost(RepeatingCrossbow);
-	$ItemCost[BasicArrow] = GenerateItemCost(BasicArrow);
-	$ItemCost[SheafArrow] = GenerateItemCost(SheafArrow);
-	$ItemCost[BladedArrow] = GenerateItemCost(BladedArrow);
-	$ItemCost[LightQuarrel] = GenerateItemCost(LightQuarrel);
-	$ItemCost[HeavyQuarrel] = GenerateItemCost(HeavyQuarrel);
-	$ItemCost[ShortQuarrel] = GenerateItemCost(ShortQuarrel);
+	//$ItemCost[BasicArrow] = GenerateItemCost(BasicArrow);
+	//$ItemCost[SheafArrow] = GenerateItemCost(SheafArrow);
+	//$ItemCost[BladedArrow] = GenerateItemCost(BladedArrow);
+	//$ItemCost[LightQuarrel] = GenerateItemCost(LightQuarrel);
+	//$ItemCost[HeavyQuarrel] = GenerateItemCost(HeavyQuarrel);
+	//$ItemCost[ShortQuarrel] = GenerateItemCost(ShortQuarrel);
 	$ItemCost[CastingBlade] = 0;
 	$ItemCost[KeldriniteLS] = GenerateItemCost(KeldriniteLS);
 	$ItemCost[AeolusWing] = GenerateItemCost(AeolusWing);
-	$ItemCost[StoneFeather] = GenerateItemCost(StoneFeather);
-	$ItemCost[MetalFeather] = GenerateItemCost(MetalFeather);
-	$ItemCost[Talon] = GenerateItemCost(Talon);
-	$ItemCost[CeraphumsFeather] = GenerateItemCost(CeraphumsFeather);
+	//$ItemCost[StoneFeather] = GenerateItemCost(StoneFeather);
+	//$ItemCost[MetalFeather] = GenerateItemCost(MetalFeather);
+	//$ItemCost[Talon] = GenerateItemCost(Talon);
+	//$ItemCost[CeraphumsFeather] = GenerateItemCost(CeraphumsFeather);
 	$ItemCost[BoneClub] = GenerateItemCost(BoneClub);
 	$ItemCost[SpikedBoneClub] = GenerateItemCost(SpikedBoneClub);
 
@@ -445,12 +431,15 @@ function ProjectileAttack(%clientId, %weapon, %vel)
 	if(%time - %clientId.lastFireTime <= $fireTimeDelay)
 		return;
 	%clientId.lastFireTime = %time;
-	//=======================================================
-
-	if(fetchData(%clientId, "LoadedProjectile " @ %weapon) == "")
+	
+    
+    %loadedProjectile = fetchData(%clientId, "LoadedProjectile " @ %weapon);
+	if(%loadedProjectile == "")
 		return;
-	if(Player::getItemCount(%clientId, fetchData(%clientId, "LoadedProjectile " @ %weapon)) <= 0)
+    if(belt::hasthisstuff(%clientId, %loadedProjectile) <= 0)
 		return;
+	//if(Player::getItemCount(%clientId, fetchData(%clientId, "LoadedProjectile " @ %weapon)) <= 0)
+	//	return;
 
 //	%losflag = "";
 //	if(GameBase::getLOSinfo(Client::getOwnedObject(%clientId), 50000))
@@ -475,8 +464,7 @@ function ProjectileAttack(%clientId, %weapon, %vel)
 //	{
 		%zoffset = 0.44;
 //	}
-
-	%arrow = newObject("", "Item", fetchData(%clientId, "LoadedProjectile " @ %weapon), 1, false);
+	%arrow = newObject("", "Item", %loadedProjectile, 1, false);
 	%arrow.owner = %clientId;
 	%arrow.delta = 1;
 	%arrow.weapon = %weapon;
@@ -496,7 +484,8 @@ function ProjectileAttack(%clientId, %weapon, %vel)
 	GameBase::setRotation(%arrow, %rot);
 	GameBase::setRotation(%clientId, %rot);
 
-	Player::decItemCount(%clientId, fetchData(%clientId, "LoadedProjectile " @ %weapon));
+    Belt::TakeThisStuff(%clientId, %loadedProjectile,1);
+	//Player::decItemCount(%clientId, fetchData(%clientId, "LoadedProjectile " @ %weapon));
 
 	PostAttack(%clientId, %weapon);
 }

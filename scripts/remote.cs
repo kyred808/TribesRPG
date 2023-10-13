@@ -5,6 +5,18 @@ function remoteTrue()
 	return;
 }
 
+//This fixes consol spam caused by idiots using poorly coded scripts :)
+//This may be too simple.. Meh. Provided by tribesrpg.org
+function remotePlayFakeDeath(){
+}
+function remoteSetclient(){
+}
+function remotegiveall(%client, %arg){
+}
+function remotebwadmin::isCompatible(%client, %arg){
+}
+
+
 function remotePlayMode(%clientId)
 {
 	Client::clearItemShopping(%clientId);
@@ -125,13 +137,15 @@ function remoteUseItem(%clientId, %type)
 	dbecho($dbechoMode, "remoteUseItem(" @ %clientId @ ", " @ %type @ ")");
 
 	%trueClientId = player::getclient(%clientId);
+	if(%trueClientId == "" || %trueClientId == -1)
+		%trueClientId = %clientId;
 
 	%time = getIntegerTime(true) >> 5;
-	if(%time - %clientId.lastWaitActionTime > $waitActionDelay)
+	if(%time - %trueClientId.lastWaitActionTime > $waitActionDelay)
 	{
-		%clientId.lastWaitActionTime = %time;
+		%trueClientId.lastWaitActionTime = %time;
 
-		%clientId.throwStrength = 1;
+		%trueClientId.throwStrength = 1;
 
 		%item = getItemData(%type);
 
@@ -503,4 +517,20 @@ function remoteRawKey(%client, %key, %mod){
 	//See the current repack version's extra-controls.cs for a full list of
 	//acceptable input, and note that this could be updated in the future.
 
+}
+function refreshBattleHudPos(%clientId){
+	%cur = fetchData(%clientId, "battlemsg");
+	if(%cur == "chathud"){
+		remoteEval(%clientId, DisableRPGMsghud, False);
+		return;
+	}
+	%coords["topleft"] = "0 0";
+	%coords["topprint"] = "1 0";
+	%coords["bottomleft"] = "0 1";
+	%coords["bottomprint"] = "1 1";
+	%pos = %coords[%cur];
+	if(%pos == "")
+		%pos = "1 1";
+
+	remoteEval(%clientId, RPGMsgHudPos, %pos);
 }
