@@ -39,7 +39,7 @@ function BeltMenu::GetUpperLowerBounds(%numElements,%page,%offset)
         %extra = %offset;
     
     %numElements += %extra;
-    echo(%numElements);
+    //echo(%numElements);
     %numFullPages = floor((%numElements)/ %numLines);
     
     %lowerBound = (%page * %numLines) - (%numLines-1);
@@ -59,18 +59,72 @@ function BeltMenu::GetUpperLowerBounds(%numElements,%page,%offset)
     return %numFullPages@" "@ %lowerBound @" "@ %upperBound;
 }
 
+
 function MenuViewBelt(%clientId, %page)
 {
+    if(%page == "")
+        %page = 1;
 	Client::buildMenu(%clientId, "Belt:", "ViewBelt", true);
-	if(Belt::GetNS(%clientid,"RareItems") > 0)	Client::addMenuItem(%clientId, %cnt++ @ "Rares", "RareItems");
-	if(Belt::GetNS(%clientid,"GemItems") > 0)		Client::addMenuItem(%clientId, %cnt++ @ "Gems", "GemItems");
-	if(Belt::GetNS(%clientid,"KeyItems") > 0)		Client::addMenuItem(%clientId, %cnt++ @ "Keys", "KeyItems");
-	if(Belt::GetNS(%clientid,"LoreItems") > 0)	Client::addMenuItem(%clientId, %cnt++ @ "Lore", "LoreItems");
-    //if(Belt::GetNS(%clientid,"GearItems") > 0)
-        Client::addMenuItem(%clientId, %cnt++ @ "Equip", "EquipItems");
-	//Client::addMenuItem(%clientId, %cnt++ @ "Smithing Book", "smithbook");
-	Client::addMenuItem(%clientId, "xDone", "done");
-	return;
+    
+    %num = 0;
+    %activeGroups[0] = "";
+    for(%i = 0; %i <= $Belt::NumberOfBeltGroups; %i++)
+    {
+        %group = $Belt::ItemGroup[%i];
+        if(getWord(fetchData(%clientId,%group),0) != -1)
+        {
+            %activeGroups[%num] = %group;
+            echo(%group @ " " @ %num-1);
+            %num++;
+        }
+    }
+    %num = %num;
+    echo(%num);
+    %menuULB = BeltMenu::GetUpperLowerBounds(%num,%page);
+
+    %numFullPages = getWord(%menuULB,0);
+    %lb = getWord(%menuULB,1);
+    %ub = getWord(%menuULB,2);
+    echo(%lb @ " > "@ %ub);
+    %x = %lb - 1;
+	for(%i = %lb; %i <= %ub; %i++)
+	{
+        echo(%x);
+        %group = %activeGroups[%x]; //$Belt::ItemGroup[%i];
+        echo(%group);
+        %disp = $Belt::ItemGroupShortName[$Belt::ItemGroupIndex[%group]]; //$Belt::ItemGroupShortName[%i];
+        echo(%disp);
+        Client::addMenuItem(%clientId, %cnt++ @ %disp, %group);
+        %x++;
+            
+    }
+    
+    if(%page == 1)
+	{
+		if(%num > 6) Client::addMenuItem(%clientId, "nNext >>", "page " @ %page+1);
+		Client::addMenuItem(%clientId, "xDone", "done");
+	}
+	else if(%page == %numFullPages+1)
+	{
+		Client::addMenuItem(%clientId, "p<< Prev", "page " @ %page-1);
+		Client::addMenuItem(%clientId, "xDone", "done");
+	}
+	else
+	{
+		Client::addMenuItem(%clientId, "nNext >>", "page " @ %page+1);
+		Client::addMenuItem(%clientId, "p<< Prev", "page " @ %page-1);
+	}
+    return;
+	//if(Belt::GetNS(%clientid,"RareItems") > 0)	Client::addMenuItem(%clientId, %cnt++ @ "Rares", "RareItems");
+	//if(Belt::GetNS(%clientid,"GemItems") > 0)		Client::addMenuItem(%clientId, %cnt++ @ "Gems", "GemItems");
+	//if(Belt::GetNS(%clientid,"KeyItems") > 0)		Client::addMenuItem(%clientId, %cnt++ @ "Keys", "KeyItems");
+	//if(Belt::GetNS(%clientid,"LoreItems") > 0)	Client::addMenuItem(%clientId, %cnt++ @ "Lore", "LoreItems");
+    //if(Belt::GetNS(%clientid,"AmmoItems") > 0)	Client::addMenuItem(%clientId, %cnt++ @ "Ammo", "AmmoItems");
+    ////if(Belt::GetNS(%clientid,"GearItems") > 0)
+    //    Client::addMenuItem(%clientId, %cnt++ @ "Equip", "EquipItems");
+	////Client::addMenuItem(%clientId, %cnt++ @ "Smithing Book", "smithbook");
+	//Client::addMenuItem(%clientId, "xDone", "done");
+	//return;
 }
 
 
@@ -105,238 +159,11 @@ function processMenuViewBelt(%clientId, %opt)
 	return;
 }
 
-
-function MenuBeltEquip(%clientid,%type,%page)
-{
-    Client::buildMenu(%clientId, "Belt Equipment:", "BeltEquip", true);
-    %numSlots = $BeltEquip::NumberOfSlots;
-    
-    // Calculate upper and lower bound indexes for paged menu
-    %menuULB = BeltMenu::GetUpperLowerBounds(%numSlots,%page);
-    %numPages = getWord(%menuULB,0);
-    %lowerBound = getWord(%menuULB,1);
-    %upperBound = getWord(%menuULB,2);
-    
-    %x = %lowerBound - 1;
-    for(%i = %lowerBound; %i <= %upperBound; %i++)
-    {
-        Client::addMenuItem(%clientId, %cnt++ @ $BeltEquip::Slot[%x,Disp], %x @ " "@%type);
-        %x++;
-    }
-    
-    if(%page == 1)
-	{
-		if(%numSlots > 6) Client::addMenuItem(%clientId, "nNext >>", "page " @ %page+1 @" "@%type);
-		Client::addMenuItem(%clientId, "xBack", "back");
-	}
-	else if(%page == %numPages+1)
-	{
-		Client::addMenuItem(%clientId, "p<< Prev", "page " @ %page-1 @" "@%type);
-		Client::addMenuItem(%clientId, "xBack", "back");
-	}
-	else
-	{
-		Client::addMenuItem(%clientId, "nNext >>", "page " @ %page+1 @" "@%type);
-		Client::addMenuItem(%clientId, "p<< Prev", "page " @ %page-1 @" "@%type);
-	}
-    
-    return;
-}
-
-function processMenuBeltEquip(%clientid, %opt)
-{
-    %option = getWord(%opt,0);
-    %page = getWord(%opt,1);
-    %type = getWord(%opt,2);
-    
-    if(%option == "back")
-    {
-        MenuViewBelt(%clientId,1);
-    }
-    else if(%option == "page")
-    {
-        MenuBeltEquip(%clientId,%type,%page);
-    }
-    else
-    {
-        //here, page is type
-        MenuBeltEquipmentSlot(%clientid,%option,%page,1);
-    }
-    return;
-}
-
-// Need to test %indexOffset when more than 6 equip items for a type exist
-function MenuBeltEquipmentSlot(%clientid,%slotId,%prevType,%page)
-{
-    echo("MenuBeltEquipmentSlot("@%clientid@","@%slotId@","@%prevType@","@%page@")");
-    %slotDisp = $BeltEquip::Slot[%slotId,Disp];
-    %curItem = Player::GetEquippedBeltItem(%clientId,$BeltEquip::Slot[%slotId,Name]);
-    
-    %header = %slotDisp@":";
-    %clientId.bulkNum = "";
-    %indexOffset = 0;
-    if(%curItem != "")
-    {
-        %header = %header @" ("@ $beltitem[%curItem, "Name"] @")";
-        %indexOffset = 1;
-    }
-    Client::buildMenu(%clientId, %header, "BeltEquipSlot", true);
-    
-    %slotType = $BeltEquip::Slot[%slotId,Type];
-    %nf = BeltEquip::GetList(%clientId,%slotType);
-    %numItems = GetWord(%nf,0);
-    echo("Num Items: "@ %numItems);
-    echo("Item NS: "@ %nf);
-    
-    if(%curItem != "")
-        Client::addMenuItem(%clientId, "eUnequip "@ $beltitem[%curItem, "Name"],"unequip " @ %curItem @" "@ %slotId @" "@%prevType);
-    
-    %menuULB = BeltMenu::GetUpperLowerBounds(%numItems,%page,%indexOffset);
-    
-    %numFullPages = getWord(%menuULB,0);
-    %lb = getWord(%menuULB,1);
-    %ub = getWord(%menuULB,2);
-    echo(%lb);
-    echo(%ub);
-	%x = %lb - 1;
-	for(%i = %lb; %i <= %ub; %i++)
-    {
-		%x++;
-		%item = getword(%nf,%x);
-        echo(%item);
-		%amnt = Belt::HasThisStuff(%clientid,%item);
-		Client::addMenuItem(%clientId, %cnt++ @%amnt@" "@ $beltitem[%item, "Name"], "select "@ %item @" "@ %slotId @" "@%prevType);
-	}
-
-	if(%page == 1)
-	{
-		if(%numItems + %indexOffset > 6) Client::addMenuItem(%clientId, "nNext >>", "page " @ %page+1 @" "@ %slotId @" "@%prevType);
-		Client::addMenuItem(%clientId, "xBack", "back "@ %prevType);
-	}
-	else if(%page == %numFullPages+1)
-	{
-		Client::addMenuItem(%clientId, "p<< Prev", "page " @ %page-1 @" "@ %slotId @" "@%prevType);
-		Client::addMenuItem(%clientId, "xBack", "back "@ %prevType);
-	}
-	else
-	{
-		Client::addMenuItem(%clientId, "nNext >>", "page " @ %page+1 @" "@ %slotId @" "@%prevType);
-		Client::addMenuItem(%clientId, "p<< Prev", "page " @ %page-1 @" "@ %slotId @" "@%prevType);
-	}
-
-	return;
-}
-
-function processMenuBeltEquipSlot(%clientid, %opt)
-{
-    echo("processMenuBeltEquipSlot("@%clientid@","@ %opt@")");
-	%o = GetWord(%opt, 0);
-	%pageOrItem = GetWord(%opt, 1);
-	%slotId = GetWord(%opt, 2);
-    %prevType = getWord(%opt, 3);
-
-	if(%o == "select")
-	{
-        if(%clientId.bulkNum < 1)
-			%clientId.bulkNum = 1;
-		if(%clientId.bulkNum > 500)
-			%clientId.bulkNum = 500;
-            
-        MenuBeltEquipmentDropOrSlot(%clientId,%slotId,%prevType,%pageOrItem);//%t,%d,%p,);
-		return;
-	}
-    
-    if(%o == "unequip")
-    {
-        BeltEquip::UnequipItem(%clientId,$BeltEquip::Slot[%slotId,Name],true);
-        MenuBeltEquipmentSlot(%clientid,%slotId,%prevType,1);
-    }
-    
-    if(%o == "back")
-    {
-        MenuBeltEquip(%clientid,%prevType,1);
-        return;
-    }
-
-	if(%o == "page")
-    {
-		MenuBeltEquipmentSlot(%clientid,%slotId,%prevType,%pageOrItem);
-        return;
-    }
-
-	
-}
-
-function MenuBeltEquipmentDropOrSlot(%clientid,%slotId,%prevType,%item)
-{
-    echo("MenuBeltEquipmentDropOrSlot("@%clientid@","@%slotId@","@%prevType@","@%item@")");
-    %slotDisp = "Slot - "@ $BeltEquip::Slot[%slotId,Name];
-    Client::buildMenu(%clientId, %slotDisp@":", "BeltEquipmentDropOrSlot", true);
-    %cmnt = Belt::HasThisStuff(%clientid,%item);
-    %amnt = %clientId.bulkNum;
-    if(%amnt == "" || %amnt < 1)
-        %amnt = 1;
-
-    if(%amnt > %cmnt)
-		%amnt = %cmnt;
-        
-    Client::addMenuItem(%clientId, "1Equip "@ $beltitem[%item, "Name"], "equip "@ %item @ " "@ %slotId @" "@%prevType);
-    Client::addMenuItem(%clientId, "dDrop "@ %amnt @ " " @ $beltitem[%item, "Name"], "drop "@ %item @ " "@ %slotId @" "@%prevType @" "@ %amnt);
-    Client::addMenuItem(%clientId, "eExamine", "examine "@ %item @ " "@ %slotId @" "@%prevType);
-    Client::addMenuItem(%clientId, "xBack", "back "@ %item @ " "@ %slotId @" "@%prevType);
-}
-
-function processMenuBeltEquipmentDropOrSlot(%clientid,%opt)
-{
-    %option = getWord(%opt,0);
-    %item = getWord(%opt,1);
-    %slotId = getWord(%opt,2);
-    %prevType = getWord(%opt,3);
-    %amnt = getWord(%opt,4);
-    if(%option == "drop")
-    {
-        if(%amnt != %clientId.bulkNum)
-        {
-            if(%clientId.bulkNum < 1)	%clientId.bulkNum = 1;
-            if(%clientId.bulkNum > 500)	%clientId.bulkNum = 500;
-            MenuBeltEquipmentDropOrSlot(%clientid, %slotId, %prevType,%item);
-            return;
-        }
-        else
-        {
-            Belt::DropItem(%clientid,%item,%amnt);
-            return;
-        }
-    }
-    else if(%option == "equip")
-    {
-        %curItem = Player::GetEquippedBeltItem(%clientId,$BeltEquip::Slot[%slotId,Name]);
-        if(%curItem != "")
-            BeltEquip::UnequipItem(%clientId,$BeltEquip::Slot[%slotId,Name],true);
-        BeltEquip::EquipItem(%clientId,%item,$BeltEquip::Slot[%slotId,Name],true);
-        return;
-    }
-    else if(%option == "examine")
-    {
-        %msg = WhatIs(%item);
-		bottomprint(%clientId, %msg, floor(String::len(%msg) / 20));
-        MenuBeltEquipmentDropOrSlot(%clientid,%slotId,%prevType,%item);
-        return;
-    }
-    else if(%option == "back")
-    {
-        MenuBeltEquipmentSlot(%clientid,%slotId,%prevType,1);
-        return;
-    }
-}
-
 function MenuBeltGear(%clientid, %type, %page)
 {
     echo("MenuBeltGear("@%clientid@","@%type@","@%page@")");
-	if(%type == "RareItems") %disp = "Rares";
-	if(%type == "KeyItems") %disp = "Keys";
-	if(%type == "GemItems") %disp = "Gems";
-	if(%type == "LoreItems") %disp = "Lore";
+    
+    %disp = $Belt::ItemGroupShortName[$Belt::ItemGroupIndex[%type]];
 
 	Client::buildMenu(%clientId, %disp@":", "BeltGear", true);
 	%clientId.bulkNum = "";
@@ -410,10 +237,21 @@ function MenuBeltDrop(%clientid, %item, %type)
 		%amnt = %cmnt;
 
 	Client::buildMenu(%clientId, %name@" ("@%cmnt@")", "BeltDrop", true);
-
+    Client::addMenuItem(%clientId, "eExamine", %type@" examine "@%item);
 	if(!$LoreItem[%item])
-	Client::addMenuItem(%clientId, %cnt++ @ "Drop "@%amnt, %type@" drop "@%item@" "@%amnt);
-	Client::addMenuItem(%clientId, %cnt++ @ "Examine", %type@" examine "@%item);
+    {
+        Client::addMenuItem(%clientId, %cnt++ @ "Drop "@%amnt, %type@" drop "@%item@" "@%amnt);
+        if(%cmnt >= 10)
+            Client::addMenuItem(%clientId, %cnt++ @"Drop 10", %type@" drop "@%item@" 10 bulk");
+        if(%cmnt >= 50)
+            Client::addMenuItem(%clientId, %cnt++ @"Drop 50", %type@" drop "@%item@" 50 bulk");
+        if(%cmnt >= 100)
+            Client::addMenuItem(%clientId, %cnt++ @ "Drop 100", %type@" drop "@%item@" 100 bulk");
+        if(%cmnt >= 500)
+            Client::addMenuItem(%clientId, %cnt++ @ "Drop 500", %type@" drop "@%item@" 500 bulk");
+            
+        Client::addMenuItem(%clientId, "dDrop [ALL]", %type@" drop "@%item@" "@ %cmnt @" bulk");
+	}
 	if(%clientId.currentSmith != "")Client::addMenuItem(%clientId, %cnt++ @ "Add to Smithing", "blah add "@%item);
 	if(%clientId.currentSmith != "")Client::addMenuItem(%clientId, %cnt++ @ "Remove from Smithing", "blah remove "@%item);
 	Client::addMenuItem(%clientId, "xDone", "done");
@@ -422,14 +260,16 @@ function MenuBeltDrop(%clientid, %item, %type)
 
 function processMenuBeltDrop(%clientId, %opt)
 {
+    echo("Drop: "@%opt);
 	%type = GetWord(%opt, 0);
 	%option = GetWord(%opt, 1);
 	%item = GetWord(%opt, 2);
 	%amnt = GetWord(%opt, 3);
+    %bulk = getWord(%opt, 4);
 
 	if(%amnt <= 0) %amnt = 1;
 
-	if(%amnt != %clientId.bulkNum)
+	if(%bulk == -1 && %amnt != %clientId.bulkNum)
 	{
 		if(%clientId.bulkNum < 1)	%clientId.bulkNum = 1;
 		if(%clientId.bulkNum > 500)	%clientId.bulkNum = 500;
@@ -438,11 +278,16 @@ function processMenuBeltDrop(%clientId, %opt)
 	else if(%option == "drop")
 	{
 		Belt::DropItem(%clientid,%item,%amnt,%type);
+        Client::SendMessage(%clientId, $MsgWhite, "You dropped "@ %amnt @" "@%item@".~wPku_weap.wav");
+        if(Belt::HasThisStuff(%clientid,%item) > 0)
+        {
+            MenuBeltDrop(%clientid, %item, %type);
+        }
 	}
 	else if(%option == "examine")
 	{
 		%msg = WhatIs(%item);
-		bottomprint(%clientId, %msg, floor(String::len(%msg) / 20));
+		bottomprint(%clientId, %msg, floor(String::len(%msg) / 5));
 	}
 	else if(%option == "add")
 	{
@@ -510,7 +355,7 @@ function processMenuBuyOrSellBelt(%clientId, %opt)
     }
     else if(%option == "sell")
     {
-        MenuSellBelt(%clientId);
+        MenuSellBelt(%clientId,1);
     }
     return;
 }
@@ -580,39 +425,70 @@ function processMenuBuyBelt(%clientId, %opt)
 	return;
 }
 
-function MenuSellBelt(%clientId)
+function MenuSellBelt(%clientId,%page)
 {
 	Client::buildMenu(%clientId, "Belt sell:", "SellBelt", true);
 
-	if(Belt::GetNS(%clientid,"RareItems") > 0)	Client::addMenuItem(%clientId, %cnt++ @ "Rares", "RareItems");
-	if(Belt::GetNS(%clientid,"GemItems") > 0)		Client::addMenuItem(%clientId, %cnt++ @ "Gems", "GemItems");
-	if(Belt::GetNS(%clientid,"KeyItems") > 0)		Client::addMenuItem(%clientId, %cnt++ @ "Keys", "KeyItems");
-	if(Belt::GetNS(%clientid,"LoreItems") > 0)	Client::addMenuItem(%clientId, %cnt++ @ "Lore", "LoreItems");
-	Client::addMenuItem(%clientId, "xCancel", "done");
-	return;
+    %num = 0;
+    %activeGroups[0] = "";
+    for(%i = 0; %i <= $Belt::NumberOfBeltGroups; %i++)
+    {
+        %group = $Belt::ItemGroup[%i];
+        if(getWord(fetchData(%clientId,%group),0) != -1)
+        {
+            %activeGroups[%num] = %group;
+            echo(%group @ " " @ %num);
+            %num++;
+        }
+    }
+    %num = %num;
+    %menuULB = BeltMenu::GetUpperLowerBounds(%num,%page);
+
+    %numFullPages = getWord(%menuULB,0);
+    %lb = getWord(%menuULB,1);
+    %ub = getWord(%menuULB,2);
+    echo(%lb @ " > "@ %ub);
+    %x = %lb - 1;
+	for(%i = %lb; %i <= %ub; %i++)
+	{
+        %group = %activeGroups[%x]; //$Belt::ItemGroup[%i];
+        %disp = $Belt::ItemGroupShortName[$Belt::ItemGroupIndex[%group]]; //$Belt::ItemGroupShortName[%i];
+        Client::addMenuItem(%clientId, %cnt++ @ %disp, %group);
+        %x++;
+            
+    }
+    if(%page == 1)
+	{
+		if(%num > 6) Client::addMenuItem(%clientId, "nNext >>", "page " @ %page+1);
+		Client::addMenuItem(%clientId, "xDone", "done");
+	}
+	else if(%page == %numFullPages+1)
+	{
+		Client::addMenuItem(%clientId, "p<< Prev", "page " @ %page-1);
+		Client::addMenuItem(%clientId, "xDone", "done");
+	}
+	else
+	{
+		Client::addMenuItem(%clientId, "nNext >>", "page " @ %page+1);
+		Client::addMenuItem(%clientId, "p<< Prev", "page " @ %page-1);
+	}
+    return;
 }
 
 function processMenuSellBelt(%clientId, %opt)
 {
-	if($Belt::ItemGroupItemCount[%opt] > 0)
-	{
-		MenuSellBeltItem(%clientid, %opt, 1);
+    %o = getWord(%opt,0);
+    %p = getWord(%opt,1);
+	if(%o != "page")
+    {
+        if(%o != "done")
+            MenuSellBeltItem(%clientid, %o, 1);
 		return;
 	}
-
-	if(%opt != "done")
-		MenuSellBelt(%clientId);
+    else
+		MenuSellBelt(%clientId,%p);
 
 	return;
-}
-
-function GetWordCount(%string)
-{
-    for(%i = 0; GetWord(%string,%i) != -1; %i++)
-    {
-        //Just countin'
-    }
-    return %i;
 }
 
 function MenuBuyBeltItem(%clientId,%npc,%typeIdx,%page)
@@ -696,8 +572,8 @@ function processMenuBuyBeltItem(%clientid, %opt)
 
 function MenuBuyBeltItemFinal(%clientId,%item)
 {
-    echo("MenuBuyBeltItemFinal("@%clientId@","@%item@")");
-    echo("Client Bulk: "@%clientId.bulkNum);
+    //echo("MenuBuyBeltItemFinal("@%clientId@","@%item@")");
+    //echo("Client Bulk: "@%clientId.bulkNum);
     %name = $beltitem[%item, "Name"];
     if(%clientId.bulkNum == "")
         %clientId.bulkNum = 1;
@@ -708,9 +584,22 @@ function MenuBuyBeltItemFinal(%clientId,%item)
     if(%amnt <= 0) %amnt = 1;
 	else if(%amnt > 500) %amnt = 500;
 
-	Client::buildMenu(%clientId, "Buy: $"@fetchData(%clientId,"COINS"), "BuyBeltItemFinal", true);
+	Client::buildMenu(%clientId, "Buy "@%item@": $"@fetchData(%clientId,"COINS"), "BuyBeltItemFinal", true);
 
-	Client::addMenuItem(%clientId, %cnt++ @ %name@" "@%amnt @" ($"@ Belt::GetBuyCost(%clientId,%item)*%amnt @")","buy "@%item@" "@%amnt);
+    %money = fetchData(%clientId,"COINS");
+    %cost = Belt::GetBuyCost(%clientId,%item);
+    Client::addMenuItem(%clientId, "eExamine","examine "@%item);
+	Client::addMenuItem(%clientId, %cnt++ @ "Buy "@%amnt @" ($"@ Belt::GetBuyCost(%clientId,%item)*%amnt @")","buy "@%item@" "@%amnt);
+    if(%money >= %cost*10)
+        Client::addMenuItem(%clientId, %cnt++ @ "Buy 10 ($"@ Belt::GetBuyCost(%clientId,%item)*10 @")", "buy "@%item@" 10 bulk");
+    if(%money >= %cost*50)
+        Client::addMenuItem(%clientId, %cnt++ @ "Buy 50 ($"@ Belt::GetBuyCost(%clientId,%item)*50 @")", "buy "@%item@" 50 bulk");
+    if(%money >= %cost*100)
+        Client::addMenuItem(%clientId, %cnt++ @ "Buy 100 ($"@ Belt::GetBuyCost(%clientId,%item)*100 @")", "buy "@%item@" 100 bulk");
+    if(%money >= %cost*500)
+        Client::addMenuItem(%clientId, %cnt++ @ "Buy 500 ($"@ Belt::GetBuyCost(%clientId,%item)*500 @")", "buy "@%item@" 500 bulk");
+    
+    
     //Client::addMenuItem(%clientId, %cnt++ @ %mode @ " " @%amnt, %type@" " @%mode@" "@%item@" "@%amnt);
 	Client::addMenuItem(%clientId, "xCancel", "done");
 	return;
@@ -722,12 +611,21 @@ function processMenuBuyBeltItemFinal(%clientId, %opt)
     %option = getWord(%opt,0);
 	%item = GetWord(%opt, 1);
 	%amnt = GetWord(%opt, 2);
+    %bulk = GetWord(%opt,3);
     
     if(%amnt <= 0) %amnt = 1;
     
+    if(%option == "examine")
+    {
+        %msg = WhatIs(%item);
+		bottomprint(%clientId, %msg, floor(String::len(%msg) / 20));
+        MenuBuyBeltItemFinal(%clientId, %item);
+        return;
+    }
+    
     if(%option == "done")
 		Client::CancelMenu(%clientId);
-    else if(%amnt != %clientId.bulkNum)
+    else if(%bulk == -1 && %amnt != %clientId.bulkNum)
 	{
 		if(%clientId.bulkNum < 1)	%clientId.bulkNum = 1;
 		if(%clientId.bulkNum > 500)	%clientId.bulkNum = 500;
@@ -760,10 +658,7 @@ function processMenuBuyBeltItemFinal(%clientId, %opt)
 }
 function MenuSellBeltItem(%clientid, %type, %page)
 {
-	if(%type == "RareItems") %disp = "Rares";
-	if(%type == "KeyItems") %disp = "Keys";
-	if(%type == "GemItems") %disp = "Gems";
-	if(%type == "LoreItems") %disp = "Lore";
+    %disp = $Belt::ItemGroupShortName[$Belt::ItemGroupIndex[%type]];
 
 	Client::buildMenu(%clientId, %disp@" sell:", "SellBeltItem", true);
 	%clientId.bulkNum = "";
@@ -840,8 +735,34 @@ function MenuSellBeltItemFinal(%clientid, %item, %type, %mode)
 		%amnt = %cmnt;
 
 	Client::buildMenu(%clientId, %name@" ("@%cmnt@")", "SellBeltItemFinal", true);
-
-	Client::addMenuItem(%clientId, %cnt++ @ %mode @ " " @%amnt @" ($"@ Belt::GetSellCost(%clientId,%item)*%amnt @")", %type@" " @%mode@" "@%item@" "@%amnt);
+    if(%mode == "sell")
+    {
+        Client::addMenuItem(%clientId, %cnt++ @ %mode @ " " @%amnt @" ($"@ Belt::GetSellCost(%clientId,%item)*%amnt @")", %type@" " @%mode@" "@%item@" "@%amnt);
+        if(%cmnt >= 10)
+            Client::addMenuItem(%clientId, %cnt++ @ %mode @ " 10 ($"@ Belt::GetSellCost(%clientId,%item)*10 @")", %type@" " @%mode@" "@%item@" 10 bulk");
+        if(%cmnt >= 50)
+            Client::addMenuItem(%clientId, %cnt++ @ %mode @ " 50 ($"@ Belt::GetSellCost(%clientId,%item)*50 @")", %type@" " @%mode@" "@%item@" 50 bulk");
+        if(%cmnt >= 100)
+            Client::addMenuItem(%clientId, %cnt++ @ %mode @ " 100 ($"@ Belt::GetSellCost(%clientId,%item)*100 @")", %type@" " @%mode@" "@%item@" 100 bulk");
+        if(%cmnt >= 500)
+            Client::addMenuItem(%clientId, %cnt++ @ %mode @ " 500 ($"@ Belt::GetSellCost(%clientId,%item)*500 @")", %type@" " @%mode@" "@%item@" 500 bulk");
+        Client::addMenuItem(%clientId, %cnt++ @ "Sell [ALL] ($"@ Belt::GetSellCost(%clientId,%item)*%cmnt @")", %type@" " @%mode@" "@%item@" "@%cmnt @" bulk");
+    }
+    else
+    {
+        echo(%mode);
+        Client::addMenuItem(%clientId, %cnt++ @ %mode @ " " @%amnt, %type@" " @%mode@" "@%item@" "@%amnt);
+        if(%cmnt > 10)
+            Client::addMenuItem(%clientId, %cnt++ @ %mode @ " 10", %type@" " @%mode@" "@%item@" 10 bulk");
+        if(%cmnt > 50)
+            Client::addMenuItem(%clientId, %cnt++ @ %mode @ " 50", %type@" " @%mode@" "@%item@" 50 bulk");
+        if(%cmnt > 100)
+            Client::addMenuItem(%clientId, %cnt++ @ %mode @ " 100", %type@" " @%mode@" "@%item@" 100 bulk");
+        if(%cmnt > 500)
+            Client::addMenuItem(%clientId, %cnt++ @ %mode @ " 500", %type@" " @%mode@" "@%item@" 500 bulk");
+        Client::addMenuItem(%clientId, %cnt++ @ %mode @" [ALL]", %type@" " @%mode@" "@%item@" "@%cmnt@" bulk");
+        
+    }
     // Suggested bulk sells
     //if(%cmnt >= 5)
     //{
@@ -862,12 +783,13 @@ function processMenuSellBeltItemFinal(%clientId, %opt)
 	%option = GetWord(%opt, 1);
 	%item = GetWord(%opt, 2);
 	%amnt = GetWord(%opt, 3);
+    %bulk = getWord(%opt, 4);
     
     if(%amnt <= 0) %amnt = 1;
     
-if(%type == "ineedanextrawordsothisisithaha")
+    if(%type == "ineedanextrawordsothisisithaha")
 		Client::CancelMenu(%clientId);
-    else if(%amnt != %clientId.bulkNum)
+    else if(%bulk == -1 && %amnt != %clientId.bulkNum)
 	{
 		if(%clientId.bulkNum < 1)	%clientId.bulkNum = 1;
 		if(%clientId.bulkNum > 500)	%clientId.bulkNum = 500;
@@ -876,6 +798,7 @@ if(%type == "ineedanextrawordsothisisithaha")
 	else if(%option == "sell")
 	{
 		%cmnt = Belt::HasThisStuff(%clientid,%item);
+        echo(%cmnt @" >= "@ %amnt);
 		if(%cmnt >= %amnt)
 		{
 			%cost = Belt::GetSellCost(%clientid,%item) * %amnt;
@@ -885,7 +808,10 @@ if(%type == "ineedanextrawordsothisisithaha")
 			Client::SendMessage(%clientId, $MsgWhite, "You received "@%cost@" coins.~wbuysellsound.wav");
 			RefreshAll(%clientId);
 			%clientId.bulkNum = 1;
-
+            
+            if(Belt::HasThisStuff(%clientid,%item) > 0)
+                MenuSellBeltItemFinal(%clientid, %item, %type, %option);
+            
 			if($LoreItem[%item])
 				Client::sendMessage(%clientId, $MsgRed, "(You have sold a lore item)");
 		}
@@ -893,56 +819,165 @@ if(%type == "ineedanextrawordsothisisithaha")
 	else if(%option == "store")
 	{
 		%cmnt = Belt::HasThisStuff(%clientid,%item);
+        echo(%cmnt @" >= "@ %amnt);
 		if(%cmnt >= %amnt)
 		{
-	storeData(%clientId, "Stored"@%type, SetStuffString(fetchData(%clientId, "Stored"@%type), %item, %clientId.bulkNum));
+            //storeData(%clientId, "Stored"@%type, SetStuffString(fetchData(%clientId, "Stored"@%type), %item, %clientId.bulkNum));
 			Belt::TakeThisStuff(%clientid,%item,%amnt);
-			Client::SendMessage(%clientId, $MsgWhite, "You have stored "@%item@".");
+            Belt::BankGiveThisStuff(%clientid,%item,%amnt);
+			Client::SendMessage(%clientId, $MsgWhite, "You have stored "@ %amnt @" "@%item@".~wPku_weap.wav");
 			RefreshAll(%clientId);
 			%clientId.bulkNum = 1;
-		if(belt::itemCount(%item, fetchdata(%clientId, %type)) >> 0)
-			MenuSellBeltItemFinal(%clientid, %item, %type, %option);
+            if(belt::itemCount(%item, fetchdata(%clientId, %type)) > 0)
+                MenuSellBeltItemFinal(%clientid, %item, %type, %option);
 		}
 	}
 	else if(%option == "withdraw")
 	{
-	%cmnt = Belt::GetStored(%clientId, %opt);
+        %cmnt = Belt::GetStored(%clientId, %opt);
+        echo(%cmnt @" >= "@ %amnt);
 		if(%cmnt >= %amnt)
 		{
-			Client::SendMessage(%clientId, $MsgWhite, "You have withdrawn "@%item@".");
+			Client::SendMessage(%clientId, $MsgWhite, "You have withdrawn "@ %amnt @" "@%item@".~wPku_weap.wav");
 			RefreshAll(%clientId);
-			Belt::GiveThisStuff(%clientid, %item, %amnt, 1);
-			storeData(%clientId, "Stored"@%type, SetStuffString(fetchData(%clientId, "Stored"@%type), %item, -%clientId.bulkNum));
+			Belt::GiveThisStuff(%clientid, %item, %amnt);
+            Belt::BankTakeThisStuff(%clientid,%item,%amnt);
+			//storeData(%clientId, "Stored"@%type, SetStuffString(fetchData(%clientId, "Stored"@%type), %item, -%clientId.bulkNum));
 			%clientId.bulkNum = 1;
-		if(belt::itemCount(%item, fetchdata(%clientId, "Stored"@%type)) >> 0)
-			MenuSellBeltItemFinal(%clientid, %item, %type, %option);
+            if(belt::itemCount(%item, fetchdata(%clientId, "Stored"@%type)) > 0)
+                MenuSellBeltItemFinal(%clientid, %item, %type, %option);
 		}
 	}
 	return;
 }
 
-function MenuStoreBelt(%clientId,%mode)
+function MenuStoreBelt(%clientId,%mode,%page)
 {
 	Client::buildMenu(%clientId, "Belt "@%mode@":", "StoreBelt", true);
     if(%mode == "store")
     {
-        if(Belt::GetNS(%clientid,"RareItems") > 0)	Client::addMenuItem(%clientId, %cnt++ @ "Rares", "RareItems "@%mode);
-        if(Belt::GetNS(%clientid,"GemItems") > 0)		Client::addMenuItem(%clientId, %cnt++ @ "Gems", "GemItems "@%mode);
-        if(Belt::GetNS(%clientid,"KeyItems") > 0)		Client::addMenuItem(%clientId, %cnt++ @ "Keys", "KeyItems "@%mode);
-        if(Belt::GetNS(%clientid,"LoreItems") > 0)	Client::addMenuItem(%clientId, %cnt++ @ "Lore", "LoreItems "@%mode);
+        Client::addMenuItem(%clientId, "sWithdraw mode", "mode store change");
+        %num = 0;
+        %activeGroups[0] = "";
+        for(%i = 0; %i <= $Belt::NumberOfBeltGroups; %i++)
+        {
+            %group = $Belt::ItemGroup[%i];
+            if(getWord(fetchData(%clientId,%group),0) != -1)
+            {
+                %activeGroups[%num] = %group;
+                echo(%group @ " " @ %num-1);
+                %num++;
+            }
+        }
+        
+        %num = %num;
+        echo(%num);
+        %menuULB = BeltMenu::GetUpperLowerBounds(%num,%page,1);
 
-        Client::addMenuItem(%clientId, "nWithdraw mode", "mode store change");
-        Client::addMenuItem(%clientId, "xCancel", "done");
+        %numFullPages = getWord(%menuULB,0);
+        %lb = getWord(%menuULB,1);
+        %ub = getWord(%menuULB,2);
+        echo(%lb @ " > "@ %ub);
+        %x = %lb - 1;
+        for(%i = %lb; %i <= %ub; %i++)
+        {
+            echo(%x);
+            %group = %activeGroups[%x]; //$Belt::ItemGroup[%i];
+            echo(%group);
+            %disp = $Belt::ItemGroupShortName[$Belt::ItemGroupIndex[%group]]; //$Belt::ItemGroupShortName[%i];
+            echo(%disp);
+            Client::addMenuItem(%clientId, %cnt++ @ %disp, %group @" "@ %mode);
+            %x++;
+                
+        }
+        
+        if(%page == 1)
+        {
+            if(%num > 6) Client::addMenuItem(%clientId, "nNext >>", "page store " @ %page+1);
+            Client::addMenuItem(%clientId, "xDone", "done");
+        }
+        else if(%page == %numFullPages+1)
+        {
+            Client::addMenuItem(%clientId, "p<< Prev", "page store " @ %page-1);
+            Client::addMenuItem(%clientId, "xDone", "done");
+        }
+        else
+        {
+            Client::addMenuItem(%clientId, "nNext >>", "page store " @ %page+1);
+            Client::addMenuItem(%clientId, "p<< Prev", "page store " @ %page-1);
+        }
+        return;
+        //if(Belt::GetNS(%clientid,"RareItems") > 0)	Client::addMenuItem(%clientId, %cnt++ @ "Rares", "RareItems "@%mode);
+        //if(Belt::GetNS(%clientid,"GemItems") > 0)		Client::addMenuItem(%clientId, %cnt++ @ "Gems", "GemItems "@%mode);
+        //if(Belt::GetNS(%clientid,"KeyItems") > 0)		Client::addMenuItem(%clientId, %cnt++ @ "Keys", "KeyItems "@%mode);
+        //if(Belt::GetNS(%clientid,"LoreItems") > 0)	Client::addMenuItem(%clientId, %cnt++ @ "Lore", "LoreItems "@%mode);
+        //if(Belt::GetNS(%clientid,"AmmoItems") > 0)	Client::addMenuItem(%clientId, %cnt++ @ "Ammo", "AmmoItems "@%mode);
+
+
+        //Client::addMenuItem(%clientId, "nWithdraw mode", "mode store change");
+        //Client::addMenuItem(%clientId, "xCancel", "done");
     }
     else
     {
-    %mode="withdraw";
-        if(fetchdata(%clientID, "StoredRareItems") != "")	Client::addMenuItem(%clientId, %cnt++ @ "Rares", "RareItems "@%mode);
-        if(fetchdata(%clientID, "StoredGemItems") != "")		Client::addMenuItem(%clientId, %cnt++ @ "Gems", "GemItems "@%mode);
-        if(fetchdata(%clientID, "StoredKeyItems") != "")		Client::addMenuItem(%clientId, %cnt++ @ "Keys", "KeyItems "@%mode);
-        if(fetchdata(%clientID, "StoredLoreItems") != "")	Client::addMenuItem(%clientId, %cnt++ @ "Lore", "LoreItems "@%mode);
-        Client::addMenuItem(%clientId, "nStore mode", "mode withdraw change");
-        Client::addMenuItem(%clientId, "xCancel", "done");
+        Client::addMenuItem(%clientId, "sStore mode", "mode withdraw change");
+        %num = 0;
+        %activeGroups[0] = "";
+        for(%i = 0; %i <= $Belt::NumberOfBeltGroups; %i++)
+        {
+            %group = $Belt::ItemGroup[%i];
+            if(getWord(fetchData(%clientId,"Stored"@%group),0) != -1)
+            {
+                %activeGroups[%num] = %group;
+                echo(%group @ " " @ %num-1);
+                %num++;
+            }
+        }
+        
+        %num = %num;
+        echo(%num);
+        %menuULB = BeltMenu::GetUpperLowerBounds(%num,%page,1);
+
+        %numFullPages = getWord(%menuULB,0);
+        %lb = getWord(%menuULB,1);
+        %ub = getWord(%menuULB,2);
+        echo(%lb @ " > "@ %ub);
+        %x = %lb - 1;
+        for(%i = %lb; %i <= %ub; %i++)
+        {
+            echo(%x);
+            %group = %activeGroups[%x]; //$Belt::ItemGroup[%i];
+            echo(%group);
+            %disp = $Belt::ItemGroupShortName[$Belt::ItemGroupIndex[%group]]; //$Belt::ItemGroupShortName[%i];
+            echo(%disp);
+            Client::addMenuItem(%clientId, %cnt++ @ %disp, %group @" "@ %mode);
+            %x++;
+                
+        }
+        
+        if(%page == 1)
+        {
+            if(%num > 6) Client::addMenuItem(%clientId, "nNext >>", "page withdraw " @ %page+1);
+            Client::addMenuItem(%clientId, "xDone", "done");
+        }
+        else if(%page == %numFullPages+1)
+        {
+            Client::addMenuItem(%clientId, "p<< Prev", "page withdraw " @ %page-1);
+            Client::addMenuItem(%clientId, "xDone", "done");
+        }
+        else
+        {
+            Client::addMenuItem(%clientId, "nNext >>", "page withdraw " @ %page+1);
+            Client::addMenuItem(%clientId, "p<< Prev", "page withdraw " @ %page-1);
+        }
+        return;
+        //%mode="withdraw";
+        //if(fetchdata(%clientID, "StoredRareItems") != "")	Client::addMenuItem(%clientId, %cnt++ @ "Rares", "RareItems "@%mode);
+        //if(fetchdata(%clientID, "StoredGemItems") != "")		Client::addMenuItem(%clientId, %cnt++ @ "Gems", "GemItems "@%mode);
+        //if(fetchdata(%clientID, "StoredKeyItems") != "")		Client::addMenuItem(%clientId, %cnt++ @ "Keys", "KeyItems "@%mode);
+        //if(fetchdata(%clientID, "StoredLoreItems") != "")	Client::addMenuItem(%clientId, %cnt++ @ "Lore", "LoreItems "@%mode);
+        //if(fetchdata(%clientID, "StoredAmmoItems") != "")	Client::addMenuItem(%clientId, %cnt++ @ "Ammo", "AmmoItems "@%mode);
+        //Client::addMenuItem(%clientId, "sStore mode", "mode withdraw change");
+        //Client::addMenuItem(%clientId, "xCancel", "done");
     }
 
 	return;
@@ -953,12 +988,19 @@ function processMenuStoreBelt(%clientId, %opt)
 	%o = getword(%opt,0);
 	%m = getword(%opt,1);
 	%c = getword(%opt,2);
+    
+    if(%o == "page")
+    {
+        MenuStoreBelt(%clientId, %m,%c);
+        return;
+    }
+    
 	if(%c == "change")
 		{
 			if(%m == "store")
-				MenuStoreBelt(%clientId, "withdraw");
+				MenuStoreBelt(%clientId, "withdraw",1);
 			if(%m == "withdraw")
-				MenuStoreBelt(%clientId, "store");
+				MenuStoreBelt(%clientId, "store",1);
 		}
 
 	if(%m == "store" || %m == "withdraw")
@@ -966,25 +1008,23 @@ function processMenuStoreBelt(%clientId, %opt)
 		if($Belt::ItemGroupItemCount[%o] > 0)
 		{
 			if(%m == "store")
-			MenuBeltStoreThisItem(%clientid, %opt, 1, %m);
+                MenuBeltStoreThisItem(%clientid, %opt, 1, %m);
 			if(%m == "withdraw")
-			MenuBeltWithdrawThisItem(%clientid, %opt, 1, %m);
+                MenuBeltWithdrawThisItem(%clientid, %opt, 1, %m);
 		}
 			return;
 
 		if(%o != "done")
-			MenuStoreBelt(%clientId, %m);
+			MenuStoreBelt(%clientId, %m,1);
 	}
 
 	return;
 }
 function MenuBeltWithdrawThisItem(%clientid, %type, %page, %mode)
 {
-%type=getword(%type, 0);
-	if(%type == "RareItems") %disp = "Rares";
-	if(%type == "KeyItems") %disp = "Keys";
-	if(%type == "GemItems") %disp = "Gems";
-	if(%type == "LoreItems") %disp = "Lore";
+    %type=getword(%type, 0);
+    %disp = $Belt::ItemGroupShortName[$Belt::ItemGroupIndex[%type]];
+
 	Client::buildMenu(%clientId, %disp@":", "BeltWithdrawThisItem", true);
 	%clientId.bulkNum = "";
 
@@ -1047,10 +1087,8 @@ function processMenuBeltWithdrawThisItem(%clientid, %opt)
 function MenuBeltStoreThisItem(%clientid, %type, %page, %mode)
 {
     %type=getword(%type, 0);
-	if(%type == "RareItems") %disp = "Rares";
-	if(%type == "KeyItems") %disp = "Keys";
-	if(%type == "GemItems") %disp = "Gems";
-	if(%type == "LoreItems") %disp = "Lore";
+    %disp = $Belt::ItemGroupShortName[$Belt::ItemGroupIndex[%type]];
+
 	Client::buildMenu(%clientId, %disp@":", "BeltStoreThisItem", true);
 	%clientId.bulkNum = "";
 
@@ -1254,6 +1292,7 @@ function belt::MugBeltMain(%clientId, %id)
 	if(Belt::GetNS(%id,"GemItems") > 0)		Client::addMenuItem(%clientId, %cnt++ @ "Gems", "GemItems");
 	if(Belt::GetNS(%id,"KeyItems") > 0)		Client::addMenuItem(%clientId, %cnt++ @ "Keys", "KeyItems");
 	if(Belt::GetNS(%id,"LoreItems") > 0)	Client::addMenuItem(%clientId, %cnt++ @ "Lore", "LoreItems");
+    if(Belt::GetNS(%id,"AmmoItems") > 0)	Client::addMenuItem(%clientId, %cnt++ @ "Ammo", "AmmoItems");
 	Client::addMenuItem(%clientId, "xDone", "done");
 	return;
 }
@@ -1276,7 +1315,8 @@ function MenuBelt::MugThisType(%clientid, %type, %page)
 	if(%type == "KeyItems") %disp = "Keys";
 	if(%type == "GemItems") %disp = "Gems";
 	if(%type == "LoreItems") %disp = "Lore";
-
+    if(%type == "AmmoItems") %disp = "Ammo";
+    
 	Client::buildMenu(%clientId, %disp@":", "Belt::MugThisType", true);
 	%clientId.bulkNum = "";
 
@@ -1460,7 +1500,7 @@ function Belt::Sell(%clientid,%npc)
 function Belt::Store(%clientid,%npc)
 {
 	AI::sayLater(%clientid, %npc, "This is the equipment you have stored from your belt.", True);
-	MenuStoreBelt(%clientid,"store");
+	MenuStoreBelt(%clientid,"store",1);
 }
 
 // Faster version in weight.cs -Kyred
@@ -1470,8 +1510,9 @@ function Belt::GetWeight(%clientid)
 	%list[2] = "GemItems";
 	%list[3] = "KeyItems";
 	%list[4] = "LoreItems";
+    %list[5] = "AmmoItems";
 
-	for(%s=1;%s<=4;%s++)
+	for(%s=1;%s<=5;%s++)
 	{
 		%type = %list[%s];
 		for(%i=0;%i<=$Belt::ItemGroupItemCount[%type];%i++)
@@ -1483,6 +1524,42 @@ function Belt::GetWeight(%clientid)
 		}
 	}
 	return %total;
+}
+
+function Belt::getDeathItems(%clientId)
+{
+    %temploot = "";
+    if(fetchData(%clientId, "LCK") < 1)
+	{
+        for(%i = 0; %i < $Belt::NumberOfBeltGroups; %i++)
+        {
+            %temploot = %temploot @ fetchData(%clientId,$Belt::ItemGroup[%i]);
+        }
+    } //LCK < 0 happens when the player ran out, 0 is after the last one is used to protect this pack
+    else
+    {
+        //Drop anything even if we have luck?
+    }
+    
+    if(%temploot != "")
+    {
+        for(%i = 0; getWord(%temploot,%i) != -1; %i+=2)
+        {
+            %a = getWord(%temploot,%i);
+            %b = getWord(%temploot,%i+1);
+            if($StealProtectedItem[%a])
+            {
+                %ba = Belt::RemoveFromList(%temploot,%a@" "@%b);
+                %temploot = %ba;
+                %i -= 2;
+            }
+            else
+                Belt::TakeThisStuff(%clientid,%a,%b);
+        }
+    }
+    if(%temploot == "")
+        %temploot = " ";
+    return %temploot;
 }
 
 function Belt::DropItem(%clientid,%item,%amnt,%type)
@@ -1547,30 +1624,69 @@ function Belt::HasThisStuff(%clientid,%item)
 
 function Belt::GiveThisStuff(%clientid, %item, %amnt, %echo, %mine)
 {
+    %item = $beltitem[%item, "Item"];
+    %type = $beltitem[%item, "Type"];
+    %list = fetchdata(%clientid,%type);
+    %count = Belt::ItemCount(%item,%list);
+    
+    if(%echo) Client::sendMessage(%clientId, 0, "You received " @ %amnt @ " " @ $beltitem[%item, "Name"] @".");
+    
+    StoreData(%clientId,%type,SetStuffString(%list,%item,%amnt));
+    
+    //if(%count > 0)
+    //{
+    //	%list = Belt::RemoveFromList(%list, %item@" "@%count);
+    //	%amnt = %amnt + %count;
+    //}
+    //%list = Belt::AddToList(%list, %item@" "@%amnt);
+    //if(%mine == 1)storeData(%clientId, %type, SetStuffString(fetchData(%clientId, %type), %item, 1));
+    //Storedata(%clientid,%type, %list);
+    //Storedata(%clientid,"AllBelt",fetchdata(%clientId, "RareItems") @ fetchdata(%clientId, "LoreItems") @ fetchdata(%clientId, "KeyItems") @ fetchdata(%clientId, "GemItems"));
+    Belt::refreshFullBeltList(%clientid);
+
+}
+
+function Belt::BankGiveThisStuff(%clientid, %item, %amnt)
+{
 	if(%amnt > 0)
 	{
 		%item = $beltitem[%item, "Item"];
 		%type = $beltitem[%item, "Type"];
-		%list = fetchdata(%clientid,%type);
+		%list = fetchdata(%clientid,"Stored"@%type);
 		%count = Belt::ItemCount(%item,%list);
 
-		if(%echo) Client::sendMessage(%clientId, 0, "You received " @ %amnt @ " " @ $beltitem[%item, "Name"] @".");
+		//if(%count > 0)
+		//{
+		//	%list = Belt::RemoveFromList(%list, %item@" "@%count);
+		//	%amnt = %amnt + %count;
+		//}
+		//%list = Belt::AddToList(%list, %item@" "@%amnt);
+		Storedata(%clientid,"Stored"@%type,SetStuffString(%list,%item,%amnt));
+	}
+}
 
-		if(%count > 0)
-		{
-			%list = Belt::RemoveFromList(%list, %item@" "@%count);
-			%amnt = %amnt + %count;
-		}
-		%list = Belt::AddToList(%list, %item@" "@%amnt);
-		if(%mine == 1)storeData(%clientId, %type, SetStuffString(fetchData(%clientId, %type), %item, 1));
-		Storedata(%clientid,%type, %list);
-		//Storedata(%clientid,"AllBelt",fetchdata(%clientId, "RareItems") @ fetchdata(%clientId, "LoreItems") @ fetchdata(%clientId, "KeyItems") @ fetchdata(%clientId, "GemItems"));
-        Belt::refreshFullBeltList(%clientid);
-    }
+function Belt::BankTakeThisStuff(%clientid,%item,%amnt)
+{
+	if(%amnt > 0)
+	{
+		%item = $beltitem[%item, "Item"];
+		%type = $beltitem[%item, "Type"];
+		%list = fetchdata(%clientid,"Stored"@%type);
+		%count = Belt::ItemCount(%item,%list);
+		%remain = %count - %amnt;
+
+		//%list = Belt::RemoveFromList(%list, %item@" "@%count);
+		//if(%amnt > 0)	%list = Belt::AddToList(%list, %item@" "@%amnt);
+
+		//Storedata(%clientid,"Stored"@%type,%list);
+        echo(SetStuffString(%list,%item,-1*%amnt));
+        Storedata(%clientid,"Stored"@%type,SetStuffString(%list,%item,-1*%amnt));
+	}
 }
 
 function Belt::TakeThisStuff(%clientid,%item,%amnt)
 {
+    %amnt = floor(%amnt);
 	if(%amnt > 0)
 	{
 		%item = $beltitem[%item, "Item"];
@@ -1578,10 +1694,8 @@ function Belt::TakeThisStuff(%clientid,%item,%amnt)
 		%list = fetchdata(%clientid,%type);
 		%count = Belt::ItemCount(%item,%list);
 		%amnt = %count - %amnt;
-
 		%list = Belt::RemoveFromList(%list, %item@" "@%count);
 		if(%amnt > 0)	%list = Belt::AddToList(%list, %item@" "@%amnt);
-
 		Storedata(%clientid,%type,%list);
         Belt::refreshFullBeltList(%clientid);
 	}
@@ -1597,16 +1711,8 @@ function isBeltItem(%item)
 
 function Belt::ItemCount(%item,%list)
 {
-	%count = 0;
-	for(%i=0;(%w = getword(%list,%i)) != -1;%i+=2)
-	{
-		if(%w == %item)
-		{
-			%count = getword(%list,%i++);
-			break;
-		}
-	}
-	return %count;
+    %w = Word::FindWord(%list,%item);
+    return getWord(%list,%w+1);
 }
 
 function Belt::AddToList(%list, %item)
@@ -1615,13 +1721,9 @@ function Belt::AddToList(%list, %item)
 	return %list;
 }
 
-function Belt::RemoveFromList(%list, %item)
+function Belt::RemoveFromList(%list,%item)
 {
-	%a = " " @ %list;
-	%a = String::replace(%a, " " @ %item, "");
-	%list = String::NEWgetSubStr(%a, 1, 99999);
-
-	return %list;
+    return String::replace(String::replace(%list,%item,""),"  "," ");
 }
 
 function Belt::IsInList(%list, %item)
@@ -1649,7 +1751,8 @@ function belt::GetStored(%clientId, %opt)
 
 function Belt::refreshFullBeltList(%clientId)
 {
-    storedata(%clientid,"AllBelt",fetchdata(%clientId, "RareItems") @ fetchdata(%clientId, "LoreItems") @ fetchdata(%clientId, "KeyItems") @ fetchdata(%clientId, "GemItems") @ fetchData(%clientId,"EquipItems"));
+    %list = 
+    storedata(%clientid,"AllBelt",fetchdata(%clientId, "RareItems") @ fetchdata(%clientId, "LoreItems") @ fetchdata(%clientId, "KeyItems") @ fetchdata(%clientId, "GemItems") @ fetchData(%clientId,"AmmoItems") @ fetchData(%clientId,"EquipItems"));
 }
 
 // ----------------------------- //

@@ -106,6 +106,7 @@ function createServer(%mission, %dedicated)
 	else
 		newObject(serverDelegate, FearCSDelegate, true, "IP", $Server::Port, "IPX", 	$Server::Port, "LOOPBACK", $Server::Port);
    
+    //patchServerNetcode();
 	exec(rpgserv);
 	exec(globals);
 	exec(rpgfunk);
@@ -155,6 +156,7 @@ function createServer(%mission, %dedicated)
 	exec(Turret);
 	exec(Beacon);
 	exec(StaticShape);
+    //exec(NewStaticShapes);
 	exec(Station);
 	exec(Moveable);
 	exec(Sensor);
@@ -165,10 +167,14 @@ function createServer(%mission, %dedicated)
 	exec(plugs);
 	exec(version);
     exec(belt);
-    exec(BeltItemDefs);
     exec(BeltEquipment);
+    exec(BeltItemDefs);
 	exec(fix);
     exec(admin_defs);
+    
+    
+    
+    
 	$Server::Info = "Running RPG Mod - www.tribesrpg.org\n" @ $extrainfo;
 
 	Server::storeData();
