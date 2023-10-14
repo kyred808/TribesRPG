@@ -125,8 +125,8 @@ function isSelectableWeapon(%clientId,%weapon)
 
 	if(Player::getItemCount(%clientId, %weapon))
 	{
-		%ammo = $WeaponAmmo[%weapon];
-		if (%ammo == "" || Player::getItemCount(%clientId,%ammo) > 0)
+		//%ammo = $WeaponAmmo[%weapon];
+		//if (%ammo == "" || Player::getItemCount(%clientId,%ammo) > 0)
 			return true;
 	}
 	return false;
@@ -183,7 +183,7 @@ function GetBestRangedProj(%clientId, %item)
 	{
 		%proj = GetWord(%list, %i);
 
-		if(String::findSubStr($ProjRestrictions[%proj], "," @ %item @ ",") != -1 && Player::getItemCount(%clientId, %proj) > 0)
+		if(String::findSubStr($ProjRestrictions[%proj], "," @ %item @ ",") != -1 && belt::hasthisstuff(%clientId, %proj) > 0)
 		{
 			%v = AddItemSpecificPoints(%proj, 6);
 			if(%v > %highest)

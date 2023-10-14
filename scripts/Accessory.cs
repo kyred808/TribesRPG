@@ -77,10 +77,10 @@ $ShopIndex = 4;
 $MiscInfo = 5;
 $BeltShopIndex = 6;
 
-$HardcodedItemCost[BluePotion] = 15;
-$HardcodedItemCost[CrystalBluePotion] = 100;
-$HardcodedItemCost[EnergyVial] = 15;
-$HardcodedItemCost[CrystalEnergyVial] = 100;
+//$HardcodedItemCost[BluePotion] = 15;
+//$HardcodedItemCost[CrystalBluePotion] = 100;
+//$HardcodedItemCost[EnergyVial] = 15;
+//$HardcodedItemCost[CrystalEnergyVial] = 100;
 
 $HardcodedItemCost[Tent] = 4000;
 $HardcodedItemCost[Trancephyte] = 120000;
@@ -147,12 +147,10 @@ function GetAccessoryList(%clientId, %type, %filter)
     if(%type == 10) //$ProjectileAccessoryType
     {
         %max = $Belt::ItemGroupItemCount["AmmoItems"];
-        echo(%max);
         for(%i = 0; %i < %max; %i++)
         {
             %item = $beltitem[%i+1,"Num","AmmoItems"];
             %count = Belt::HasThisStuff(%clientId,%item);
-            echo(%item @" "@ %count);
             if(%count)
             {
                 if(%filter != -1)
@@ -413,93 +411,93 @@ function GetCurrentlyWearingArmor(%clientId)
 //   POTIONS
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-$AccessoryVar[BluePotion, $Weight] = 4;
-$AccessoryVar[BluePotion, $MiscInfo] = "A blue potion that heals 15 HP";
-ItemData BluePotion
-{
-	description = "Blue Potion";
-	shapeFile = "armorKit";
-	heading = "eMiscellany";
-	className = "Accessory";
-	shadowDetailMask = 4;
-	price = 0;
-};
-function BluePotion::onUse(%player,%item)
-{
-	%clientId = Player::getClient(%player);
+//$AccessoryVar[BluePotion, $Weight] = 4;
+//$AccessoryVar[BluePotion, $MiscInfo] = "A blue potion that heals 15 HP";
+//ItemData BluePotion
+//{
+//	description = "Blue Potion";
+//	shapeFile = "armorKit";
+//	heading = "eMiscellany";
+//	className = "Accessory";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//function BluePotion::onUse(%player,%item)
+//{
+//	%clientId = Player::getClient(%player);
+//
+//	Player::decItemCount(%player,%item);
+//	%hp = fetchData(%clientId, "HP");
+//	refreshHP(%clientId, -0.15);
+//	refreshAll(%clientId);
+//
+//	if(fetchData(%clientId, "HP") != %hp)
+//		UseSkill(%clientId, $SkillHealing, True, True);
+//}
 
-	Player::decItemCount(%player,%item);
-	%hp = fetchData(%clientId, "HP");
-	refreshHP(%clientId, -0.15);
-	refreshAll(%clientId);
+//$AccessoryVar[CrystalBluePotion, $Weight] = 10;
+//$AccessoryVar[CrystalBluePotion, $MiscInfo] = "A crystal blue potion that heals 60 HP";
+//ItemData CrystalBluePotion
+//{
+//	description = "Crystal Blue Potion";
+//	shapeFile = "armorKit";
+//	heading = "eMiscellany";
+//	className = "Accessory";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//function CrystalBluePotion::onUse(%player,%item)
+//{
+//	%clientId = Player::getClient(%player);
+//
+//	Player::decItemCount(%player,%item);
+//	%hp = fetchData(%clientId, "HP");
+//	refreshHP(%clientId, -0.6);
+//	refreshAll(%clientId);
+//
+//	if(fetchData(%clientId, "HP") != %hp)
+//		UseSkill(%clientId, $SkillHealing, True, True);
+//}
 
-	if(fetchData(%clientId, "HP") != %hp)
-		UseSkill(%clientId, $SkillHealing, True, True);
-}
-
-$AccessoryVar[CrystalBluePotion, $Weight] = 10;
-$AccessoryVar[CrystalBluePotion, $MiscInfo] = "A crystal blue potion that heals 60 HP";
-ItemData CrystalBluePotion
-{
-	description = "Crystal Blue Potion";
-	shapeFile = "armorKit";
-	heading = "eMiscellany";
-	className = "Accessory";
-	shadowDetailMask = 4;
-	price = 0;
-};
-function CrystalBluePotion::onUse(%player,%item)
-{
-	%clientId = Player::getClient(%player);
-
-	Player::decItemCount(%player,%item);
-	%hp = fetchData(%clientId, "HP");
-	refreshHP(%clientId, -0.6);
-	refreshAll(%clientId);
-
-	if(fetchData(%clientId, "HP") != %hp)
-		UseSkill(%clientId, $SkillHealing, True, True);
-}
-
-$AccessoryVar[EnergyVial, $Weight] = 2;
-$AccessoryVar[EnergyVial, $MiscInfo] = "An energy vial that provides 16 MP";
-ItemData EnergyVial
-{
-	description = "Energy Vial";
-	shapeFile = "armorKit";
-	heading = "eMiscellany";
-	className = "Accessory";
-	shadowDetailMask = 4;
-	price = 0;
-};
-function EnergyVial::onUse(%player,%item)
-{
-	%clientId = Player::getClient(%player);
-
-	Player::decItemCount(%player,%item);
-	refreshMANA(%clientId, -16);
-	refreshAll(%clientId);
-}
-
-$AccessoryVar[CrystalEnergyVial, $Weight] = 5;
-$AccessoryVar[CrystalEnergyVial, $MiscInfo] = "A crystal energy vial that provides 50 MP";
-ItemData CrystalEnergyVial
-{
-	description = "Crystal Energy Vial";
-	shapeFile = "armorKit";
-	heading = "eMiscellany";
-	className = "Accessory";
-	shadowDetailMask = 4;
-	price = 0;
-};
-function CrystalEnergyVial::onUse(%player,%item)
-{
-	%clientId = Player::getClient(%player);
-
-	Player::decItemCount(%player,%item);
-	refreshMANA(%clientId, -50);
-	refreshAll(%clientId);
-}
+//$AccessoryVar[EnergyVial, $Weight] = 2;
+//$AccessoryVar[EnergyVial, $MiscInfo] = "An energy vial that provides 16 MP";
+//ItemData EnergyVial
+//{
+//	description = "Energy Vial";
+//	shapeFile = "armorKit";
+//	heading = "eMiscellany";
+//	className = "Accessory";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//function EnergyVial::onUse(%player,%item)
+//{
+//	%clientId = Player::getClient(%player);
+//
+//	Player::decItemCount(%player,%item);
+//	refreshMANA(%clientId, -16);
+//	refreshAll(%clientId);
+//}
+//
+//$AccessoryVar[CrystalEnergyVial, $Weight] = 5;
+//$AccessoryVar[CrystalEnergyVial, $MiscInfo] = "A crystal energy vial that provides 50 MP";
+//ItemData CrystalEnergyVial
+//{
+//	description = "Crystal Energy Vial";
+//	shapeFile = "armorKit";
+//	heading = "eMiscellany";
+//	className = "Accessory";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//function CrystalEnergyVial::onUse(%player,%item)
+//{
+//	%clientId = Player::getClient(%player);
+//
+//	Player::decItemCount(%player,%item);
+//	refreshMANA(%clientId, -50);
+//	refreshAll(%clientId);
+//}
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //   RINGS

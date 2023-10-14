@@ -169,7 +169,7 @@ function Player::onKilled(%this)
         %beltItems = Belt::getDeathItems(%clientid);
         
         %tmploot = %tmploot @ %beltItems; 
-        echo("Death Loot: "@ %tmploot);
+        //echo("Death Loot: "@ %tmploot);
         //if(fetchdata(%clientId, "AllBelt") != "")
         //{
         //    %a[1] = "RareItems";
@@ -468,12 +468,13 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 
 				storeData(%shooterClient, "NextHitBash", "");
 			}
-			if(%rweapon != "")
-				%rweapondamage = GetRoll(GetWord(GetAccessoryVar(%rweapon, $SpecialVar), 1));
-			else
-				%rweapondamage = 0;
-			%weapondamage = GetRoll(GetWord(GetAccessoryVar(%weapon, $SpecialVar), 1));
-			%value = round((( (%weapondamage + %rweapondamage) / 1000) * $PlayerSkill[%shooterClient, %skilltype]) * %multi * %dmgMult);
+			//if(%rweapon != "")
+			//	%rweapondamage = GetRoll(GetWord(GetAccessoryVar(%rweapon, $SpecialVar), 1));
+			//else
+			//	%rweapondamage = 0;
+			%weapondamage = fetchData(%shooterClient,"ATK"); //GetRoll(GetWord(GetAccessoryVar(%weapon, $SpecialVar), 1));
+            
+			%value = round((( (%weapondamage) / 1000) * $PlayerSkill[%shooterClient, %skilltype]) * %multi * %dmgMult);
 
 			%ab = (getRandom() * (fetchData(%damagedClient, "DEF") / 10)) + 1;
 			%value = Cap(%value - %ab, 1, "inf");

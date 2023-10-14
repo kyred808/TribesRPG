@@ -33,6 +33,7 @@ BeltItem::AddBeltItemGroup("GemItems","Gems",2);
 BeltItem::AddBeltItemGroup("LoreItems","Lore",3);
 BeltItem::AddBeltItemGroup("AmmoItems","Ammo",4);
 BeltItem::AddBeltItemGroup("EquipItems","Equip",5);
+BeltItem::AddBeltItemGroup("PotionItems","Potions",6);
 
 // =============================
 // End Belt Groups
@@ -79,9 +80,13 @@ $ItemList[Mining, 13] = "Keldrinite " @ round($HardcodedItemCost[Keldrinite] / %
 
 
 // Equip Items
-BeltEquip::AddEquipmentItem("Ring of Power","ringofpower","EquipItems",0.2,5000,13,"6 150","finger");
-BeltEquip::AddEquipmentItem("Necklace of Defence","necklaceofdef","EquipItems",0.2,5000,14,"7 150","neck");
-BeltEquip::AddEquipmentItem("Armband of Hurt","armbandofhurt","EquipItems",0.2,5000,15,"6 250","arm");
+BeltEquip::AddEquipmentItem("Ring of Minor Power","ringofminpower","EquipItems",0.2,5000,13,"ATK 5","finger");
+BeltEquip::AddEquipmentItem("Brawler's Ring","brawlring","EquipItems",0.2,5000,13,"ATK 10","finger");
+BeltEquip::AddEquipmentItem("Ring of Power","ringofpower","EquipItems",0.2,5000,13,"ATK 150","finger");
+BeltEquip::AddEquipmentItem("Protection Amulet","protectamulet","EquipItems",0.2,5000,14,"DEF 25 MDEF 25","neck");
+BeltEquip::AddEquipmentItem("Necklace of Defence","necklaceofdef","EquipItems",0.2,5000,14,"DEF 150","neck");
+BeltEquip::AddEquipmentItem("Power Bracelet","armbandofhurt","EquipItems",0.2,5000,15,"ATK 250","arm");
+
 
 
 //Ammo Items
@@ -166,6 +171,57 @@ $AccessoryVar[blackstatue, $MiscInfo] = "A strage black statue.";
 $AccessoryVar[skeletonbone, $MiscInfo] = "A bone from an old skeleton.";
 $AccessoryVar[EnchantedStone, $MiscInfo] = "A weird glowing stone.";
 $AccessoryVar[DragonScale, $MiscInfo] = "A dragon scale.";
+
+
+
+BeltItem::Add("Blue Potion","BluePotion","PotionItems",4,15,27,"DrinkHealingPotion 15");
+BeltItem::Add("Crystal Blue Potion","CrystalBluePotion","PotionItems",10,100,28,"DrinkHealingPotion 16");
+
+BeltItem::Add("Energy Vial","EnergyVial","PotionItems",2,15,29,"DrinkManaPotion 15");
+BeltItem::Add("Crystal Energy Vial","CrystalEnergyVial","PotionItems",5,100,30,"DrinkManaPotion 50");
+
+
+$AccessoryVar[BluePotion, $MiscInfo] = "A blue potion that heals 15 HP";
+$AccessoryVar[CrystalBluePotion, $MiscInfo] = "A crystal blue potion that heals 60 HP";
+
+
+$AccessoryVar[EnergyVial, $MiscInfo] = "An energy vial that provides 16 MP";
+$AccessoryVar[CrystalEnergyVial, $MiscInfo] = "A crystal energy vial that provides 50 MP";
+
+function Belt::UseItem(%clientId,%item)
+{
+    if(Belt::HasThisStuff(%clientId,%item) > 0)
+    {
+        if(getWord($beltitem[%item, "Special"],0) == "DrinkHealingPotion")
+        {
+            DrinkHealingPotion(%clientId,%item,getWord($beltitem[%item, "Special"],1));
+            Belt::TakeThisStuff(%clientId,%item,1);
+            RefreshAll(%clientId);
+        }
+        
+        else if(getWord($beltitem[%item, "Special"],0) == "DrinkManaPotion")
+        {
+            DrinkManaPotion(%clientId,%item,getWord($beltitem[%item, "Special"],1));
+            Belt::TakeThisStuff(%clientId,%item,1);
+            RefreshAll(%clientId);
+        }
+    }
+}
+
+function DrinkHealingPotion(%clientId,%item,%amt)
+{
+    %hp = fetchData(%clientId, "HP");
+    refreshHP(%clientId,%amt * -0.01);
+    if(fetchData(%clientId,"HP") != %hp)
+        UseSkill(%clientId, $SkillHealing, True, True);
+    Client::sendMessage(%clientId, $MsgWhite, "You drank a "@$beltitem[%item, "Name"]@" and recovered "@ %amt @"HP~wActivateAR.wav");
+}
+
+function DrinkManaPotion(%clientId,%item,%amt)
+{
+    refreshMana(%clientId,%amt*-1);
+    Client::sendMessage(%clientId, $MsgWhite, "You drank a "@$beltitem[%item, "Name"]@" and recovered "@ %amt @"MP~wActivateAR.wav");
+}
 
 // =============================
 // Other items for Salmon's server

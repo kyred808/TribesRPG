@@ -657,12 +657,12 @@ function processMenuselectspell(%clientId, %option)
 function processMenuselectrweapon(%clientId, %item)
 {
 	%list = GetAccessoryList(%clientId, 10, -1);
-    echo(%list);
+    //echo(%list);
 	Client::buildMenu(%clientId, "Projectiles:", "selectproj", true);
 	for(%i = 0; GetWord(%list, %i) != -1; %i++)
 	{
 		%proj = GetWord(%list, %i);
-        echo(%proj);
+        //echo(%proj);
 		if(String::findSubStr($ProjRestrictions[%proj], "," @ %item @ ",") != -1)
 			Client::addMenuItem(%clientId, %curitem++ @ $beltitem[%proj, "Name"], %item @ " " @ %proj);
 	}

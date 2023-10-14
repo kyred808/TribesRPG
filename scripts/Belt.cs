@@ -74,26 +74,26 @@ function MenuViewBelt(%clientId, %page)
         if(getWord(fetchData(%clientId,%group),0) != -1)
         {
             %activeGroups[%num] = %group;
-            echo(%group @ " " @ %num-1);
+            //echo(%group @ " " @ %num-1);
             %num++;
         }
     }
     %num = %num;
-    echo(%num);
+    //echo(%num);
     %menuULB = BeltMenu::GetUpperLowerBounds(%num,%page);
 
     %numFullPages = getWord(%menuULB,0);
     %lb = getWord(%menuULB,1);
     %ub = getWord(%menuULB,2);
-    echo(%lb @ " > "@ %ub);
+    //echo(%lb @ " > "@ %ub);
     %x = %lb - 1;
 	for(%i = %lb; %i <= %ub; %i++)
 	{
-        echo(%x);
+        //echo(%x);
         %group = %activeGroups[%x]; //$Belt::ItemGroup[%i];
-        echo(%group);
+        //echo(%group);
         %disp = $Belt::ItemGroupShortName[$Belt::ItemGroupIndex[%group]]; //$Belt::ItemGroupShortName[%i];
-        echo(%disp);
+        //echo(%disp);
         Client::addMenuItem(%clientId, %cnt++ @ %disp, %group);
         %x++;
             
@@ -238,6 +238,8 @@ function MenuBeltDrop(%clientid, %item, %type)
 
 	Client::buildMenu(%clientId, %name@" ("@%cmnt@")", "BeltDrop", true);
     Client::addMenuItem(%clientId, "eExamine", %type@" examine "@%item);
+    if($beltitem[%item, "Special"] != "")
+        Client::addMenuItem(%clientId, "uUse", %type@" use "@%item);
 	if(!$LoreItem[%item])
     {
         Client::addMenuItem(%clientId, %cnt++ @ "Drop "@%amnt, %type@" drop "@%item@" "@%amnt);
@@ -260,7 +262,7 @@ function MenuBeltDrop(%clientid, %item, %type)
 
 function processMenuBeltDrop(%clientId, %opt)
 {
-    echo("Drop: "@%opt);
+    //echo("Drop: "@%opt);
 	%type = GetWord(%opt, 0);
 	%option = GetWord(%opt, 1);
 	%item = GetWord(%opt, 2);
@@ -284,6 +286,15 @@ function processMenuBeltDrop(%clientId, %opt)
             MenuBeltDrop(%clientid, %item, %type);
         }
 	}
+    else if(%option == "use")
+    {
+        Belt::UseItem(%clientid,%item);
+        if(Belt::HasThisStuff(%clientid,%item) > 0)
+        {
+            MenuBeltDrop(%clientid, %item, %type);
+        }
+        return;
+    }
 	else if(%option == "examine")
 	{
 		%msg = WhatIs(%item);
@@ -1276,6 +1287,7 @@ function Belt::TossBelt(%clientId, %vel, %namelist, %t)
 	}
 
 }
+
 //==========================//
 //======MUG BELT START======//
 //==========================//
@@ -1511,6 +1523,7 @@ function Belt::GetWeight(%clientid)
 	%list[3] = "KeyItems";
 	%list[4] = "LoreItems";
     %list[5] = "AmmoItems";
+    %list[6] = "EquipItems";
 
 	for(%s=1;%s<=5;%s++)
 	{
@@ -1590,14 +1603,20 @@ function Belt::GetNS(%clientid,%type)
 	return %bn@%list;
 }
 
-function BeltItem::Add(%name,%item,%type,%weight,%cost,%shopIndex)
-{
+$Belt::SpecialVarNone = 0;
+$Belt::SpecialVarUsable = 1;
 
+function BeltItem::Add(%name,%item,%type,%weight,%cost,%shopIndex,%specialVars)
+{
+    if(%specialVars == "")
+        %specialVars = $Belt::SpecialVarNone;
 	%num = $Belt::ItemGroupItemCount[%type]++;
 	$beltitem[%num, "Num", %type] = %item;
 	$beltitem[%item, "Item"] = %item;
 	$beltitem[%item, "Name"] = %name;
 	$beltitem[%item, "Type"] = %type;
+    $beltitem[%item, "ItemID"] = %num;
+    $beltitem[%item, "Special"] = %specialVars;
 	$AccessoryVar[%item, $Weight] = %weight;
 	$HardcodedItemCost[%item] = %cost;
     if(%shopIndex != "")

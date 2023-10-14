@@ -315,7 +315,21 @@ function BeltEquip::GetList(%clientId,%slotType)
     return %bn@%list;
 }
 
-
+function BeltEquip::AddBonusStats(%clientId,%statType)
+{
+    %val = 0;
+    for(%i = 0; $BeltEquip::Slot[%i,Name] != ""; %i++)
+    {
+        %slotName = $BeltEquip::Slot[%i,Name];
+        %item = $ClientData::BeltEquip[%clientId,%slotName];
+        %w = Word::FindWord($BeltEquip::Item[$beltitem[%item, "ItemID"],Special],%statType);
+        //echo($BeltEquip::Item[$beltitem[%item, "ItemID"],Special] @ " "@ %w);
+        //echo("BB: "@%item@" "@ getWord($BeltEquip::Item[$beltitem[%item, "ItemID"],Special],%w) @" "@%val);
+        if(%w != -1)
+            %val += getWord($BeltEquip::Item[$beltitem[%item, "ItemID"],Special],%w+1);
+    }
+    return %val;
+}
 
 //%location is slot name
 function BeltEquip::EquipItem(%clientId,%item,%location,%echo)
@@ -329,7 +343,7 @@ function BeltEquip::EquipItem(%clientId,%item,%location,%echo)
         $ClientData::BeltEquip[%clientId,%location] = %item;
         BeltEquip::GiveBonusStats(%clientId,%item);
         if(%echo)
-            Client::SendMessage(%clientId, $MsgWhite, "You equipped "@ %item @" on "@ BeltEquip::GetSlotDisplayName(%location) @".~wPku_weap.wav");
+            Client::SendMessage(%clientId, $MsgWhite, "You equipped "@ %item @" on "@ BeltEquip::GetSlotDisplayName(%location) @".~wPku_hlth.wav");
     }
     else
     {
@@ -349,7 +363,7 @@ function BeltEquip::UnequipItem(%clientId,%location,%echo)
         Belt::GiveThisStuff(%clientid, %curItem, 1, false);
         BeltEquip::RemoveBonusStats(%clientId,%curItem);
         if(%echo)
-            Client::SendMessage(%clientId, $MsgWhite, "You unequipped "@ %curItem @" on "@ BeltEquip::GetSlotDisplayName(%location) @".~Pku_hlth.wav");
+            Client::SendMessage(%clientId, $MsgWhite, "You unequipped "@ %curItem @" on "@ BeltEquip::GetSlotDisplayName(%location) @".~wPku_hlth.wav");
     }
 }
 

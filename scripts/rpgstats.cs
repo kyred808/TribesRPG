@@ -11,7 +11,8 @@ function fetchData(%clientId, %type)
 	{
 		%a = AddPoints(%clientId, 7);
 		%b = AddBonusStatePoints(%clientId, "DEF");
-		%c = (%a + %b);
+        %belt = BeltEquip::AddBonusStats(%clientId,"DEF");
+		%c = (%a + %b + %belt);
 		%d = (fetchData(%clientId, "OverweightStep") * 7.0) / 100;
 		%e = Cap(%c - (%c * %d), 0, "inf");
 		
@@ -21,7 +22,7 @@ function fetchData(%clientId, %type)
 	{
 		%a = AddPoints(%clientId, 3);
 		%b = AddBonusStatePoints(%clientId, "MDEF");
-		%c = (%a + %b);
+		%c = (%a + %b) + BeltEquip::AddBonusStats(%clientId,"MDEF");
 		%d = (fetchData(%clientId, "OverweightStep") * 7.0) / 100;
 		%e = Cap(%c - (%c * %d), 0, "inf");
 		
@@ -29,18 +30,22 @@ function fetchData(%clientId, %type)
 	}
 	else if(%type == "ATK")
 	{
+        
 		%weapon = Player::getMountedItem(%clientId, $WeaponSlot);
-
 		if(%weapon != -1)
 		{
 			%a = AddBonusStatePoints(%clientId, "ATK");
-
+            %extra = 0;
 			if(GetAccessoryVar(%weapon, $AccessoryType) == $RangedAccessoryType)
-				%weapon = fetchData(%clientId, "LoadedProjectile " @ %weapon);
+            {
+				%rweapon = fetchData(%clientId, "LoadedProjectile " @ %weapon);
+                %extra = GetRoll(GetWord(GetAccessoryVar(%rweapon, $SpecialVar), 1));
+            }
 
 			%b = GetRoll(GetWord(GetAccessoryVar(%weapon, $SpecialVar), 1));
-
-			return %a + %b;
+            %b = %b + %extra;
+            %c = BeltEquip::AddBonusStats(%clientId,"ATK");
+			return %a + %b + %c;
 		}
 		else
 			return 0;
@@ -52,8 +57,8 @@ function fetchData(%clientId, %type)
 		%c = floor(fetchData(%clientId, "RemortStep") * ($PlayerSkill[%clientId, $SkillEndurance] / 8));
 		%d = fetchData(%clientId, "LVL");
 		%e = AddBonusStatePoints(%clientId, "MaxHP");
-
-		return floor(%a + %b + %c + %d + %e);
+        %f = BeltEquip::AddBonusStats(%clientId,"MaxHP");
+		return floor(%a + %b + %c + %d + %e + %f);
 	}
 	else if(%type == "HP")
 	{
@@ -70,8 +75,8 @@ function fetchData(%clientId, %type)
 		%a = 8 + round( $PlayerSkill[%clientId, $SkillEnergy] * (1/3) );
 		%b = AddPoints(%clientId, 5);
 		%c = AddBonusStatePoints(%clientId, "MaxMANA");
-
-		return %a + %b;
+        %d = BeltEquip::AddBonusStats(%clientId,"MaxMANA");
+		return %a + %b + %c + %d;
 	}
 	else if(%type == "MANA")
 	{
@@ -87,7 +92,7 @@ function fetchData(%clientId, %type)
 		%a = 50 + $PlayerSkill[%clientId, $SkillWeightCapacity];
 		//%b = AddPoints(%clientId, 9);
 		%c = AddBonusStatePoints(%clientId, "MaxWeight");
-
+        %d = BeltEquip::AddBonusStats(%clientId,"MaxWeight");
 		return FixDecimals(%a + %c);
 	}
 	else if(%type == "Weight")

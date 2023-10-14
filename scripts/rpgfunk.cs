@@ -2158,9 +2158,9 @@ function FellOffMap(%id)
 function SetStuffString(%stuff,%item,%amount)
 {
     %stuff = FixStuffString(%stuff);
-    echo(%stuff);
+    //echo(%stuff);
     %w = Word::FindWord(%stuff,%item);
-    echo(%w != -1);
+    //echo(%w != -1);
     if(%w < 0)
     {
         %ret = %stuff;
@@ -2179,7 +2179,7 @@ function SetStuffString(%stuff,%item,%amount)
             %new = "";
         
         %ret = String::Replace(%stuff,%entry,%new);
-        echo("Ret: "@%ret);
+        //echo("Ret: "@%ret);
         if(String::left(%ret,1) != " ")
             %ret = " " @ %ret;
         return %ret;

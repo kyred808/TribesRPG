@@ -44,7 +44,6 @@ function GetWeight(%clientId)
         %weight = GetAccessoryVar(%currentItem, $Weight);
         if(%weight != "" && %weight != False)
             %total += %weight * %count;
-            
         
         %i += 2;
         %currentItem = getWord(%beltList,%i);
@@ -58,7 +57,7 @@ function GetWeight(%clientId)
         {
             %weight = GetAccessoryVar(%item, $Weight);
             if(%weight != "" && %weight != False)
-                %total += %weight * %count;
+                %total += %weight;
         }
     }
 	//add up coins
