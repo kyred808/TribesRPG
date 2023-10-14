@@ -180,33 +180,36 @@ function Item::onCollision(%this,%object)
         }
         else if(%item.className == "Projectile")
         {
-        %damagedClient = %clientId;
-        %shooterClient = %this.owner;
-        if(%shooterClient != "")
-        {
-            %vec = Vector::getDistance("0 0 0", Item::getVelocity(%this));
-            if(%vec == 0 && $ProjectileDoubleCheck[%this])
-                %vec = 3.0;
-        }
-        else
-            %vec = 0;	//don't let thrown projectiles damage!
-
-        $ProjectileDoubleCheck[%this] = "";
-
-        if(%vec >= 2.5)
-        {
-            GameBase::virtual(%object, "onDamage", $DamageType[%item], 1.0, "0 0 0", "0 0 0", "0 0 0", "torso", %this.weapon, %shooterClient, %item);
-        }
-        else
-        {
-            if(Item::giveItem(%clientId, %item, %this.delta, True))
+            %damagedClient = %clientId;
+            %shooterClient = %this.owner;
+            %item = %this.itemProj;
+            
+            if(%shooterClient != "")
             {
-                Item::playPickupSound(%this);
-                RefreshAll(%clientId);
+                %vec = Vector::getDistance("0 0 0", Item::getVelocity(%this));
+                if(%vec == 0 && $ProjectileDoubleCheck[%this])
+                    %vec = 3.0;
             }
-        }
+            else
+                %vec = 0;	//don't let thrown projectiles damage!
 
-        deleteObject(%this);
+            $ProjectileDoubleCheck[%this] = "";
+
+            if(%vec >= 2.5)
+            {
+                GameBase::virtual(%object, "onDamage", $DamageType[%item], 1.0, "0 0 0", "0 0 0", "0 0 0", "torso", %this.weapon, %shooterClient, %item);
+            }
+            else
+            {
+                belt::givethisstuff(%clientId, %item, %this.delta,True);
+                //if(Item::giveItem(%clientId, %item, %this.delta, True))
+                //{
+                    Item::playPickupSound(%this);
+                    RefreshAll(%clientId);
+                //}
+            }
+
+            deleteObject(%this);
 		}
             else if(%item.className == "Accessory" || $LoreItem[%item] == True)
             {

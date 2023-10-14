@@ -144,6 +144,35 @@ function GetAccessoryList(%clientId, %type, %filter)
 	if(IsDead(%clientId) || !fetchData(%clientId, "HasLoadedAndSpawned") || %clientId.IsInvalid || %clientId.choosingGroup || %clientId.choosingClass)
 		return "";
 
+    if(%type == 10) //$ProjectileAccessoryType
+    {
+        %max = $Belt::ItemGroupItemCount["AmmoItems"];
+        echo(%max);
+        for(%i = 0; %i < %max; %i++)
+        {
+            %item = $beltitem[%i+1,"Num","AmmoItems"];
+            %count = Belt::HasThisStuff(%clientId,%item);
+            echo(%item @" "@ %count);
+            if(%count)
+            {
+                if(%filter != -1)
+                {
+                    %flag2 = False;
+                    %av = GetAccessoryVar(%item, $SpecialVar);
+                    for(%j = 0; GetWord(%av, %j) != -1; %j+=2)
+                    {
+                        %w = GetWord(%av, %j);
+                        if(String::findSubStr(%filter, %w) != -1)
+                            %flag2 = True;
+                    }
+                }
+                if(%filter == -1 || %flag2)
+                    %list = %list @ %item @ " ";
+            }
+		}
+		return %list;
+    }
+    
 	%list = "";
 	%max = getNumItems();
 	for(%i = 0; %i < %max; %i++)
@@ -213,11 +242,11 @@ function GetAccessoryList(%clientId, %type, %filter)
 				if($AccessoryVar[%item, $AccessoryType] == $RangedAccessoryType)
 					%flag = True;
 			}
-			else if(%type == 10)
-			{
-				if($AccessoryVar[%item, $AccessoryType] == $ProjectileAccessoryType)
-					%flag = True;
-			}
+			//else if(%type == 10)
+			//{
+			//	if($AccessoryVar[%item, $AccessoryType] == $ProjectileAccessoryType)
+			//		%flag = True;
+			//}
             else if(%type == 11)
             {
                 if($AccessoryVar[%item, $AccessoryType] == $ShortBladeAccessoryType)

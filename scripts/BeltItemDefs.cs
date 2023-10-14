@@ -125,6 +125,18 @@ $ProjRestrictions[MetalFeather] = ",AeolusWing,";
 $ProjRestrictions[Talon] = ",AeolusWing,";
 $ProjRestrictions[CeraphumsFeather] = ",AeolusWing,";
 
+$ProjItemData[SmallRock] = SmallRock;
+$ProjItemData[BasicArrow] = BowArrow;
+$ProjItemData[SheafArrow] = BowArrow;
+$ProjItemData[BladedArrow] = BowArrow;
+$ProjItemData[LightQuarrel] = CrossbowBolt;
+$ProjItemData[HeavyQuarrel] = CrossbowBolt;
+$ProjItemData[ShortQuarrel] = CrossbowBolt;
+$ProjItemData[StoneFeather] = BowArrow;
+$ProjItemData[MetalFeather] = BowArrow;
+$ProjItemData[Talon] = BowArrow;
+$ProjItemData[CeraphumsFeather] = BowArrow;
+
 // Lore Items
 
 BeltItem::Add("Parchment","parchment","LoreItems",0.2,1);

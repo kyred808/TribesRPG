@@ -464,10 +464,12 @@ function ProjectileAttack(%clientId, %weapon, %vel)
 //	{
 		%zoffset = 0.44;
 //	}
-	%arrow = newObject("", "Item", %loadedProjectile, 1, false);
+    
+	%arrow = newObject("", "Item", $ProjItemData[%loadedProjectile], 1, false);
 	%arrow.owner = %clientId;
 	%arrow.delta = 1;
 	%arrow.weapon = %weapon;
+    %arrow.itemProj = %loadedProjectile;
 
 	addToSet("MissionCleanup", %arrow);
   	schedule("Item::Pop(" @ %arrow @ ");", 30, %arrow);
@@ -2271,96 +2273,117 @@ ItemData SmallRock
 	shadowDetailMask = 4;
 	price = 0;
 };
-ItemData BasicArrow
+
+ItemData BowArrow
 {
-	description = "Basic Arrow";
+    description = "Arrow";
 	className = "Projectile";
 	shapeFile = "tracer";
 	heading = "xAmmunition";
 	shadowDetailMask = 4;
 	price = 0;
 };
-ItemData SheafArrow
+
+ItemData CrossbowBolt
 {
-	description = "Sheaf Arrow";
-	className = "Projectile";
-	shapeFile = "tracer";
-	heading = "xAmmunition";
-	shadowDetailMask = 4;
-	price = 0;
-};
-ItemData BladedArrow
-{
-	description = "Bladed Arrow";
-	className = "Projectile";
-	shapeFile = "tracer";
-	heading = "xAmmunition";
-	shadowDetailMask = 4;
-	price = 0;
-};
-ItemData LightQuarrel
-{
-	description = "Light Quarrel";
+    description = "Light Quarrel";
 	className = "Projectile";
 	shapeFile = "bullet";
 	heading = "xAmmunition";
 	shadowDetailMask = 4;
 	price = 0;
 };
-ItemData HeavyQuarrel
-{
-	description = "Heavy Quarrel";
-	className = "Projectile";
-	shapeFile = "bullet";
-	heading = "xAmmunition";
-	shadowDetailMask = 4;
-	price = 0;
-};
-ItemData ShortQuarrel
-{
-	description = "Short Quarrel";
-	className = "Projectile";
-	shapeFile = "bullet";
-	heading = "xAmmunition";
-	shadowDetailMask = 4;
-	price = 0;
-};
-ItemData StoneFeather
-{
-	description = "Stone Feather";
-	className = "Projectile";
-	shapeFile = "tracer";
-	heading = "xAmmunition";
-	shadowDetailMask = 4;
-	price = 0;
-};
-ItemData MetalFeather
-{
-	description = "Metal Feather";
-	className = "Projectile";
-	shapeFile = "tracer";
-	heading = "xAmmunition";
-	shadowDetailMask = 4;
-	price = 0;
-};
-ItemData Talon
-{
-	description = "Talon";
-	className = "Projectile";
-	shapeFile = "tracer";
-	heading = "xAmmunition";
-	shadowDetailMask = 4;
-	price = 0;
-};
-ItemData CeraphumsFeather
-{
-	description = "Ceraphum's Feather";
-	className = "Projectile";
-	shapeFile = "tracer";
-	heading = "xAmmunition";
-	shadowDetailMask = 4;
-	price = 0;
-};
+
+//ItemData BasicArrow
+//{
+//	description = "Basic Arrow";
+//	className = "Projectile";
+//	shapeFile = "tracer";
+//	heading = "xAmmunition";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//ItemData SheafArrow
+//{
+//	description = "Sheaf Arrow";
+//	className = "Projectile";
+//	shapeFile = "tracer";
+//	heading = "xAmmunition";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//ItemData BladedArrow
+//{
+//	description = "Bladed Arrow";
+//	className = "Projectile";
+//	shapeFile = "tracer";
+//	heading = "xAmmunition";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//ItemData LightQuarrel
+//{
+//	description = "Light Quarrel";
+//	className = "Projectile";
+//	shapeFile = "bullet";
+//	heading = "xAmmunition";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//ItemData HeavyQuarrel
+//{
+//	description = "Heavy Quarrel";
+//	className = "Projectile";
+//	shapeFile = "bullet";
+//	heading = "xAmmunition";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//ItemData ShortQuarrel
+//{
+//	description = "Short Quarrel";
+//	className = "Projectile";
+//	shapeFile = "bullet";
+//	heading = "xAmmunition";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//ItemData StoneFeather
+//{
+//	description = "Stone Feather";
+//	className = "Projectile";
+//	shapeFile = "tracer";
+//	heading = "xAmmunition";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//ItemData MetalFeather
+//{
+//	description = "Metal Feather";
+//	className = "Projectile";
+//	shapeFile = "tracer";
+//	heading = "xAmmunition";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//ItemData Talon
+//{
+//	description = "Talon";
+//	className = "Projectile";
+//	shapeFile = "tracer";
+//	heading = "xAmmunition";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
+//ItemData CeraphumsFeather
+//{
+//	description = "Ceraphum's Feather";
+//	className = "Projectile";
+//	shapeFile = "tracer";
+//	heading = "xAmmunition";
+//	shadowDetailMask = 4;
+//	price = 0;
+//};
 
 //===========================================================================================
 //===========================================================================================
