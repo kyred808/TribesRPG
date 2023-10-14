@@ -667,7 +667,24 @@ function Zone::onExit(%clientId, %zoneLeft)
 	dbecho($dbechoMode, "Zone::onExit(" @ %clientId @ ", " @ %zoneLeft @ ")");
 
 	refreshHPREGEN(%clientId);	//this is because you regen faster or slower depending on the zone you are in
-
+    echo(%zoneLeft);
+    if($CleanUpBotsOnZoneEmpty)
+    {
+        if(getWordCount(Zone::getPlayerList(%zoneLeft, 2)) == 0)
+        {
+            %bots = Zone::getPlayerList(%zoneLeft, 3);
+            for(%i = 0; %i < getWordCount(%bots); %i++)
+            {
+                %b = getWord(%bots,%i);
+                if(!$ZoneCleanupProtected[%b])
+                {
+                    storeData(%b,"noDropLootbagFlag",true);
+                    Player::Kill(%b);
+                }
+            }
+        }
+    }
+    
 	if(Zone::getType(%zoneLeft) == "WATER")
 	{
 		//Client::sendMessage(%clientId, $MsgBeige, "You have left water!");

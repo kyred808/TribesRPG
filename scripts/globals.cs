@@ -56,6 +56,8 @@ if($fullCycleTime == "") $fullCycleTime = 60 * 60;
 if($nightDayCycle == "") $nightDayCycle = False;
 //--------------------------------------
 
+$CleanUpBotsOnZoneEmpty = true;
+
 $vvv = 10;
 
 $RecalcEconomyDelay = 60 * 5;
