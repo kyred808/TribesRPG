@@ -670,7 +670,7 @@ function Zone::onExit(%clientId, %zoneLeft)
     if($CleanUpBotsOnZoneEmpty && Zone::getType(%zoneLeft) == "DUNGEON")
     {
         %isAi = Player::isAiControlled(%clientId);
-        if(%isAi)
+        if(%isAi && !$ZoneCleanupProtected[%clientId])
         {
             storeData(%clientId,"noDropLootbagFlag",true);
             Player::Kill(%clientId);
