@@ -57,6 +57,7 @@ if($nightDayCycle == "") $nightDayCycle = False;
 //--------------------------------------
 
 $CleanUpBotsOnZoneEmpty = true;
+$PlayersFastHealInProtectedZones = true;
 
 $vvv = 10;
 

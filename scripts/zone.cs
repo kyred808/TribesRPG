@@ -641,7 +641,7 @@ function Zone::onEnter(%clientId, %oldZone, %newZone)
 {
 	dbecho($dbechoMode, "Zone::onEnter(" @ %clientId @ ", " @ %oldZone @ ", " @ %newZone @ ")");
 
-	refreshHPREGEN(%clientId);	//this is because you regen faster or slower depending on the zone you are in
+	refreshHPREGEN(%clientId,%newZone);	//this is because you regen faster or slower depending on the zone you are in
 
 	if(Zone::getType(%newZone) == "WATER")
 	{

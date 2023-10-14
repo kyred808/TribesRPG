@@ -44,11 +44,12 @@ function refreshHP(%clientId, %value)
 
 	return setHP(%clientId, fetchData(%clientId, "HP") - round(%value * $TribesDamageToNumericDamage));
 }
-function refreshHPREGEN(%clientId)
+function refreshHPREGEN(%clientId,%zone)
 {
 	dbecho($dbechoMode, "refreshHPREGEN(" @ %clientId @ ")");
 
 	%a = $PlayerSkill[%clientId, $SkillHealing] / 250000;
+    
 	if(%clientId.sleepMode == 1)
 		%b = %a + 0.0200;
 	else if(%clientId.sleepMode == 2)
@@ -56,6 +57,13 @@ function refreshHPREGEN(%clientId)
 	else
 		%b = %a;
 
+    if($PlayersFastHealInProtectedZones && Zone::getType(%zone) == "PROTECTED")
+    {
+        if(!Player::isAIControlled(%clientId))
+        {
+            %b+=1;
+        }
+    }
 	%c = AddPoints(%clientId, 10) / 2000;
 
 	%r = %b + %c;
