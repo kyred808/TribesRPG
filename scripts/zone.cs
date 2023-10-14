@@ -667,9 +667,17 @@ function Zone::onExit(%clientId, %zoneLeft)
 	dbecho($dbechoMode, "Zone::onExit(" @ %clientId @ ", " @ %zoneLeft @ ")");
 
 	refreshHPREGEN(%clientId);	//this is because you regen faster or slower depending on the zone you are in
-    echo(%zoneLeft);
-    if($CleanUpBotsOnZoneEmpty)
+    if($CleanUpBotsOnZoneEmpty && Zone::getType(%zoneLeft) == "DUNGEON")
     {
+        %isAi = Player::isAiControlled(%clientId);
+        if(%isAi)
+        {
+            storeData(%clientId,"noDropLootbagFlag",true);
+            Player::Kill(%clientId);
+            return;
+        }
+        
+        
         if(getWordCount(Zone::getPlayerList(%zoneLeft, 2)) == 0)
         {
             %bots = Zone::getPlayerList(%zoneLeft, 3);
