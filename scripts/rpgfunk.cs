@@ -1074,7 +1074,7 @@ function UpdateTeam(%clientId)
 	dbecho($dbechoMode, "UpdateTeam(" @ %clientId @ ")");
 
 	%t = $TeamForRace[fetchData(%clientId, "RACE")];
-
+    echo("Ent team?");
 	GameBase::setTeam(%clientId, %t);
 }
 

@@ -128,6 +128,9 @@ function Player::onKilled(%this)
 				if(%a == CastingBlade)
 					%flag = False;		//HARDCODED because we DONT want any players to have this item.
 				
+                if(%a == Treeatk)
+                    %flag = False;
+                
 				if($StealProtectedItem[%a])
 					%flag = False;
 

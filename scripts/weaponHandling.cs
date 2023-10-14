@@ -203,6 +203,7 @@ function GetBestWeapon(%clientId)
 	%highest = -1;
 	%bestWeapon = -1;
 
+    
 	%item = Knife;
 	for(%weapon = $NextWeapon[%item]; %weapon != %item; %weapon = $NextWeapon[%weapon])
 	{
@@ -222,6 +223,9 @@ function GetBestWeapon(%clientId)
 			if(%weapon == CastingBlade)
 				%add += 200;
 
+            if(%weapon == Treeatk)
+                %add += 9999;
+                
 			if(%x != -1)
 			{
 				%atk = AddItemSpecificPoints(%weapon, 6) + %add;

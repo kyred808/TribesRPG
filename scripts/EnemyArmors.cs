@@ -14,7 +14,6 @@ $Server::teamName[6] = "Minotaur";
 $Server::teamSkin[6] = "min";
 $Server::teamName[7] = "Uber";
 $Server::teamSkin[7] = "fedmonster";
-
 //------------------------------
 
 $NameForRace[generic] = "MaleHuman";
@@ -80,6 +79,9 @@ $NameForRace[Reaper] = "Minotaur";
 $NameForRace[Sloth] = "Uber";
 $NameForRace[Gohort] = "Uber";
 
+$NameForRace[Ent] = "Enchanted";
+
+
 //------------------------------
 
 $ArmorTypeToRace[TravellerArmor] = "Traveller";
@@ -96,6 +98,7 @@ $ArmorTypeToRace[ZombieArmor] = "Zombie";
 $ArmorTypeToRace[DemonArmor] = "Demon";
 
 $ArmorTypeToRace[BatArmor] = "Bat";
+$ArmorTypeToRace[EnchantedArmor] = "Enchanted";
 
 $RaceToArmorType[Goblin] = "GoblinArmor";
 $RaceToArmorType[Gnoll] = "GnollArmor";
@@ -111,7 +114,7 @@ $RaceToArmorType[Zombie] = "ZombieArmor";
 $RaceToArmorType[Demon] = "DemonArmor";
 
 $RaceToArmorType[Bat] = "BatArmor";
-
+$RaceToArmorType[Enchanted] = "EnchantedArmor";
 //------------------------------
 
 $spawnIndex[1] = "merchant";
@@ -179,7 +182,7 @@ $spawnIndex[52] = "Magi";
 $spawnIndex[53] = "Spawn";
 
 $spawnIndex[54] = "Bat";
-
+$spawnIndex[55] = "Ent";
 //------------------------------
 
 $BotEquipment[Runt] = 		"CLASS Fighter LVL 1 COINS 1/50 LCK 0 RKnife 1 Quartz 4/-300";
@@ -236,6 +239,7 @@ $BotEquipment[Gohort] = 	"CLASS Mage LVL 527/50 COINS 135/50 LCK 4 CastingBlade 
 
 $BotEquipment[Bat] = 		"CLASS Fighter LVL 1 COINS 1/50 LCK 0 Quartz 4/-300";
 
+$BotEquipment[Ent] = 	"CLASS Fighter LVL 38/75 COINS 300/50 LCK 3 Treeatk 1";
 //------------------------------
 
 $TeamForRace[Traveller] = 1;
@@ -251,6 +255,7 @@ $TeamForRace[Uber] = 7;
 $TeamForRace[Zombie] = 4;
 $TeamForRace[Demon] = 4;
 $TeamForRace[Bat] = 2;
+$TeamForRace[Enchanted] = 5;
 
 //------------------------------
 
@@ -362,6 +367,12 @@ $RaceSound[Bat, Hit, 1] = SoundBatAcquired1;
 $RaceSound[Bat, Taunt, 1] = SoundBatAcquired1;
 $RaceSound[Bat, RandomWait, 1] = SoundBatAcquired1;
 
+$RaceSound[Enchanted, Death, 1] = SoundUndeadHit2;
+$RaceSound[Enchanted, Acquired, 1] = SoundUndeadHit2;
+$RaceSound[Enchanted, Acquired, 2] = SoundUndeadHit2;
+$RaceSound[Enchanted, RandomWait, 1] = SoundUndeadHit2;
+$RaceSound[Enchanted, Hit, 1] = SoundUndeadHit2;
+$RaceSound[Enchanted, Hit, 2] = SoundHitLeather;
 
 //------------------------------------------------------------------
 // Traveller armor data:	(light)
@@ -2704,3 +2715,222 @@ PlayerData DemonArmor
 	boxHeadBackPercentage  = 0;
 	boxHeadFrontPercentage = 1;
 };
+
+PlayerData EnchantedArmor
+{
+	className = "Armor";
+	shapeFile = "invisable";
+	flameShapeName = "mflame";
+	shieldShapeName = "shield";
+	damageSkinData = "armorDamageSkins";
+	debrisId = playerDebris;
+	shadowDetailMask = 1;
+
+	canCrouch = false;
+	visibleToSensor = true;
+	mapFilter = 1;
+	mapIcon = "M_player";
+
+	maxJetSideForceFactor = 1;
+	maxJetForwardVelocity = 1.0;
+	minJetEnergy = 60;
+	jetForce = 1;
+	jetEnergyDrain = 0.0;
+
+	maxDamage = 1.0;
+	maxForwardSpeed = 15;
+	maxBackwardSpeed = 15 * 0.8;
+	maxSideSpeed = 15* 0.75;
+	groundForce = 75 * 9.0;
+	mass = 9.0;
+	groundTraction = 3.0;
+	maxEnergy = 80;
+	drag = 1.0;
+	density = 1.2;
+
+	minDamageSpeed = 150;
+	damageScale = 0.055;
+
+	jumpImpulse = 75;
+	jumpSurfaceMinDot = $jumpSurfaceMinDot;
+
+	// animation data:
+	// animation name, one shot, exclude, direction, firstPerson, chaseCam, thirdPerson, signalThread
+
+	// movement animations:
+	animData[0]  = { "root", none, 1, true, true, true, false, 0 };
+	animData[1]  = { "run", none, 1, true, false, true, false, 3 };
+	animData[2]  = { "runback", none, 1, true, false, true, false, 3 };
+	animData[3]  = { "side left", none, 1, true, false, true, false, 3 };
+	animData[4]  = { "side left", none, -1, true, false, true, false, 3 };
+	animData[5] = { "jump stand", none, 1, true, false, true, false, 3 };
+	animData[6] = { "jump run", none, 1, true, false, true, false, 3 };
+	animData[7] = { "crouch root", none, 1, true, true, true, false, 3 };
+	animData[8] = { "crouch root", none, 1, true, true, true, false, 3 };
+	animData[9] = { "crouch root", none, -1, true, true, true, false, 3 };
+	animData[10] = { "crouch forward", none, 1, true, false, true, false, 3 };
+	animData[11] = { "crouch forward", none, -1, true, false, true, false, 3 };
+	animData[12] = { "crouch side left", none, 1, true, false, true, false, 3 };
+	animData[13] = { "crouch side left", none, -1, true, false, true, false, 3 };
+	animData[14]  = { "fall", none, 1, true, true, true, false, 3 };
+	animData[15]  = { "landing", SoundLandOnGround, 1, true, false, false, false, 3 };
+	animData[16]  = { "landing", SoundLandOnGround, 1, true, false, false, false, 3 };
+	animData[17]  = { "tumble loop", none, 1, true, false, false, false, 3 };
+	animData[18]  = { "tumble end", none, 1, true, false, false, false, 3 };
+	animData[19] = { "jet", none, 1, true, true, true, false, 3 };
+
+	// misc. animations:
+	animData[20] = { "die back", none, 1, true, false, false, false, 0 };
+	animData[21] = { "throw", none, 1, true, false, false, false, 3 };
+	animData[22] = { "flyer root", none, 1, false, false, false, false, 3 };
+	animData[23] = { "apc root", none, 1, true, true, true, false, 3 };
+	animData[24] = { "apc pilot", none, 1, false, false, false, false, 3 };
+
+	// death animations:
+	animData[25] = { "crouch die", none, 1, false, false, false, false, 4 };
+	animData[26] = { "die chest", none, 1, false, false, false, false, 4 };
+	animData[27] = { "die head", none, 1, false, false, false, false, 4 };
+	animData[28] = { "die grab back", none, 1, false, false, false, false, 4 };
+	animData[29] = { "die right side", none, 1, false, false, false, false, 4 };
+	animData[30] = { "die left side", none, 1, false, false, false, false, 4 };
+	animData[31] = { "die leg left", none, 1, false, false, false, false, 4 };
+	animData[32] = { "die leg right", none, 1, false, false, false, false, 4 };
+	animData[33] = { "die blown back", none, 1, false, false, false, false, 4 };
+	animData[34] = { "die spin", none, 1, false, false, false, false, 4 };
+	animData[35] = { "die forward", none, 1, false, false, false, false, 4 };
+	animData[36] = { "die forward kneel", none, 1, false, false, false, false, 4 };
+	animData[37] = { "die back", none, 1, false, false, false, false, 4 };
+
+	// signal moves:
+	animData[38] = { "sign over here",  none, 1, true, false, false, false, 2 };
+	animData[39] = { "sign point", none, 1, true, false, false, false, 1 };
+	animData[40] = { "sign retreat",none, 1, true, false, false, false, 2 };
+	animData[41] = { "sign stop", none, 1, true, false, false, true, 1 };
+	animData[42] = { "sign salut", none, 1, true, false, false, true, 1 };
+
+	// celebraton animations:
+	animData[43] = { "celebration 1", none, 1, true, false, false, false, 2 };
+	animData[44] = { "celebration 2", none, 1, true, false, false, false, 2 };
+	animData[45] = { "celebration 3", none, 1, true, false, false, false, 2 };
+
+	// taunt anmations:
+	animData[46] = { "taunt 1", none, 1, true, false, false, false, 2 };
+	animData[47] = { "taunt 2", none, 1, true, false, false, false, 2 };
+
+	// poses:
+	animData[48] = { "pose kneel", none, 1, true, false, false, true, 1 };
+	animData[49] = { "pose stand", none, 1, true, false, false, true, 1 };
+
+	// Bonus wave
+	animData[50] = { "wave", none, 1, true, false, false, true, 1 };
+
+	jetSound = NoSound;
+
+	rFootSounds =
+	{
+		SoundMFootRSoft,
+		SoundMFootRHard,
+		SoundMFootRSoft,
+		SoundMFootRHard,
+		SoundMFootRSoft,
+		SoundMFootRSoft,
+		SoundMFootRSoft,
+		SoundMFootRHard,
+		SoundMFootRSnow,
+		SoundMFootRSoft,
+		SoundMFootRSoft,
+		SoundMFootRSoft,
+		SoundMFootRSoft,
+		SoundMFootRSoft,
+		SoundMFootRSoft
+	};
+	lFootSounds =
+	{
+		SoundMFootLSoft,
+		SoundMFootLHard,
+		SoundMFootLSoft,
+		SoundMFootLHard,
+		SoundMFootLSoft,
+		SoundMFootLSoft,
+		SoundMFootLSoft,
+		SoundMFootLHard,
+		SoundMFootLSnow,
+		SoundMFootLSoft,
+		SoundMFootLSoft,
+		SoundMFootLSoft,
+		SoundMFootLSoft,
+		SoundMFootLSoft,
+		SoundMFootLSoft
+	};
+
+	footPrints = { 2, 3 };
+
+	boxWidth = 0.7;
+	boxDepth = 0.7;
+	boxNormalHeight = 2.4;
+
+	boxNormalHeadPercentage  = 0.83;
+	boxNormalTorsoPercentage = 0.49;
+
+	boxHeadLeftPercentage  = 0;
+	boxHeadRightPercentage = 1;
+	boxHeadBackPercentage  = 0;
+	boxHeadFrontPercentage = 1;
+};
+
+//****************************************************************************************************
+//   Treeatk
+//****************************************************************************************************
+$SkillType[Treeatk] = $SkillPiercing;
+$AccessoryVar[Treeatk, $AccessoryType] = $PolearmAccessoryType;
+$AccessoryVar[Treeatk, $SpecialVar] = "6 30";
+$AccessoryVar[Treeatk, $MiscInfo] = "A Treeatk";
+$AccessoryVar[Treeatk, $Weight] = 0.1;
+$WeaponRange[Treeatk] = $minRange + 1;
+$WeaponDelay[Treeatk] = 2;
+$HardcodedItemCost[Treeatk] = 0;
+
+ItemImageData TreeatkImage
+{
+	shapeFile  = "tree1";
+	mountPoint = 0;
+
+	weaponType = 0; // Single Shot
+	reloadTime = 0;
+	mountOffset = { -1, -1, -2 }; 
+	fireTime = $WeaponDelay[Treeatk];
+	minEnergy = 0;
+	maxEnergy = 0;
+
+	accuFire = true;
+
+	sfxFire = SoundHitLeather;
+	sfxActivate = SoundHitLeather;
+};
+ItemData Treeatk
+{
+	heading = "bWeapons";
+	description = "Treeatk";
+	className = "Weapon";
+	shapeFile  = "tree1";
+	hudIcon = "trident";
+	shadowDetailMask = 4;
+	imageType = TreeatkImage;
+	price = 0;
+	showWeaponBar = true;
+};
+
+function TreeatkImage::onFire(%player, %slot)
+{
+	%clientId = Player::getClient(%player);
+	if(!Player::isAiControlled(%clientId))
+		RPG::decItemCount(%clientId, "Treeatk", 1);
+
+	%rot = Gamebase::getrotation(%clientId);
+	%currvel = Item::getVelocity(%clientId);
+	%vel = vector::getfromrot(%rot, -80, -2);
+	%finalvel = vector::sub(%currvel, %vel); 
+	Item::setvelocity(%clientId, %finalvel);
+
+	MeleeAttack(%player, $WeaponRange[Treeatk], Treeatk);
+}

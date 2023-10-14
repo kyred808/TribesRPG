@@ -933,6 +933,40 @@ instant SimGroup "MissionGroup" {
 				rotation = "0 0 0";
 			};
 		};
+        instant SimGroup "DUNGEON Jaten Grove" {
+            instant SimGroup "DropPoints" {
+                instant Marker "Marker1" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-7.40722 1278.62 249.037";
+                    rotation = "0 0 0";
+                };
+                instant Marker "Marker1" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "151.08 1245.79 222.282";
+                    rotation = "0 0 0";
+                };
+                instant Marker "Marker1" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-17.3808 1264.47 257.295";
+                    rotation = "0 0 0";
+                };
+                instant Marker "Marker1" {
+                    dataBlock = "PathMarker";
+                    name = "";
+                    position = "-45.1223 1247.22 273.46";
+                    rotation = "0 0 0";
+                };
+            };
+            instant Marker "150 150 150 0" {
+                dataBlock = "PathMarker";
+                name = "";
+                position = "58.069 1247.95 217.618";
+                rotation = "0 0 0";
+            };
+        };
 		instant SimGroup "WATER water" {
 			instant Marker "6200 6200 79 0" {
 				dataBlock = "PathMarker";
@@ -1501,6 +1535,18 @@ instant SimGroup "MissionGroup" {
 			position = "-1565.75 -300.341 352.109";
 			rotation = "0 0 0";
 		};
+        instant Marker "1 1 2 10 20 55" {
+            dataBlock = "PathMarker";
+            name = "Ent Grove 1";
+            position = "96.8385 1259.93 233.848";
+            rotation = "0 0 0";
+        };
+        instant Marker "1 1 2 20 80 55" {
+            dataBlock = "PathMarker";
+            name = "Ent Grove 2";
+            position = "19.4813 1244.93 237.878";
+            rotation = "0 0 0";
+        };
 		instant Marker "1.5 5 8 10 30 31 32" {
 			dataBlock = "PathMarker";
 			name = "lair ghoul spawn";
@@ -1738,6 +1784,38 @@ instant SimGroup "MissionGroup" {
 				deleteOnDestroy = "False";
 				locked = "0";
 			};
+            instant StaticShape "GroveTreeOne1" {
+                dataBlock = "TreeShape";
+                name = "";
+                position = "-118.673 1340.27 236.994";
+                rotation = "0.222838 0.355102 1.01375";
+                destroyable = "True";
+                deleteOnDestroy = "False";
+            };
+            instant StaticShape "GroveTreeOne2" {
+                dataBlock = "TreeShape";
+                name = "";
+                position = "66.6288 1223.5 236";
+                rotation = "-0.199995 -0.149997 0";
+                destroyable = "True";
+                deleteOnDestroy = "False";
+            };
+            instant StaticShape "GroveTreeTwo1" {
+                dataBlock = "TreeShapeTwo";
+                name = "";
+                position = "105.006 1257.46 235.697";
+                rotation = "0 -0 0.399998";
+                destroyable = "True";
+                deleteOnDestroy = "False";
+            };
+            instant StaticShape "GroveTreeOne3" {
+                dataBlock = "TreeShape";
+                name = "";
+                position = "-28.9155 1273.07 254";
+                rotation = "-0.099999 0.0259996 0.999998";
+                destroyable = "True";
+                deleteOnDestroy = "False";
+            };
 			instant StaticShape "PlantTwo1" {
 				dataBlock = "PlantTwo";
 				name = "";
