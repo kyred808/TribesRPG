@@ -52,9 +52,9 @@ function fetchData(%clientId, %type)
 	}
 	else if(%type == "MaxHP")
 	{
-		%a = $MinHP[fetchData(%clientId, "RACE")] + ($PlayerSkill[%clientId, $SkillEndurance] * 0.6);
+		%a = $MinHP[fetchData(%clientId, "RACE")] + (CalculatePlayerSkill(%clientId, $SkillEndurance) * 0.6);
 		%b = AddPoints(%clientId, 4);
-		%c = floor(fetchData(%clientId, "RemortStep") * ($PlayerSkill[%clientId, $SkillEndurance] / 8));
+		%c = floor(fetchData(%clientId, "RemortStep") * (CalculatePlayerSkill(%clientId, $SkillEndurance) / 8));
 		%d = fetchData(%clientId, "LVL");
 		%e = AddBonusStatePoints(%clientId, "MaxHP");
         %f = BeltEquip::AddBonusStats(%clientId,"MaxHP");
@@ -72,7 +72,7 @@ function fetchData(%clientId, %type)
 	}
 	else if(%type == "MaxMANA")
 	{
-		%a = 8 + round( $PlayerSkill[%clientId, $SkillEnergy] * (1/3) );
+		%a = 8 + round( CalculatePlayerSkill(%clientId, $SkillEnergy) * (1/3) );
 		%b = AddPoints(%clientId, 5);
 		%c = AddBonusStatePoints(%clientId, "MaxMANA");
         %d = BeltEquip::AddBonusStats(%clientId,"MaxMANA");
@@ -89,7 +89,7 @@ function fetchData(%clientId, %type)
 	}
 	else if(%type == "MaxWeight")
 	{
-		%a = 50 + $PlayerSkill[%clientId, $SkillWeightCapacity];
+		%a = 50 + CalculatePlayerSkill(%clientId, $SkillWeightCapacity);
 		//%b = AddPoints(%clientId, 9);
 		%c = AddBonusStatePoints(%clientId, "MaxWeight");
         %d = BeltEquip::AddBonusStats(%clientId,"MaxWeight");
@@ -228,7 +228,14 @@ function MenuSP(%clientId, %page)
 		%ub = %ns;
 
 	for(%i = %lb; %i <= %ub; %i++)
-		Client::addMenuItem(%clientId, %cnt++ @ "(" @ GetPlayerSkill(%clientId, %i) @ ") " @ $SkillDesc[%i], %i @ " " @ %page);
+    {
+        %bonus = BeltEquip::AddBonusStats(%clientId,"SKILL"@%i);
+        echo(%bonus);
+        if(%bonus > 0)
+            Client::addMenuItem(%clientId, %cnt++ @ "(" @ GetPlayerSkill(%clientId, %i) @ "+"@ %bonus @") " @ $SkillDesc[%i], %i @ " " @ %page);
+        else
+            Client::addMenuItem(%clientId, %cnt++ @ "(" @ GetPlayerSkill(%clientId, %i) @ ") " @ $SkillDesc[%i], %i @ " " @ %page);
+    }
 
 	if(%page == 1)
 	{
@@ -280,7 +287,7 @@ function processMenusp(%clientId, %opt)
             if(%echo)
                 Client::SendMessage(%clientId,$MsgWhite,"You spent "@ %clientId.bulkNum @" SP on "@$SkillDesc[%o]);
             
-            RefreshAll(%clientId);
+            RefreshAll(%clientId,false);
         }
 		//if(%clientId.bulkNum > 30 && !(%clientId.adminLevel >= 1) )
 		//	%clientId.bulkNum = 30;
@@ -687,6 +694,7 @@ function DoRemort(%clientId)
 		AddSkillPoint(%clientId, %i, $autoStartupSP);
 
 	UnequipMountedStuff(%clientId);
+    BeltEquip::UnequipAll(%clientId);
 	
 	Player::setDamageFlash(%clientId, 1.0);
 	Item::setVelocity(%clientId, "0 0 0");
@@ -694,7 +702,7 @@ function DoRemort(%clientId)
 
 	playSound(RespawnC, GameBase::getPosition(%clientId));
 	
-	RefreshAll(%clientId);
+	RefreshAll(%clientId,true);
 
 	Client::sendMessage(%clientId, $MsgBeige, "Welcome to Remort Level " @ fetchData(%clientId, "RemortStep") @ "!");
 

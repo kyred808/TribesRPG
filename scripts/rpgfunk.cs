@@ -954,7 +954,7 @@ function clipTrailingNumbers(%str)
 {
 	dbecho($dbechoMode, "clipTrailingNumbers(" @ %str @ ")");
 
-    return String::clipTrailing(%str, "1234567890");
+    return String::clipTrailing(%str); //, "1234567890");
     
     //Mem dll fixes replaces this
 	//for(%i=0; %i <= String::len(%str); %i++)
@@ -1096,7 +1096,7 @@ function ChangeRace(%clientId, %race)
 	setHP(%clientId, fetchData(%clientId, "MaxHP"));
 	setMANA(%clientId, fetchData(%clientId, "MaxMANA"));
 
-	RefreshAll(%clientId);
+	RefreshAll(%clientId,true);
 }
 
 function ClearVariables(%clientId)
@@ -1757,17 +1757,86 @@ function round(%n)
 	return (%f + %b) * %t;
 }
 
-function RefreshAll(%clientId)
+//%equip is usually false. Used to recheck the requirements of your equipment
+function RefreshAll(%clientId, %equip)
 {
-	dbecho($dbechoMode, "RefreshAll(" @ %clientId @ ")");
-
+	dbecho($dbechoMode, "RefreshAll(" @ %clientId @ ","@ %equip @")");
+    if(%equip == "")
+        %equip = false;
 	if(String::findSubStr(fetchData(%clientId, "RACE"), "Human") != -1)
+    {
 		RefreshWeight(%clientId);
+        if(%equip)
+            RefreshEquipment(%clientId);
+    }
 
 	UpdateAppearance(%clientId);
 	refreshHPREGEN(%clientId);
 	refreshMANAREGEN(%clientId);
 	Game::refreshClientScore(%clientId);
+}
+
+function RefreshEquipment(%clientId)
+{
+    //Weapon
+    %weapon = Player::getMountedItem(%clientId, $WeaponSlot);
+    %sound = true;
+    if(%weapon != -1)
+    {
+        echo(%weapon);
+        echo(SkillCanUse(%clientId,%weapon));
+        if(!SkillCanUse(%clientId,%weapon))
+        {
+            Player::unMountItem(%clientId, $WeaponSlot);
+            Client::sendMessage(%clientId, $MsgRed, "You lack the skills to use " @ %weapon @ ".~wPku_weap.wav");
+            %sound = false;
+        }
+        
+    }
+    //Equip
+    %list = GetAccessoryList(%clientId,2,-1);
+    
+    for(%i = 0; %i < getWordCount(%list); %i++)
+    {
+        %item = getWord(%list,%i);
+        if(!SkillCanUse(%clientId,%item))
+        {
+            %player = Client::getControlObject(%clientId);
+            %o = String::getSubStr(%item, 0, String::len(%item)-1);	//remove the 0
+            %msg = "You lack the skills to use " @ %item.description @ ".";
+            if(%sound)
+            {
+                %msg = %msg @ "~wPku_weap.wav";
+                %sound = false;
+            }
+			Client::sendMessage(%clientId, $MsgRed,%msg);
+			Player::setItemCount(%player, %item, Player::getItemCount(%player, %item)-1);
+			Player::setItemCount(%player, %o, Player::getItemCount(%player, %o)+1);
+
+			if($OverrideMountPoint[%item] == "")
+				Player::unMountItem(%player, 1);
+        }
+    }
+
+    //Belt Items
+    for(%i = 0; %i < $BeltEquip::NumberOfSlots; %i++)
+    {
+        %item = BeltEquip::GetEquippedItem(%clientId,%slotId);
+        if(%item != "")
+        {
+            if(!BeltEquip::CanUseItem(%clientId,%item))
+            {
+                %msg = "You lack the skills to use " @ %item @ ".";
+                if(%sound)
+                {
+                    %msg = %msg @ "~wPku_weap.wav"; 
+                    %sound = false;
+                }
+                BeltEquip::UnequipItem(%clientId,$BeltEquip::Slot[%id,Name],false);
+                Client::sendMessage(%clientId,$MsgRed,%msg);
+            }
+        }
+    }
 }
 
 function HasThisStuff(%clientId, %list, %multiplier)
@@ -2110,7 +2179,7 @@ function GiveThisStuff(%clientId, %list, %echo, %multiplier)
 		}
 	}
 
-	RefreshAll(%clientId);
+	RefreshAll(%clientId,true);
 
 	//Process the counter data, if any
 	for(%i = 1; %tmpcnt[%i] != ""; %i++)
@@ -2142,7 +2211,7 @@ function FellOffMap(%id)
 {
 	dbecho($dbechoMode, "FellOffMap(" @ %id @ ")");
 
-	RefreshAll(%id);
+	RefreshAll(%id,false);
 
 	if(Player::isAiControlled(%id))
 	{
@@ -2798,7 +2867,7 @@ function PerhapsPlayStealSound(%clientId, %type)
 		%snd = SoundPickupItem;
 
 	%r = getRandom() * 1000;
-	%n = 1000 - $PlayerSkill[%clientId, $SkillStealing];
+	%n = 1000 - CalculatePlayerSkill(%clientId, $SkillStealing);
 	if(%r <= %n)
 	{
 		playSound(%snd, GameBase::getPosition(%clientId));

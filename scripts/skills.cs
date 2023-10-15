@@ -581,6 +581,10 @@ function GetPlayerSkill(%clientId, %skill)
 {
 	return $PlayerSkill[%clientId, %skill];
 }
+function CalculatePlayerSkill(%clientId, %skill)
+{
+    return $PlayerSkill[%clientId, %skill] + BeltEquip::AddBonusStats(%clientId,"SKILL"@%skill);
+}
 function GetSkillMultiplier(%clientId, %skill)
 {
 	dbecho($dbechoMode, "GetSkillMultiplier(" @ %clientId @ ", " @ %skill @ ")");
@@ -662,7 +666,7 @@ function SkillCanUse(%clientId, %thing)
 		}
 		else
 		{
-			if($PlayerSkill[%clientId, %s] < %n)
+			if(CalculatePlayerSkill(%clientId, %s) < %n)
 				%flag = 1;
 		}
 	}
@@ -713,7 +717,7 @@ function UseSkill(%clientId, %skilltype, %successful, %showmsg, %base, %refresha
 				if(%showmsg)
 					Client::sendMessage(%clientId, $MsgBeige, "You have increased your skill in " @ $SkillDesc[%skilltype] @ " (" @ $PlayerSkill[%clientId, %skilltype] @ ")");
 				if(%refreshall)
-					RefreshAll(%clientId);
+					RefreshAll(%clientId,false);
 			}
 		}
 	}

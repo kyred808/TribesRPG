@@ -81,12 +81,13 @@ $ItemList[Mining, 13] = "Keldrinite " @ round($HardcodedItemCost[Keldrinite] / %
 
 // Equip Items
 BeltEquip::AddEquipmentItem("Ring of Minor Power","ringofminpower","EquipItems",0.2,5000,13,"ATK 5","finger");
-BeltEquip::AddEquipmentItem("Brawler's Ring","brawlring","EquipItems",0.2,5000,13,"ATK 10","finger");
-BeltEquip::AddEquipmentItem("Ring of Power","ringofpower","EquipItems",0.2,5000,13,"ATK 150","finger");
+BeltEquip::AddEquipmentItem("Brawler's Ring","brawlring","EquipItems",0.2,5000,31,"ATK 10","finger");
+BeltEquip::AddEquipmentItem("Ring of Power","ringofpower","EquipItems",0.2,5000,32,"ATK 150","finger");
+BeltEquip::AddEquipmentItem("Mage's Ring","magesring","EquipItems",0.2,50000,33,"SKILL"@$SkillOffensiveCasting@" 25 SKILL"@$SkillDefensiveCasting@" 5 SKILL"@$SkillNeutralCasting@" 10 SKILL"@$SkillEnergy@" 25","finger");
 BeltEquip::AddEquipmentItem("Protection Amulet","protectamulet","EquipItems",0.2,5000,14,"DEF 25 MDEF 25","neck");
-BeltEquip::AddEquipmentItem("Necklace of Defence","necklaceofdef","EquipItems",0.2,5000,14,"DEF 150","neck");
-BeltEquip::AddEquipmentItem("Power Bracelet","armbandofhurt","EquipItems",0.2,5000,15,"ATK 250","arm");
-
+BeltEquip::AddEquipmentItem("Necklace of Defence","necklaceofdef","EquipItems",0.2,5000,34,"DEF 150","neck");
+BeltEquip::AddEquipmentItem("Power Bracelet","armbandofhurt","EquipItems",0.2,5000,35,"ATK 250","arm");
+BeltEquip::AddEquipmentItem("Swordsman Armbad","swordsmanarmband","EquipItems",0.2,5000,36,"SKILL"@$SkillSlashing@" 150","arm");
 
 
 //Ammo Items
@@ -196,14 +197,14 @@ function Belt::UseItem(%clientId,%item)
         {
             DrinkHealingPotion(%clientId,%item,getWord($beltitem[%item, "Special"],1));
             Belt::TakeThisStuff(%clientId,%item,1);
-            RefreshAll(%clientId);
+            RefreshAll(%clientId,false);
         }
         
         else if(getWord($beltitem[%item, "Special"],0) == "DrinkManaPotion")
         {
             DrinkManaPotion(%clientId,%item,getWord($beltitem[%item, "Special"],1));
             Belt::TakeThisStuff(%clientId,%item,1);
-            RefreshAll(%clientId);
+            RefreshAll(%clientId,false);
         }
     }
 }

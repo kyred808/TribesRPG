@@ -10,7 +10,7 @@ function getBuyCost(%clientId, %item)
 	else
 		%cost = %p;
 
-	%p = round($PlayerSkill[%clientId, $SkillHaggling] / 20) / 100;
+	%p = round(CalculatePlayerSkill(%clientId, $SkillHaggling) / 20) / 100;
 	%x = round(%cost * Cap(%p, 0.0, 0.5) );
 	%cost -= %x;
 
@@ -28,7 +28,7 @@ function getSellCost(%clientId, %item)
 	else
 		%cost = round(%p * ($resalePercentage/100));
 
-	%p = round($PlayerSkill[%clientId, $SkillHaggling] / 11) / 100;
+	%p = round(CalculatePlayerSkill(%clientId, $SkillHaggling) / 11) / 100;
 	%x = round(%cost * Cap(%p, 0.0, 1.0) );
 	%cost += %x;
 
@@ -106,7 +106,7 @@ function buyItem(%clientId, %item)
 	
 				SetupBank(%clientId, %clientId.currentBank);	//refresh
 
-				RefreshAll(%clientId);
+				RefreshAll(%clientId,false);
 			}
 			else
 				Client::sendMessage(%clientId, $MsgRed, "You only have " @ %cnt @ " of this item.~wC_BuySell.wav");
@@ -135,7 +135,7 @@ function buyItem(%clientId, %item)
 					Player::incItemCount(%clientId, %item, %clientId.bulkNum);
 					BuySell(%player, %item, %clientId.bulkNum, BUY);
 		
-					RefreshAll(%clientId);
+					RefreshAll(%clientId,false);
 					%clientId.bulkNum = 1;
 
 					return 1;
@@ -200,7 +200,7 @@ function buyItem(%clientId, %item)
 								Client::sendMessage(%clientId, $MsgBeige, "Attempting to " @ %w @ "...");
 	
 								%a = %itemweight * %weightToTimeFactor;
-								%b = (1000 - $PlayerSkill[%clientId, $SkillStealing]) / 50;
+								%b = (1000 - CalculatePlayerSkill(%clientId, $SkillStealing)) / 50;
 								%c = Cap(%b, 0, "inf");
 								%d = %c * %weightToTimeFactor;
 	
@@ -260,8 +260,8 @@ function DoSteal(%clientId, %cl, %itemcount, %item, %fitem, %w)
 		Client::sendMessage(%clientId, $MsgWhite, "Your target has wandered off...");
 	else
 	{
-		%r1 = GetRoll("1d" @ $PlayerSkill[%clientId, $SkillStealing]);
-		%r2 = GetRoll("1d" @ ($PlayerSkill[%cl, $SkillStealing])); //+ $PlayerSkill[%cl, $SkillDodging]));
+		%r1 = GetRoll("1d" @ CalculatePlayerSkill(%clientId, $SkillStealing));
+		%r2 = GetRoll("1d" @ (CalculatePlayerSkill(%cl, $SkillStealing))); //+ $PlayerSkill[%cl, $SkillDodging]));
 		%b = %r1 - %r2;
 		%a = %b - %FailWeight;
 		if(%a > 0 && %itemcount == %icnt)
@@ -273,8 +273,8 @@ function DoSteal(%clientId, %cl, %itemcount, %item, %fitem, %w)
 		
 			SetupInvSteal(%clientId, %cl);
 					
-			RefreshAll(%clientId);
-			RefreshAll(%cl);
+			RefreshAll(%clientId,false);
+			RefreshAll(%cl,true);
 				
 			UseSkill(%clientId, $SkillStealing, True, True);
 			PostSteal(%clientId, True, %clientId.stealType);
@@ -353,7 +353,7 @@ function sellItem(%clientId, %item)
 		
 						SetupBank(%clientId, %clientId.currentBank);	//refresh
 		
-						RefreshAll(%clientId);
+						RefreshAll(%clientId,false);
 					}
 					else
 						Client::sendMessage(%clientId, $MsgRed, "Unequip this item before storing it.~wC_BuySell.wav");
@@ -406,7 +406,7 @@ function sellItem(%clientId, %item)
 					Player::setItemCount(%player, %item, (%count-%numsell));
 					Client::SendMessage(%clientId, $MsgWhite, "~wbuysellsound.wav");
 	
-					RefreshAll(%clientId);
+					RefreshAll(%clientId,false);
 					%clientId.bulkNum = 1;
 
 					return 1;

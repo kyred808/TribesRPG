@@ -144,6 +144,7 @@ function processMenuBeltEquipSlot(%clientid, %opt)
     {
         BeltEquip::UnequipItem(%clientId,$BeltEquip::Slot[%slotId,Name],true);
         MenuBeltEquipmentSlot(%clientid,%slotId,%prevType,1);
+        RefreshAll(%clientId,true);
     }
     
     if(%o == "back")
@@ -210,6 +211,7 @@ function processMenuBeltEquipmentDropOrSlot(%clientid,%opt)
         if(%curItem != "")
             BeltEquip::UnequipItem(%clientId,$BeltEquip::Slot[%slotId,Name],true);
         BeltEquip::EquipItem(%clientId,%item,$BeltEquip::Slot[%slotId,Name],true);
+        RefreshAll(%clientId,true);
         return;
     }
     else if(%option == "examine")
@@ -315,6 +317,12 @@ function BeltEquip::GetList(%clientId,%slotType)
     return %bn@%list;
 }
 
+// WIP
+function BeltEquip::CanUseItem(%clientId,%itemName)
+{
+    return true;
+}
+
 function BeltEquip::AddBonusStats(%clientId,%statType)
 {
     %val = 0;
@@ -329,6 +337,20 @@ function BeltEquip::AddBonusStats(%clientId,%statType)
             %val += getWord($BeltEquip::Item[$beltitem[%item, "ItemID"],Special],%w+1);
     }
     return %val;
+}
+
+function BeltEquip::GetEquippedItem(%clientId,%slotId)
+{
+    return $ClientData::BeltEquip[%clientId,$BeltEquip::Slot[%slotId,Name]];
+}
+
+function BeltEquip::UnequipAll(%clientId)
+{
+    for(%i = 0; %i < $BeltEquip::NumberOfSlots; %i++)
+    {
+        BeltEquip::UnequipItem(%clientId,$BeltEquip::Slot[%i,Name]);
+    }
+    RefreshAll(%clientId,true);
 }
 
 //%location is slot name

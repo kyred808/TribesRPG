@@ -65,7 +65,7 @@ function GroupTrigger::onTrigEnter(%object, %this)
 			if(!fetchData(%clientId, "invisible"))
 				GameBase::startFadeIn(%clientId);
 
-			RefreshAll(%clientId);
+			RefreshAll(%clientId,false);
 
 			schedule("Client::sendMessage(" @ %clientId @ ", $MsgBeige, \"" @ %gsay @ "\");", 0.22);
 		}
@@ -169,7 +169,7 @@ function DoCampSetup(%clientId, %step, %pos)
 		%g = "MissionCleanup/Camp" @ %clientId;
 
 		Player::incItemCount(%clientId, Tent);
-		RefreshAll(%clientId);
+		RefreshAll(%clientId,false);
 
 		//so the players in the grouptrigger get kicked out first.
 		Group::iterateRecursive(%g, GameBase::setPosition, "0 0 0");

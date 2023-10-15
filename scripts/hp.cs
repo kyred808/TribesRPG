@@ -48,7 +48,7 @@ function refreshHPREGEN(%clientId,%zone)
 {
 	dbecho($dbechoMode, "refreshHPREGEN(" @ %clientId @ ")");
 
-	%a = $PlayerSkill[%clientId, $SkillHealing] / 250000;
+	%a = CalculatePlayerSkill(%clientId, $SkillHealing) / 250000;
     
 	if(%clientId.sleepMode == 1)
 		%b = %a + 0.0200;

@@ -180,7 +180,7 @@ function Game::playerSpawned(%pl, %clientId, %armor)
 	if(fetchData(%clientId, "LCK") < 0)
 		storeData(%clientId, "LCK", 0);
 
-	RefreshAll(%clientId);
+	RefreshAll(%clientId,true);
 } 
 
 function Game::autoRespawn(%clientId)

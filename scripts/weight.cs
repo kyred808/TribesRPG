@@ -20,9 +20,9 @@ function GetWeight(%clientId)
 	for(%i = 0; %i < %max; %i++)
 	{
 		%checkItem = getItemData(%i);
-		%itemcount = Player::getItemCount(%clientId, %checkItem);
+		%itemcount = Player::getItemCount(%clientId, %i);
 
-		if(%itemcount)
+		if(%itemcount && %checkItem != "")
 		{
 			%weight = GetAccessoryVar(%checkItem, $Weight);
 			if(%weight != "" && %weight != False)

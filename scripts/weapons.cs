@@ -526,7 +526,7 @@ function PickAxeSwing(%player, %length, %weapon)
 				{
                     belt::givethisstuff(%clientId, %score, 1, 1, 1);
 					//Player::incItemCount(%clientId, %score, 1);
-					RefreshAll(%clientId);
+					RefreshAll(%clientId,false);
 					//Client::sendMessage(%clientId, 0, "You found " @ %score.description @ ".");
 
 					if( floor(getRandom() * 10) == 5)
@@ -547,7 +547,7 @@ function PickAxeSwing(%player, %length, %weapon)
                 %item = $MeteorMiningList[%rewardIdx];
                 //Player::incItemCount(%clientId, %item, 1);
                 belt::givethisstuff(%clientId, %score, 1, 1, 1);
-                RefreshAll(%clientId);
+                RefreshAll(%clientId,false);
                 
                 //Client::sendMessage(%clientId, 0, "You found " @ %item.description @ ".");
                 
@@ -626,7 +626,7 @@ function DoRandomMining(%clientId, %crystal)
 	{
 		%w1 = GetWord($ItemList[Mining, %i], 1) - %crystal.bonus[%i];
 		%n = Cap( (%w1 * getRandom()) + (%w1 / 2), 0, %w1);
-		%r = 1 + ($PlayerSkill[%clientId, $SkillMining] * (1/10)) * getRandom();
+		%r = 1 + (CalculatePlayerSkill(%clientId, $SkillMining) * (1/10)) * getRandom();
 
 		if(%n > %r)
 			return %lastscore;

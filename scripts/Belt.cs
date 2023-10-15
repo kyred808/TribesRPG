@@ -653,7 +653,7 @@ function processMenuBuyBeltItemFinal(%clientId, %opt)
             storeData(%clientId, "COINS", %cost, "dec");
             Belt::GiveThisStuff(%clientId,%item,%amnt);
             Client::SendMessage(%clientId, $MsgWhite, "You received "@ %amnt @" "@$beltitem[%item, "Name"]@".~wbuysellsound.wav");
-            RefreshAll(%clientId);
+            RefreshAll(%clientId,false);
         }
         else
         {
@@ -817,7 +817,7 @@ function processMenuSellBeltItemFinal(%clientId, %opt)
 			storeData(%clientId, "COINS", %cost, "inc");
 			Belt::TakeThisStuff(%clientid,%item,%amnt);
 			Client::SendMessage(%clientId, $MsgWhite, "You received "@%cost@" coins.~wbuysellsound.wav");
-			RefreshAll(%clientId);
+			RefreshAll(%clientId,false);
 			%clientId.bulkNum = 1;
             
             if(Belt::HasThisStuff(%clientid,%item) > 0)
@@ -837,7 +837,7 @@ function processMenuSellBeltItemFinal(%clientId, %opt)
 			Belt::TakeThisStuff(%clientid,%item,%amnt);
             Belt::BankGiveThisStuff(%clientid,%item,%amnt);
 			Client::SendMessage(%clientId, $MsgWhite, "You have stored "@ %amnt @" "@%item@".~wPku_weap.wav");
-			RefreshAll(%clientId);
+			RefreshAll(%clientId,false);
 			%clientId.bulkNum = 1;
             if(belt::itemCount(%item, fetchdata(%clientId, %type)) > 0)
                 MenuSellBeltItemFinal(%clientid, %item, %type, %option);
@@ -850,7 +850,7 @@ function processMenuSellBeltItemFinal(%clientId, %opt)
 		if(%cmnt >= %amnt)
 		{
 			Client::SendMessage(%clientId, $MsgWhite, "You have withdrawn "@ %amnt @" "@%item@".~wPku_weap.wav");
-			RefreshAll(%clientId);
+			RefreshAll(%clientId,false);
 			Belt::GiveThisStuff(%clientid, %item, %amnt);
             Belt::BankTakeThisStuff(%clientid,%item,%amnt);
 			//storeData(%clientId, "Stored"@%type, SetStuffString(fetchData(%clientId, "Stored"@%type), %item, -%clientId.bulkNum));
@@ -1229,7 +1229,7 @@ function BeltItem::AddBeltItemGroup(%name,%shortName,%index)
 function Belt::GetBuyCost(%clientid,%item)
 {
     %cost = $HardcodedItemCost[%item];
-    %p = round($PlayerSkill[%clientid, $SkillHaggling] / 20) / 100;
+    %p = round(CalculatePlayerSkill(%clientid,$SkillHaggling) / 20) / 100;
     %x = round(%cost * Cap(%p, 0.0, 0.5) );
 	%cost -= %x;
     
@@ -1240,7 +1240,7 @@ function Belt::GetSellCost(%clientid,%item)
 	%p = $HardcodedItemCost[%item];
 	%cost = round(%p * ($resalePercentage/100));
 
-	%p = round($PlayerSkill[%clientId, $SkillHaggling] / 11) / 100;
+	%p = round(CalculatePlayerSkill(%clientid,$SkillHaggling) / 11) / 100;
 	%x = round(%cost * Cap(%p, 0.0, 1.0) );
 	%cost += %x;
 
@@ -1413,8 +1413,8 @@ for(%i=0; getword(fetchdata(%cl, %type), %i) != -1; %i+=2)
 		Client::sendMessage(%clientId, $MsgWhite, "Your target has wandered off...");
 	else
 	{
-		%r1 = GetRoll("1d" @ $PlayerSkill[%clientId, $SkillStealing]);
-		%r2 = GetRoll("1d" @ ($PlayerSkill[%cl, $SkillStealing] + $PlayerSkill[%cl, $SkillDodging]));
+		%r1 = GetRoll("1d" @ CalculatePlayerSkill(%clientid,$SkillStealing));
+		%r2 = GetRoll("1d" @ (CalculatePlayerSkill(%cl,$SkillStealing))); //+ $PlayerSkill[%cl, $SkillDodging]));
 		%b = %r1 - %r2;
 		%a = %b - %FailWeight;
 		if(%a > 0 && %icnt > 0)
@@ -1428,8 +1428,8 @@ for(%i=0; getword(fetchdata(%cl, %type), %i) != -1; %i+=2)
 			if(%newcnt > 0)
 			MenuBelt::MugChoose(%clientid, %item, %type);
 
-			RefreshAll(%clientId);
-			RefreshAll(%cl);
+			RefreshAll(%clientId,false);
+			RefreshAll(%cl,true);
 
 			UseSkill(%clientId, $SkillStealing, True, True);
 			PostSteal(%clientId, True, %clientId.stealType);
@@ -1541,7 +1541,7 @@ function Belt::DropItem(%clientid,%item,%amnt,%type)
 	{
 		Belt::TakeThisStuff(%clientid,%item,%amnt);
 		TossLootbag(%clientId, %item@" "@%amnt, 8, "*", 0, 1);
-        RefreshAll(%clientId);
+        RefreshAll(%clientId,false);
 	}
 }
 

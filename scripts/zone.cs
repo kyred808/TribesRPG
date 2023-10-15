@@ -316,7 +316,7 @@ function UpdateZone(%object)
 				{
 					Client::sendMessage(%clientId, $MsgRed, "Your " @ %orb.description @ " has burned out.");
 					Player::decItemCount(%clientId, %orb @ "0", 1);
-					RefreshAll(%clientId);
+					RefreshAll(%clientId,true);
 				}
 			}
 			if($BurnOutInRain[%orb] > 0)
@@ -329,7 +329,7 @@ function UpdateZone(%object)
 						{
 							Client::sendMessage(%clientId, $MsgRed, "The rain has burned out your " @ %orb.description @ ".");
 							Player::decItemCount(%clientId, %orb @ "0", 1);
-							RefreshAll(%clientId);
+							RefreshAll(%clientId,true);
 						}
 					}
 				}
@@ -353,7 +353,7 @@ function UpdateZone(%object)
 		//perhaps leave scent
 		if(!fetchData(%clientId, "invisible"))
 		{
-			if(OddsAre(floor($PlayerSkill[%clientId, $SkillSenseHeading] / 100)+1))
+			if(OddsAre(floor(CalculatePlayerSkill(%clientId, $SkillSenseHeading) / 100)+1))
 			{
 				storeData(%clientId, "lastScent", GameBase::getPosition(%clientId));
 			}
@@ -655,7 +655,7 @@ function Zone::onEnter(%clientId, %oldZone, %newZone)
 			storeData(%clientId, "RACE", Client::getGender(%clientId) @ "Human");
 			storeData(%clientId, "isMimic", "");
 			UpdateTeam(%clientId);
-			RefreshAll(%clientId);
+			RefreshAll(%clientId,true);
 
 			playSound(AbsorbABS, GameBase::getPosition(%clientId));
 		}

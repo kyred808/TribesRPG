@@ -420,7 +420,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 			//For the case of SPELLS, the initial damage has already been determined before calling this function
 
 			%dmg = %value;
-			%value = round(((%dmg / 1000) * $PlayerSkill[%shooterClient, %skilltype]));
+			%value = round(((%dmg / 1000) * CalculatePlayerSkill(%shooterClient, %skilltype)));
 
 			%ab = (getRandom() * (fetchData(%damagedClient, "MDEF") / 10)) + 1;
 			%value = Cap(%value - %ab, 0, "inf");
@@ -441,7 +441,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 				{
 					if(%skilltype == $SkillPiercing)
 					{
-						%multi += $PlayerSkill[%shooterClient, $SkillBackstabbing] / 175;
+						%multi += CalculatePlayerSkill(%shooterClient, $SkillBackstabbing) / 175;
 						%Backstab = True;
 						%dotherdebugmsg = "\n\nyou were backstabbed";
 						%sotherdebugmsg = "\n\nyou successfully backstabbed!";
@@ -460,9 +460,9 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 			{
 				if(%skilltype == $SkillBludgeoning)
 				{
-					%multi += $PlayerSkill[%shooterClient, $SkillBashing] / 470;
+					%multi += CalculatePlayerSkill(%shooterClient, $SkillBashing) / 470;
 					%b = GameBase::getRotation(%shooterClient);
-					%c = $PlayerSkill[%shooterClient, $SkillBashing] / 15;
+					%c = CalculatePlayerSkill(%shooterClient, $SkillBashing) / 15;
 
 					%Bash = True;
 
@@ -478,7 +478,7 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 			//	%rweapondamage = 0;
 			%weapondamage = fetchData(%shooterClient,"ATK"); //GetRoll(GetWord(GetAccessoryVar(%weapon, $SpecialVar), 1));
             
-			%value = round((( (%weapondamage) / 1000) * $PlayerSkill[%shooterClient, %skilltype]) * %multi * %dmgMult);
+			%value = round((( (%weapondamage) / 1000) * CalculatePlayerSkill(%shooterClient, %skilltype)) * %multi * %dmgMult);
 
 			%ab = (getRandom() * (fetchData(%damagedClient, "DEF") / 10)) + 1;
 			%value = Cap(%value - %ab, 1, "inf");
@@ -505,10 +505,10 @@ function Player::onDamage(%this,%type,%value,%pos,%vec,%mom,%vertPos,%rweapon,%o
 			if(%type != $LandingDamageType && %shooterClient != %damagedClient && %shooterClient != 0)
 			{
 				if(%type == $SpellDamageType)
-					%x = (fetchData(%damagedClient, "MDEF") / 5) + $PlayerSkill[%damagedClient, $SkillSpellResistance] + 5;
+					%x = (fetchData(%damagedClient, "MDEF") / 5) + CalculatePlayerSkill(%damagedClient, $SkillSpellResistance) + 5;
 				else
 					%x = (fetchData(%damagedClient, "DEF") / 5); //+ $PlayerSkill[%damagedClient, $SkillDodging] + 5;
-				%y = $PlayerSkill[%shooterClient, %skilltype] + 5;
+				%y = CalculatePlayerSkill(%shooterClient, %skilltype) + 5;
 	
 				%n = %x + %y;
 	

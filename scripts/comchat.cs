@@ -562,8 +562,8 @@ return;
 								%fail = False;
 								if(%victimCoins > 0)
 								{
-									%r1 = GetRoll("1d" @ ($PlayerSkill[%TrueClientId, $SkillStealing] * (4/5)));
-									%r2 = GetRoll("1d" @ $PlayerSkill[%id, $SkillStealing]);
+									%r1 = GetRoll("1d" @ (CalculatePlayerSkill(%TrueClientId,$SkillStealing) * (4/5)));
+									%r2 = GetRoll("1d" @ CalculatePlayerSkill(%id,$SkillStealing));
 									%a = %r1 - %r2;
 									if(%a > 0)
 									{
@@ -579,8 +579,8 @@ return;
 	
 						                              Client::sendMessage(%TrueClientId, $MsgTypeChat, "You successfully stole " @ %amount @ " coins from " @ %victimName @ "!");
 			
-					                                    RefreshAll(%TrueClientId);
-					                                    RefreshAll(%id);
+					                                    RefreshAll(%TrueClientId,false);
+					                                    RefreshAll(%id,false);
 	
 											UseSkill(%TrueClientId, $SkillStealing, True, True);
 											PostSteal(%TrueClientId, True, 0);
@@ -681,7 +681,7 @@ return;
 					%toss = GetTypicalTossStrength(%TrueClientId);
 	
 	                        TossLootbag(%TrueClientId, "COINS " @ %cropped, %toss, "*", 0);
-					RefreshAll(%TrueClientId);
+					RefreshAll(%TrueClientId,false);
 	
 	                        Client::sendMessage(%TrueClientId, 0, "You dropped " @ %cropped @ " coins.");
 	                        playSound(SoundMoney1, GameBase::getPosition(%TrueClientId));
@@ -850,7 +850,7 @@ return;
 						{
 							%dist = round(Vector::getDistance(%clientIdpos, %idpos));
 	
-							if(Cap($PlayerSkill[%TrueClientId, $SkillSenseHeading] * 7.5, 100, "inf") >= %dist)
+							if(Cap(CalculatePlayerSkill(%TrueClientId, $SkillSenseHeading) * 7.5, 100, "inf") >= %dist)
 							{
 								%d = GetNESW(%clientIdpos, %idpos);
 								Client::sendMessage(%TrueClientId, $MsgWhite, "You sense that " @ %cropped @ " is " @ %d @ " of here, " @ %dist @ " meters away.");
@@ -913,7 +913,7 @@ return;
 						{
 							%idpos = GameBase::getPosition(%closestId);
 	
-							if(Cap($PlayerSkill[%TrueClientId, $SkillSenseHeading] * 15, 100, "inf") >= %closest)
+							if(Cap(CalculatePlayerSkill(%TrueClientId, $SkillSenseHeading) * 15, 100, "inf") >= %closest)
 							{
 								%d = GetNESW(%clientIdpos, %idpos);
 								Client::sendMessage(%TrueClientId, $MsgWhite, %cropped @ "'s nearest backpack is " @ %d @ " of here, " @ %closest @ " meters away.");
@@ -1296,7 +1296,7 @@ return;
 			{
 				if(!fetchData(%TrueClientId, "invisible") && !fetchData(%TrueClientId, "blockHide"))
 				{
-					%closeEnoughToWall = Cap($PlayerSkill[%TrueClientId, $SkillHiding] / 125, 3.5, 8);
+					%closeEnoughToWall = Cap(CalculatePlayerSkill(%TrueClientId, $SkillHiding) / 125, 3.5, 8);
 	
 					%pos = GameBase::getPosition(%TrueClientId);
 	
@@ -1316,7 +1316,7 @@ return;
 						GameBase::startFadeOut(%TrueClientId);
 						storeData(%TrueClientId, "invisible", True);
 	
-						%grace = Cap($PlayerSkill[%TrueClientId, $SkillHiding] / 10, 5, 100);
+						%grace = Cap(CalculatePlayerSkill(%TrueClientId, $SkillHiding) / 10, 5, 100);
 						WalkSlowInvisLoop(%TrueClientId, 5, %grace);
 	
 						UseSkill(%TrueClientId, $SkillHiding, True, True);
@@ -1555,7 +1555,7 @@ return;
 					TakeThisStuff(%TrueClientId, fetchData(%TrueClientId, "TempPack"));
 					%namelist = %TCsenderName @ ",";
 					TossLootbag(%TrueClientId, fetchData(%TrueClientId, "TempPack"), 5, %namelist, 0);
-					RefreshAll(%TrueClientId);
+					RefreshAll(%TrueClientId,false);
 	
 					remotePlayMode(%TrueClientId);
 				}
@@ -1603,7 +1603,7 @@ return;
 						%pos = GameBase::getPosition(%TrueClientId);
 			
 						Player::decItemCount(%TrueClientId, Tent);
-						RefreshAll(%TrueClientId);
+						RefreshAll(%TrueClientId,false);
 						%group = newObject("Camp" @ %TrueClientId, SimGroup);
 						addToSet("MissionCleanup", %group);
 		
@@ -2478,7 +2478,7 @@ return;
 				else if(%id != -1)
 				{
 					Player::setItemCount(%id, GetWord(%cropped, 1), GetWord(%cropped, 2));
-					RefreshAll(%id);
+					RefreshAll(%id,false);
 					if(!%echoOff) Client::sendMessage(%TrueClientId, 0, "Set " @ %name @ " (" @ %id @ ") " @ GetWord(%cropped, 1) @ " count to " @ GetWord(%cropped, 2));
 				}
 	                  else
@@ -2528,7 +2528,7 @@ return;
 	            if(%clientToServerAdminLevel >= 2)
 	            {
 	                  Player::setItemCount(%TrueClientId, GetWord(%cropped, 0), GetWord(%cropped, 1));
-				RefreshAll(%TrueClientId);
+				RefreshAll(%TrueClientId,false);
 				if(!%echoOff) Client::sendMessage(%TrueClientId, 0, "Set " @ %TCsenderName @ " (" @ %TrueClientId @ ") " @ GetWord(%cropped, 0) @ " count to " @ GetWord(%cropped, 1));
 	            }
 			return;
@@ -2925,7 +2925,7 @@ return;
 					else if(%id != -1)
 	                        {
 						storeData(%id, "SPcredits", %c2, "inc");
-	                              RefreshAll(%id);
+	                              RefreshAll(%id,false);
 	                              if(!%echoOff) Client::sendMessage(%TrueClientId, 0, "Setting " @ %c1 @ " (" @ %id @ ") SP credits to " @ fetchData(%id, "SPcredits") @ ".");
 	                        }
 	                        else
@@ -2952,7 +2952,7 @@ return;
 					else if(%id != -1)
 	                        {
 						storeData(%id, "SPcredits", %c2);
-	                              RefreshAll(%id);
+	                              RefreshAll(%id,false);
 	                              if(!%echoOff) Client::sendMessage(%TrueClientId, 0, "Setting " @ %c1 @ " (" @ %id @ ") SP credits to " @ fetchData(%id, "SPcredits") @ ".");
 	                        }
 	                        else
@@ -2979,7 +2979,7 @@ return;
 					else if(%id != -1)
 	                        {
 						storeData(%id, "LCK", %c2, "inc");
-	                              RefreshAll(%id);
+	                              RefreshAll(%id,false);
 	                              if(!%echoOff) Client::sendMessage(%TrueClientId, 0, "Setting " @ %c1 @ " (" @ %id @ ") base LCK to " @ fetchData(%id, "LCK") @ ".");
 	                        }
 	                        else
@@ -3126,7 +3126,7 @@ return;
 					else if(%id != -1)
 	                        {
 						storeData(%id, "COINS", %c2, "inc");
-	                              RefreshAll(%id);
+	                              RefreshAll(%id,false);
 	                              if(!%echoOff) Client::sendMessage(%TrueClientId, 0, "Setting " @ %c1 @ " (" @ %id @ ") COINS to " @ fetchData(%id, "COINS") @ ".");
 	                        }
 	                        else
@@ -3153,7 +3153,7 @@ return;
 					else if(%id != -1)
 	                        {
 						storeData(%id, "BANK", %c2, "inc");
-	                              RefreshAll(%id);
+	                              RefreshAll(%id,false);
 	                              if(!%echoOff) Client::sendMessage(%TrueClientId, 0, "Setting " @ %c1 @ " (" @ %id @ ") BANK to " @ fetchData(%id, "BANK") @ ".");
 	                        }
 	                        else
@@ -3180,7 +3180,7 @@ return;
 					else if(%id != -1)
 	                        {
 	                              GameBase::setTeam(%id, %c2);
-						RefreshAll(%id);
+						RefreshAll(%id,false);
 	                              if(!%echoOff) Client::sendMessage(%TrueClientId, 0, "Setting " @ %c1 @ " (" @ %id @ ") team to " @ GameBase::getTeam(%id) @ ".");
 	                        }
 	                        else
@@ -4239,7 +4239,7 @@ return;
 							TakeThisStuff(%id, %stuff);
 							if(Player::isAiControlled(%id))
 								HardcodeAIskills(%id);
-							RefreshAll(%id);
+							RefreshAll(%id,false);
 	
 							if(!%echoOff) Client::sendMessage(%TrueClientId, 0, "Took " @ %c1 @ " (" @ %id @ "): " @ %stuff);
 						}
@@ -4785,7 +4785,7 @@ return;
 						if(%sn != 0)
 						{
 							$PlayerSkill[%id, %sid] += %sn;
-							RefreshAll(%id);
+							RefreshAll(%id,true);
 							if(!%echoOff) Client::sendMessage(%TrueClientId, 0, "Set " @ %name @ " (" @ %id @ ") " @ $SkillDesc[%sid] @ " to " @ $PlayerSkill[%id, %sid]);
 						}
 					}
@@ -5243,7 +5243,7 @@ return;
 					{
 						storeData(%TrueClientId, "BANK", %c, "inc");
 						storeData(%TrueClientId, "COINS", %c, "dec");
-						RefreshAll(%TrueClientId);
+						RefreshAll(%TrueClientId,false);
 						AI::sayLater(%TrueClientId, %closestId, "You have given me " @ %c @ " coins.  You are now carrying " @ fetchData(%TrueClientId, "COINS") @ " coins and I have " @ fetchData(%TrueClientId, "BANK") @ " of yours.  Have a nice day.", True);
 
 						playSound(SoundMoney1, GameBase::getPosition(%closestId));
@@ -5269,7 +5269,7 @@ return;
 					{
 						storeData(%TrueClientId, "COINS", %c, "inc");
 						storeData(%TrueClientId, "BANK", %c, "dec");
-						RefreshAll(%TrueClientId);
+						RefreshAll(%TrueClientId,false);
 						AI::sayLater(%TrueClientId, %closestId, "I have given you " @ %c @ " coins.  You are now carrying " @ fetchData(%TrueClientId, "COINS") @ " coins and I have " @ fetchData(%TrueClientId, "BANK") @ " of yours.  Have a nice day.", True);
 
 						playSound(SoundMoney1, GameBase::getPosition(%TrueClientId));
@@ -5362,7 +5362,7 @@ return;
 							AI::sayLater(%TrueClientId, %closestId, "Here's your LCK point, thanks for your business.", True);
 							GiveThisStuff(%TrueClientId, "LCK 1", True);
 							storeData(%TrueClientId, "COINS", %cost, "dec");
-							RefreshAll(%TrueClientId);
+							RefreshAll(%TrueClientId,false);
 						}
 						else
 							AI::sayLater(%TrueClientId, %closestId, "You can't afford this.", True);
@@ -5391,7 +5391,7 @@ return;
 								storeData(%id, "bounty", 0);
 	
 								playSound(SoundMoney1, GameBase::getPosition(%TrueClientId));
-								RefreshAll(%TrueClientId);
+								RefreshAll(%TrueClientId,false);
 							}
 							else
 								AI::sayLater(%TrueClientId, %closestId, %n @ "'s bounty is currently at " @ fetchData(%id, "bounty") @ " coins. Goodbye.", True);
@@ -5441,7 +5441,7 @@ return;
 								storeData(%TrueClientId, "COINS", $teleportInArenaCost, "dec");
 								storeData(%TrueClientId, "inArena", True);
 								RefreshArenaTextBox(%TrueClientId);
-								RefreshAll(%TrueClientId);
+								RefreshAll(%TrueClientId,false);
 
 								$state[%closestId, %TrueClientId] = "";
 							}
@@ -5716,7 +5716,7 @@ return;
 	
 							storeData(%TrueClientId, "COINS", %nc, "dec");
 							playSound(SoundMoney1, GameBase::getPosition(%closestId));
-							RefreshAll(%TrueClientId);
+							RefreshAll(%TrueClientId,false);
 	
 							%n = "";
 							for(%i = 0; (%a = GetWord($BotInfo[%aiName, NAMES], %i)) != -1; %i++)
@@ -5876,7 +5876,7 @@ return;
 							BootFromCurrentHouse(%TrueClientId, True);
 							JoinHouse(%TrueClientId, %houseNum, True);
 							GiveThisStuff(%TrueClientId, $HouseStartUpEq[%houseNum]);
-							RefreshAll(%TrueClientId);
+							RefreshAll(%TrueClientId,true);
 							AI::sayLater(%TrueClientId, %closestId, "Welcome to " @ $HouseName[%houseNum] @ "! Here is your start up equipment. Good luck on your adventures!", True);
 
 							playSound(SoundMoney1, GameBase::getPosition(%TrueClientId));

@@ -730,7 +730,7 @@ function BeginCastSpell(%clientId, %keyword)
 					playSound($Spell::startSound[%i], GameBase::getPosition(%clientId));
 
 					%skt = $SkillType[$Spell::keyword[%i]];
-					%sk1 = $PlayerSkill[%clientId, %skt];
+					%sk1 = CalculatePlayerSkill(%clientId, %skt);
 					%gsa = GetSkillAmount($Spell::keyword[%i], %skt);
 					%sk2 = %sk1 - %gsa;
 					%sk = Cap(%sk2, 0, "inf");
@@ -1270,8 +1270,8 @@ function DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
                 if(getObjectType(%castObj) == "Player")
                 {
                     %skilltype = $SkillType[$Spell::keyword[%index]];
-                    %troll = fetchData(%id, "LVL") + floor(getRandom() * ($PlayerSkill[%id, %skilltype] + ($PlayerSkill[%id, $SkillSpellResistance] * (1/2)) ));
-                    %yroll = fetchData(%clientId, "LVL") + floor(getRandom() * $PlayerSkill[%clientId, %skilltype]);
+                    %troll = fetchData(%id, "LVL") + floor(getRandom() * (CalculatePlayerSkill(%id, %skilltype) + (CalculatePlayerSkill(%id, $SkillSpellResistance) * (1/2)) ));
+                    %yroll = fetchData(%clientId, "LVL") + floor(getRandom() * CalculatePlayerSkill(%clientId, %skilltype));
 
                     if(%yroll > %troll)
                     {
@@ -1295,7 +1295,7 @@ function DoCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
                         storeData(%clientId, "isMimic", True);
                     
                         UpdateTeam(%clientId);
-                        RefreshAll(%clientId);
+                        RefreshAll(%clientId,true);
                     
                         %castPos = GameBase::getPosition(%clientId);
                         %returnFlag = True;
@@ -1964,8 +1964,8 @@ function DoBotCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
 			if(getObjectType(%castObj) == "Player")
 			{
 				%skilltype = $SkillType[$Spell::keyword[%index]];
-				%troll = fetchData(%id, "LVL") + floor(getRandom() * ($PlayerSkill[%id, %skilltype] + ($PlayerSkill[%id, $SkillSpellResistance] * (1/2)) ));
-				%yroll = fetchData(%clientId, "LVL") + floor(getRandom() * $PlayerSkill[%clientId, %skilltype]);
+				%troll = fetchData(%id, "LVL") + floor(getRandom() * (CalculatePlayerSkill(%id, %skilltype) + (CalculatePlayerSkill(%id, $SkillSpellResistance) * (1/2)) ));
+				%yroll = fetchData(%clientId, "LVL") + floor(getRandom() * CalculatePlayerSkill(%clientId, %skilltype));
 
 				if(%yroll > %troll)
 				{
@@ -1989,7 +1989,7 @@ function DoBotCastSpell(%clientId, %index, %oldpos, %castPos, %castObj, %w2)
 					storeData(%clientId, "isMimic", True);
 				
 					UpdateTeam(%clientId);
-					RefreshAll(%clientId);
+					RefreshAll(%clientId,true);
 				
 					%castPos = GameBase::getPosition(%clientId);
 					%returnFlag = True;

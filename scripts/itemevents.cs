@@ -223,7 +223,7 @@ function Item::onCollision(%this,%object)
                 //if(Item::giveItem(%clientId, %item, %this.delta, True))
                 //{
                     Item::playPickupSound(%this);
-                    RefreshAll(%clientId);
+                    RefreshAll(%clientId,false);
                 //}
             }
 
@@ -234,7 +234,7 @@ function Item::onCollision(%this,%object)
 			if(Item::giveItem(%clientId, %item, 1, True))
 			{
 				Item::playPickupSound(%this);
-				RefreshAll(%clientId);
+				RefreshAll(%clientId,false);
 				deleteObject(%this);
 			}
 		}
@@ -317,7 +317,7 @@ function Item::onUse(%player,%item)
 
 		refreshHP(%clientId, 0);
 		refreshMANA(%clientId, 0);
-		RefreshAll(%clientId);
+		RefreshAll(%clientId,false);
 	}
 }
 
@@ -352,7 +352,7 @@ function Item::onDrop(%player,%item)
 				}
 
 				Player::decItemCount(%player,%item,%delta);
-				RefreshAll(Player::getClient(%player));
+				RefreshAll(Player::getClient(%player),false);
 
 				return %obj;
 			}
@@ -385,7 +385,7 @@ function Ammo::onDrop(%player,%item)
 			Item::playPickupSound(%obj);
 			Player::decItemCount(%player,%item,%delta);
 
-			RefreshAll(Player::getClient(%player));
+			RefreshAll(Player::getClient(%player),false);
 		}
 	}
 }	
