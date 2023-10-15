@@ -58,6 +58,11 @@ if($nightDayCycle == "") $nightDayCycle = False;
 
 $CleanUpBotsOnZoneEmpty = true;
 $PlayersFastHealInProtectedZones = true;
+$BotsCanPickupPlayerPacks = true;
+$MessagePlayerIfBotStolePack = true;
+
+// Once exceeded, the oldest gets deleted
+$MaxLootbagsPerPlayer = 15;
 
 $vvv = 10;
 

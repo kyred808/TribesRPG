@@ -531,6 +531,20 @@ function GetNumSkills()
     return $NumberOfSkills;
 }
 
+function CalculateCurrentSkillUpperBound(%clientId)
+{
+    return ($skillRangePerLevel * fetchData(%clientId, "LVL")) + 20 + fetchData(%clientId, "RemortStep");
+}
+
+function CalculateSPToCurrentUpperBound(%clientId,%skill)
+{
+    %curSkill = $PlayerSkill[%clientId, %skill];
+    %mult = GetSkillMultiplier(%clientId, %skill);
+    %ub = CalculateCurrentSkillUpperBound(%clientId);
+    
+    return floor((%ub - %curSkill)/%mult)+1;
+}
+
 function AddSkillPoint(%clientId, %skill, %delta)
 {
 	dbecho($dbechoMode, "AddSkillPoint(" @ %clientId @ ", " @ %skill @ ", " @ %delta @ ")");
@@ -547,7 +561,7 @@ function AddSkillPoint(%clientId, %skill, %delta)
 	//if($PlayerSkill[%clientId, %skill] >= $SkillCap)
 	//	return False;
 
-	%ub = ($skillRangePerLevel * fetchData(%clientId, "LVL")) + 20 + fetchData(%clientId, "RemortStep");
+	%ub = CalculateCurrentSkillUpperBound(%clientId); //($skillRangePerLevel * fetchData(%clientId, "LVL")) + 20 + fetchData(%clientId, "RemortStep");
 	if($PlayerSkill[%clientId, %skill] >= %ub)
 		return False;
 	//==========================

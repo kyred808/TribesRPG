@@ -257,25 +257,49 @@ function processMenusp(%clientId, %opt)
 
 	if(fetchData(%clientId, "SPcredits") > 0 && %o != "page" && %o != "done")
 	{
-		if(%clientId.bulkNum < 1)
-			%clientId.bulkNum = 1;
-		if(%clientId.bulkNum > 30 && !(%clientId.adminLevel >= 1) )
-			%clientId.bulkNum = 30;
+        %spCredits = fetchData(%clientId, "SPcredits");
+        %limit = CalculateSPToCurrentUpperBound(%clientId,%o);
+        if(%limit > 0)
+        {
+            %echo = true;
+            if(%clientId.bulkNum < 1 || %clientId.bulkNum == "")
+            {
+                %clientId.bulkNum = 1;
+                %echo = false;
+            }
+            
+            if(%clientId.bulkNum > %spCredits)
+                %clientId.bulkNum = %spCredits;
+                
+            if(%clientId.bulkNum > %limit)
+                %clientId.bulkNum = %limit;
+            
+            AddSkillPoint(%clientId, %o, %clientId.bulkNum);
+            storeData(%clientId, "SPcredits", %clientId.bulkNum, "dec");
+            
+            if(%echo)
+                Client::SendMessage(%clientId,$MsgWhite,"You spent "@ %clientId.bulkNum @" SP on "@$SkillDesc[%o]);
+            
+            RefreshAll(%clientId);
+        }
+		//if(%clientId.bulkNum > 30 && !(%clientId.adminLevel >= 1) )
+		//	%clientId.bulkNum = 30;
+        //
+        //  
+		//for(%i = 1; %i <= %clientId.bulkNum; %i++)
+		//{
+		//	if(fetchData(%clientId, "SPcredits") > 0)
+		//	{
+		//		if(AddSkillPoint(%clientId, %o))
+		//			storeData(%clientId, "SPcredits", 1, "dec");
+		//		else
+		//			break;
+		//	}
+		//	else
+		//		break;
+		//}
 
-		for(%i = 1; %i <= %clientId.bulkNum; %i++)
-		{
-			if(fetchData(%clientId, "SPcredits") > 0)
-			{
-				if(AddSkillPoint(%clientId, %o))
-					storeData(%clientId, "SPcredits", 1, "dec");
-				else
-					break;
-			}
-			else
-				break;
-		}
-
-		RefreshAll(%clientId);
+		//RefreshAll(%clientId);
 	}
 
 	if(%o != "done")

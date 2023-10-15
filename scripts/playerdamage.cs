@@ -283,6 +283,7 @@ function Player::onKilled(%this)
 
 	if(Player::isAiControlled(%clientId))
 	{
+        $ZoneCleanupProtected[%clientId] = false;
 		//event stuff
 		%i = GetEventCommandIndex(%clientId, "onkill");
 		if(%i != -1)

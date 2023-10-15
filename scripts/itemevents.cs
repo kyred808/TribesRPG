@@ -118,6 +118,7 @@ function Item::onCollision(%this,%object)
                 %msg = "You found an empty backpack.";
             else
             {
+                %skip = false;
                 if(IsInCommaList(%namelist, Client::getName(%clientId)) || %namelist == "*")
                 {
                     if(String::ICompare(%ownerName, Client::getName(%clientId)) == 0)
@@ -126,10 +127,27 @@ function Item::onCollision(%this,%object)
                         %msg = "You found a backpack.";
                     else
                         %msg = "You found one of " @ %ownerName @ "'s backpacks.";
+                        
+                    if(Player::isAIControlled(%clientId))
+                    {
+                        %ownerClient = NEWgetClientByName(%ownerName);
+                        //Was this a player's pack?
+                        if(!Player::isAIControlled(%ownerClient))
+                        {
+                            if($BotsCanPickupPlayerPacks)
+                            {
+                                if($MessagePlayerIfBotStolePack)
+                                    Client::sendMessage(%ownerClient, $MsgRed, Client::getName(%clientId) @" just stole one of your packs!~wError_Message.wav");
+                                $ZoneCleanupProtected[%clientId] = true;
+                            }
+                            else
+                                %skip = true;
+                        }
+                    }
                 }
             }
 
-            if(%msg != "")
+            if(%msg != "" && !%skip)
             {
                 %newloot = String::getSubStr($loot[%this], String::len(%ownerName)+String::len(%namelist)+2, 99999);
 

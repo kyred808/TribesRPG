@@ -5097,7 +5097,8 @@ return;
 					else if(%id != -1)
 					{
 						storeData(%id, "EXP", %c2, "inc");
-						HardcodeAIskills(%id);
+                        if(Player::isAiControlled(%id))
+                            HardcodeAIskills(%id);
 						Game::refreshClientScore(%id);
 						if(!%echoOff) Client::sendMessage(%TrueClientId, 0, "Setting " @ %c1 @ " (" @ %id @ ") EXP to " @ fetchData(%id, "EXP") @ ".");
 					}

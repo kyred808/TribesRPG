@@ -55,6 +55,11 @@ function KickDaJackal(%clientId)
 //   Net::kick(%clientId, "The FBI has been notified.  You better buy a legit copy before they get to your house.");
 }
 
+function DebugTerminal() {
+	broadcastDebugPort(1123);
+	Debug::functions();
+}
+
 function createServer(%mission, %dedicated)
 {
 	dbecho($dbechoMode2, "createServer(" @ %mission @ ", " @ %dedicated @ ")");

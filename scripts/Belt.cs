@@ -1246,47 +1246,6 @@ function Belt::GetSellCost(%clientid,%item)
 
 	return %cost;
 }
-function Belt::TossBelt(%clientId, %vel, %namelist, %t)
-{
-	%loot= fetchdata(%clientId, "AllBelt");
-
-	%player = Client::getOwnedObject(%clientId);
-	%ownerName = Client::getName(%clientId);
-
-	%belt = newObject("", "Item", "Belt", 1, false);
-
-	if(%t > 0)
-		schedule("$loot[" @ %belt @ "] = \"" @ %ownerName @ " * " @ %loot @ "\";", %t, %belt);
-	else
-	{
-		if($LootbagPopTime != -1)
-		{
-			schedule("Item::Pop(" @ %belt @ ");", $LootbagPopTime, %belt);
-			schedule("storeData(" @ %clientId @ ", \"beltlist\", RemoveFromCommaList(\"" @ fetchData(%clientId, "beltlist") @ "\", " @ %belt @ "));", $LootbagPopTime, %belt);
-		}
-	}
-
-	%loot = %ownerName @ " " @ %namelist @ " " @ %loot;
-
-	$loot[%belt] = %loot;
-	storeData(%clientId, "beltlist", AddToCommaList(fetchData(%clientId, "beltlist"), %belt));
-
-	addToSet("MissionCleanup", %belt);
-	GameBase::setMapName(%belt, "Backpack");
-	GameBase::throw(%belt, %player, %vel, false);
-
-	//Make sure there aren't more than 15 packs per player... This is to resolve lag problems
-	%beltlist = fetchData(%clientId, "beltlist");
-	if(CountObjInCommaList(%beltlist) > 15)
-	{
-		%p = String::findSubStr(%beltlist, ",");
-		%w = String::getSubStr(%beltlist, 0, %p);
-
-		Item::Pop(%w);
-		storeData(%clientId, "beltlist", RemoveFromCommaList(%lootbaglist, %w));
-	}
-
-}
 
 //==========================//
 //======MUG BELT START======//

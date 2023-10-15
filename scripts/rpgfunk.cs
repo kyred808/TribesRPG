@@ -1664,6 +1664,12 @@ function TeleportToMarker(%clientId, %markergroup, %testpos, %random)
 	return False;
 }
 
+function LootListCleanup(%list)
+{
+    //Eliminates excessive spaces
+    return String::replace(%list,"  "," ");
+}
+
 function TossLootbag(%clientId, %loot, %vel, %namelist, %t)
 {
 	dbecho($dbechoMode2, "TossLootbag(" @ %clientId @ ", " @ %loot @ ", " @ %vel @ ", " @ %namelist @ ", " @ %t @ ")");
@@ -1685,7 +1691,7 @@ function TossLootbag(%clientId, %loot, %vel, %namelist, %t)
 	}
 
 	%loot = %ownerName @ " " @ %namelist @ " " @ %loot;
-
+    %loot = LootListCleanup(%loot);
 	$loot[%lootbag] = %loot;
 	storeData(%clientId, "lootbaglist", AddToCommaList(fetchData(%clientId, "lootbaglist"), %lootbag));
 
@@ -1695,7 +1701,7 @@ function TossLootbag(%clientId, %loot, %vel, %namelist, %t)
 
 	//Make sure there aren't more than 15 packs per player... This is to resolve lag problems
 	%lootbaglist = fetchData(%clientId, "lootbaglist");
-	if(CountObjInCommaList(%lootbaglist) > 15)
+	if(CountObjInCommaList(%lootbaglist) > $MaxLootbagsPerPlayer)
 	{
 		%p = String::findSubStr(%lootbaglist, ",");
 		%w = String::getSubStr(%lootbaglist, 0, %p);
