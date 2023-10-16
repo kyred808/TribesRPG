@@ -228,9 +228,7 @@ function processMenuBeltEquipmentDropOrSlot(%clientid,%opt)
     }
 }
 
-$BeltEquip::Type[0] = "finger";
-$BeltEquip::Type[1] = "arm";
-$BeltEquip::Type[2] = "neck";
+
 
 //$BeltEquip::Slot[0,Name] = "finger1";
 //$BeltEquip::Slot[0,Type] = $BeltEquip::Type[0];
@@ -258,12 +256,6 @@ function BeltEquip::AddEquipmentSlot(%name,%disp,%type,%id)
     $BeltEquip::Slot[%id,Disp] = %disp;
     $BeltEquip::Slot[%name,ID] = %id;
 }
-$BeltEquip::NumberOfSlots = 0;
-
-BeltEquip::AddEquipmentSlot("finger1","Finger 1",$BeltEquip::Type[0],0);
-BeltEquip::AddEquipmentSlot("finger2","Finger 2",$BeltEquip::Type[0],1);
-BeltEquip::AddEquipmentSlot("arm","Arm",$BeltEquip::Type[1],2);
-BeltEquip::AddEquipmentSlot("neck","Neck",$BeltEquip::Type[2],3);
 
 function BeltEquip::GetSlotId(%name)
 {

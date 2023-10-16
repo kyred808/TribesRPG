@@ -34,10 +34,31 @@ BeltItem::AddBeltItemGroup("LoreItems","Lore",3);
 BeltItem::AddBeltItemGroup("AmmoItems","Ammo",4);
 BeltItem::AddBeltItemGroup("EquipItems","Equip",5);
 BeltItem::AddBeltItemGroup("PotionItems","Potions",6);
-
+BeltItem::AddBeltItemGroup("OreItems","Ores",7);
+BeltItem::AddBeltItemGroup("MetalItems","Metals",8);
 // =============================
 // End Belt Groups
 // =============================
+
+// =============================
+// Belt Equipment Slots and Types
+// =============================
+$BeltEquip::Type[0] = "finger";
+$BeltEquip::Type[1] = "arm";
+$BeltEquip::Type[2] = "neck";
+
+$BeltEquip::NumberOfSlots = 0;
+
+BeltEquip::AddEquipmentSlot("finger1","Finger 1",$BeltEquip::Type[0],0);
+BeltEquip::AddEquipmentSlot("finger2","Finger 2",$BeltEquip::Type[0],1);
+BeltEquip::AddEquipmentSlot("arm","Arm",$BeltEquip::Type[1],2);
+BeltEquip::AddEquipmentSlot("neck","Neck",$BeltEquip::Type[2],3);
+
+// =============================
+// End Belt Equipment Slots and Types
+// =============================
+
+
 
 // =============================
 // Belt Items
@@ -78,6 +99,29 @@ $ItemList[Mining, 11] = "Emerald " @ round($HardcodedItemCost[Emerald] / %f)+2;
 $ItemList[Mining, 12] = "Diamond " @ round($HardcodedItemCost[Diamond] / %f)+2;
 $ItemList[Mining, 13] = "Keldrinite " @ round($HardcodedItemCost[Keldrinite] / %f)+2;
 
+// Ore Items
+
+BeltItem::Add("CopperOre","copperore","OreItems",1,250,200);
+BeltItem::Add("TinOre","tinore","OreItems",1,250,201);
+BeltItem::Add("Galena","galena","OreItems",1,250,202);
+BeltItem::Add("Coal","coal","OreItems",1,3000,203);
+BeltItem::Add("IronOre","ironore","OreItems",1,3000,204);
+BeltItem::Add("CobaltOre","cobaltore","OreItems",1,3000,205);
+BeltItem::Add("Mithrite","mithrite","OreItems",1,3000,206);
+BeltItem::Add("Adamantite","adamantite","OreItems",1,3000,207);
+
+// Metal Items
+
+BeltItem::Add("Copper","copper","MetalItems",1,250,300);
+BeltItem::Add("Tin","tin","MetalItems",1,250,301);
+BeltItem::Add("Bronze","bronze","MetalItems",1,250,302);
+BeltItem::Add("Lead","lead","MetalItems",1,250,303);
+BeltItem::Add("Iron","iron","MetalItems",1,250,304);
+BeltItem::Add("Steel","steel","MetalItems",1,250,305);
+BeltItem::Add("Cobalt","cobalt","MetalItems",1,3000,306);
+BeltItem::Add("Mythril","mythrite","MetalItems",1,3000,307);
+BeltItem::Add("Adamantium","adamantium","MetalItems",1,3000,308);
+
 
 // Equip Items
 BeltEquip::AddEquipmentItem("Ring of Minor Power","ringofminpower","EquipItems",0.2,5000,13,"ATK 5","finger");
@@ -88,6 +132,10 @@ BeltEquip::AddEquipmentItem("Protection Amulet","protectamulet","EquipItems",0.2
 BeltEquip::AddEquipmentItem("Necklace of Defence","necklaceofdef","EquipItems",0.2,5000,34,"DEF 150","neck");
 BeltEquip::AddEquipmentItem("Power Bracelet","armbandofhurt","EquipItems",0.2,5000,35,"ATK 250","arm");
 BeltEquip::AddEquipmentItem("Swordsman Armbad","swordsmanarmband","EquipItems",0.2,5000,36,"SKILL"@$SkillSlashing@" 150","arm");
+
+
+
+
 
 
 //Ammo Items

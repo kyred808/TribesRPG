@@ -1690,7 +1690,12 @@ function isBeltItem(%item)
 function Belt::ItemCount(%item,%list)
 {
     %w = Word::FindWord(%list,%item);
-    return getWord(%list,%w+1);
+    if(%w == -1)
+        return 0;
+    %ret = getWord(%list,%w+1);
+    if(%ret < 0)
+        %ret = 0;
+    return %ret;
 }
 
 function Belt::AddToList(%list, %item)

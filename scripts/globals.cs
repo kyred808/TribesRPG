@@ -61,6 +61,9 @@ $PlayersFastHealInProtectedZones = true;
 $BotsCanPickupPlayerPacks = true;
 $MessagePlayerIfBotStolePack = true;
 
+$BaseCraftingDifficulty = 10;
+$MaxCraftingBatch = 100;
+
 // Once exceeded, the oldest gets deleted
 $MaxLootbagsPerPlayer = 15;
 
@@ -102,7 +105,7 @@ $dapFactor = 10;		//both used for assigning exp
 $dlvlFactor = 150;
 
 //sp vars
-$SkillCap = 1000;
+$SkillCap = 1000; // Unused
 $skillRangePerLevel = 10;
 
 //steal vars.

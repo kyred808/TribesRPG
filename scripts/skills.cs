@@ -2,7 +2,7 @@
 // Skills
 //######################################################################################
 
-$NumberOfSkills = 19;
+$NumberOfSkills = 21;
 $SkillSlashing = 1;
 $SkillPiercing = 2;
 $SkillBludgeoning = 3;
@@ -24,6 +24,8 @@ $SkillSenseHeading = 16;
 $SkillEnergy = 17;
 $SkillHaggling = 18;
 $SkillNeutralCasting = 19;
+$SkillSmithing = 20;
+$SkillAlchemy = 21;
 $MinLevel = "L";
 $MinGroup = "G";
 $MinClass = "C";
@@ -55,6 +57,8 @@ $SkillDesc[16] = "Sense Heading";
 $SkillDesc[17] = "Energy";
 $SkillDesc[18] = "Haggling";
 $SkillDesc[19] = "Neutral Casting";
+$SkillDesc[20] = "Smithing";
+$SkillDesc[21] = "Alchemy";
 $SkillDesc[L] = "Level";
 $SkillDesc[G] = "Group";
 $SkillDesc[C] = "Class";
@@ -112,6 +116,8 @@ $SkillMultiplier[Cleric, $SkillMining] = 1.0;
 $SkillMultiplier[Cleric, $SkillSenseHeading] = 1.0;
 $SkillMultiplier[Cleric, $SkillEnergy] = 1.5;
 $SkillMultiplier[Cleric, $SkillHaggling] = 1.0;
+$SkillMultiplier[Cleric, $SkillSmithing] = 1.2;
+$SkillMultiplier[Cleric, $SkillAlchemy] = 0.8;
 $EXPmultiplier[Cleric] = 0.85;
 
 //--------------
@@ -144,6 +150,8 @@ $SkillMultiplier[Druid, $SkillMining] = 2.0;
 $SkillMultiplier[Druid, $SkillSenseHeading] = 1.7;
 $SkillMultiplier[Druid, $SkillEnergy] = 1.2;
 $SkillMultiplier[Druid, $SkillHaggling] = 1.3;
+$SkillMultiplier[Druid, $SkillSmithing] = 1.0;
+$SkillMultiplier[Druid, $SkillAlchemy] = 2.0;
 $EXPmultiplier[Druid] = 0.8;
 
 //--------------
@@ -176,6 +184,8 @@ $SkillMultiplier[Thief, $SkillMining] = 1.0;
 $SkillMultiplier[Thief, $SkillSenseHeading] = 1.0;
 $SkillMultiplier[Thief, $SkillEnergy] = 0.5;
 $SkillMultiplier[Thief, $SkillHaggling] = 1.5;
+$SkillMultiplier[Thief, $SkillSmithing] = 1.2;
+$SkillMultiplier[Thief, $SkillAlchemy] = 1.5;
 $EXPmultiplier[Thief] = 0.8;
 
 //--------------
@@ -207,6 +217,8 @@ $SkillMultiplier[Bard, $SkillMining] = 2.0;
 $SkillMultiplier[Bard, $SkillSenseHeading] = 1.5;
 $SkillMultiplier[Bard, $SkillEnergy] = 0.6;
 $SkillMultiplier[Bard, $SkillHaggling] = 2.0;
+$SkillMultiplier[Bard, $SkillSmithing] = 1.0;
+$SkillMultiplier[Bard, $SkillAlchemy] = 1.0;
 $EXPmultiplier[Bard] = 0.8;
 
 //--------------
@@ -240,6 +252,8 @@ $SkillMultiplier[Fighter, $SkillMining] = 1.0;
 $SkillMultiplier[Fighter, $SkillSenseHeading] = 0.4;
 $SkillMultiplier[Fighter, $SkillEnergy] = 0.2;
 $SkillMultiplier[Fighter, $SkillHaggling] = 1.0;
+$SkillMultiplier[Fighter, $SkillSmithing] = 2.0;
+$SkillMultiplier[Fighter, $SkillAlchemy] = 1.0;
 $EXPmultiplier[Fighter] = 1.0;
 
 //--------------
@@ -271,6 +285,8 @@ $SkillMultiplier[Paladin, $SkillMining] = 1.0;
 $SkillMultiplier[Paladin, $SkillSenseHeading] = 0.5;
 $SkillMultiplier[Paladin, $SkillEnergy] = 0.9;
 $SkillMultiplier[Paladin, $SkillHaggling] = 1.3;
+$SkillMultiplier[Paladin, $SkillSmithing] = 1.5;
+$SkillMultiplier[Paladin, $SkillAlchemy] = 1.0;
 $EXPmultiplier[Paladin] = 1.0;
 
 //--------------
@@ -303,6 +319,8 @@ $SkillMultiplier[Ranger, $SkillMining] = 1.0;
 $SkillMultiplier[Ranger, $SkillSenseHeading] = 2.0;
 $SkillMultiplier[Ranger, $SkillEnergy] = 0.7;
 $SkillMultiplier[Ranger, $SkillHaggling] = 0.7;
+$SkillMultiplier[Ranger, $SkillSmithing] = 1.3;
+$SkillMultiplier[Ranger, $SkillAlchemy] = 2.0;
 $EXPmultiplier[Ranger] = 0.95;
 
 //--------------
@@ -335,6 +353,8 @@ $SkillMultiplier[Mage, $SkillMining] = 1.0;
 $SkillMultiplier[Mage, $SkillSenseHeading] = 0.7;
 $SkillMultiplier[Mage, $SkillEnergy] = 2.0;
 $SkillMultiplier[Mage, $SkillHaggling] = 1.0;
+$SkillMultiplier[Mage, $SkillSmithing] = 1.0;
+$SkillMultiplier[Mage, $SkillAlchemy] = 1.5;
 $EXPmultiplier[Mage] = 1.0;
 
 //######################################################################################

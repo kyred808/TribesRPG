@@ -2002,6 +2002,7 @@ function HasThisStuff(%clientId, %list, %multiplier)
         else if(isBeltItem(%w))
 		{
 			%amnt = Belt::HasThisStuff(%clientid,%w);
+            
 			if(%amnt >= %w2)
 				%flag = True;
 			else
@@ -2680,6 +2681,12 @@ function WhatIs(%item)
 	else
 		%sd = "";
 
+    %craftReqs = Crafting::getSkillReqs(%item);
+    %cr = "";
+    if(%craftReqs != "")
+        %cr = WhatSkills(Crafting::GetFullCraftCommand(%item));
+    %craftItems = Crafting::getRecipie(%item);
+    
 	if($LocationDesc[%t] != "")
 		%loc = " - Type: " @ $LocationDesc[%t];
 	else
@@ -2714,6 +2721,10 @@ function WhatIs(%item)
 		%msg = %msg @ "\nPrice: $" @ %c;
 	if(%sd != "")
 		%msg = %msg @ "\nDelay: " @ %sd @ " sec";
+    if(%cr != "")
+        %msg = %msg @ "\nCraft Skill: "@ %cr;
+    if(%craftItems != "")
+        %msg = %msg @ "\nCraft Recipie: "@ %craftItems;
 	if(%sr != "")
 		%msg = %msg @ "\nRecovery: " @ %sr @ " sec";
 	if(%sm != "")

@@ -1852,6 +1852,12 @@ SoundData SoundCanSmith
 	profile = Profile3dNear;
 };
 
+SoundData SoundCanSmith2
+{
+    wavFileName = "AXEHIT1.wav";
+    profile = Profile3dNear;
+};
+
 
 SoundData MClip5
 {

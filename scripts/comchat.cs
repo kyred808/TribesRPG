@@ -1681,49 +1681,229 @@ return;
 	
 			return;
 		}
-		if(%w1 == "#smith")
-		{
-			if(!%TrueClientId.IsSmithing)
-			{
-				%tempsmith = LTrim(fetchData(%TrueClientId, "TempSmith"));
-				if((%sc = GetSmithCombo(%tempsmith)) != 0)
-				{
-					%amt = floor(getWord(%cropped, 0));
-					if(%amt <= 0)
-						%amt = 1;
-					if(%amt > 100)
-						%amt = 100;
-
-					%cost = GetSmithComboCost(%TrueClientId, %sc) * %amt;
-
-					if(HasThisStuff(%TrueClientId, %tempsmith, %amt) && !IsDead(%TrueClientId))
-					{
-						if(%cost <= fetchData(%TrueClientId, "COINS"))
-						{
-							AI::sayLater(%TrueClientId, %TrueClientId.currentSmith, "Let me see what I can do...", True);
-	
-							for(%i = 0; (%w = GetWord(%tempsmith, %i)) != -1; %i+=2)
-							{
-								%w2 = GetWord(%tempsmith, %i+1) * %amt;
-								storeData(%TrueClientId, "BankStorage", SetStuffString(fetchData(%TrueClientId, "BankStorage"), %w, %w2));
-								Player::decItemCount(%TrueClientId, %w, %w2);
-							}
-					
-							playSound(SoundSmith, GameBase::getPosition(%TrueClientId));
-							schedule("CompleteSmith(" @ %TrueClientId @ ", " @ %cost @ ", " @ %sc @ ", \"" @ %tempsmith @ "\", " @ %amt @ ");", 5.5, %TrueClientId);
-							%TrueClientId.IsSmithing = True;
-							
-							return 1;
-						}
-						else
-						{
-							Client::sendMessage(%TrueClientId, $MsgRed, "You can't afford to smith this/these items.~wC_BuySell.wav");
-							return 0;
-						}
-					}
-				}
-			}
-		}
+        if(%w1 == "#smith" || %w1 == "#mix" || %w1 == "#smelt")
+        {
+            %item = getWord(%cropped,0);
+            %amnt = getWord(%cropped,1);
+            
+            if(%item == -1)
+                Client::sendMessage(%TrueClientId, $MsgWhite, "Use "@ %w1 @" item [amnt or %]");
+            else
+            {
+                %displayChance = false;
+                %doCraft = false;
+                if(%amnt == -1)
+                {
+                    %doCraft = true;
+                    %amnt = 1;
+                }
+                else
+                {
+                    if(Math::isInteger(%amnt) && %amnt > 0)
+                    {
+                        if(%amnt > $MaxCraftingBatch)
+                        {
+                            Client::sendMessage(%TrueClientId, $MsgWhite, "Amnt must be "@$MaxCraftingBatch@" or less.");
+                            %doCraft = false;
+                        }
+                        else
+                            %doCraft = true;
+                        
+                    }
+                    else
+                    {
+                        if(%amnt == "%")
+                        {
+                            %displayChance = true;
+                            %doCraft = true;
+                        }
+                        else
+                            Client::sendMessage(%TrueClientId, $MsgWhite, "Amnt must be blank or positive integer.");
+                    }
+                }
+                
+                if(%doCraft)
+                {
+                    if(Crafting::IsCraftableItem(%item,$Crafting::CommandToType[%w1]))
+                    {
+                        if(Crafting::SkillCheck(%TrueClientId,%item))
+                        {
+                            if(%displayChance)
+                            {
+                                %percent = Number::Beautify(Crafting::CalculateSuccessChance(%clientId,%item) * 100,0,1);
+                                Client::sendMessage(%TrueClientId, $MsgWhite, "You have a "@%percent@"% chance to successfully craft a "@%item@".");
+                            }
+                            else
+                            {
+                                if(Crafting::ItemCheck(%TrueClientId,%item,%amnt))
+                                {
+                                    if(%amnt == 1)
+                                        Crafting::CraftItem(%TrueClientId,%item);
+                                    else
+                                    {
+                                        %pos = Gamebase::getPosition(%TrueClientId);
+                                        Crafting::RecursiveCraft(%TrueClientId,%item,%pos,%amnt);
+                                    }
+                                }
+                                else
+                                {
+                                    if(%amnt == 1)
+                                        Client::sendMessage(%TrueClientId, $MsgRed, "You lack the necessary items to craft a "@ %item@".");
+                                    else
+                                    {
+                                        Client::sendMessage(%TrueClientId, $MsgRed, "You lack the necessary items to craft "@ %amnt @" "@ %item@".");
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Client::sendMessage(%TrueClientId, $MsgRed, "You lack the necessary skills to craft "@ %item @".");
+                        }
+                    }
+                    else
+                    {
+                        if(%w1 == "#smith")
+                            Client::sendMessage(%TrueClientId, $MsgRed, "That is not a smithable item.");
+                        else if(%w1 == "#mix")
+                            Client::sendMessage(%TrueClientId, $MsgRed, "That is not an alchemical item.");
+                        else if(%w1 == "#smelt")
+                            Client::sendMessage(%TrueClientId, $MsgRed, "That is not a smeltable item.");
+                    }
+                }
+            }
+        }
+        //else if(%w1 == "#mix")
+        //{
+        //    %item = getWord(%cropped,0);
+        //    %amnt = getWord(%cropped,1);
+        //    
+        //    if(%item == -1)
+        //        Client::sendMessage(%TrueClientId, $MsgWhite, "Use #mix item [amnt or %]");
+        //    else
+        //    {
+        //        %displayChance = false;
+        //        %doCraft = false;
+        //        if(%amnt == -1)
+        //        {
+        //            %doCraft = true;
+        //            %amnt = 1;
+        //        }
+        //        else
+        //        {
+        //            if(Math::isInteger(%amnt) && %amnt > 0)
+        //            {
+        //                if(%amnt > $MaxCraftingBatch)
+        //                {
+        //                    Client::sendMessage(%TrueClientId, $MsgWhite, "Amnt must be "@$MaxCraftingBatch@" or less.");
+        //                    %doCraft = false;
+        //                }
+        //                else
+        //                    %doCraft = true;
+        //                
+        //            }
+        //            else
+        //            {
+        //                if(%amnt == "%")
+        //                {
+        //                    %displayChance = true;
+        //                    %doCraft = true;
+        //                }
+        //                else
+        //                    Client::sendMessage(%TrueClientId, $MsgWhite, "Amnt must be blank or positive integer.");
+        //            }
+        //        }
+        //        
+        //        if(%doCraft)
+        //        {
+        //            echo(%item);
+        //            if(Crafting::IsCraftableItem(%item,$Crafting::CommandToType[%w1]))
+        //            {
+        //                if(Crafting::SkillCheck(%TrueClientId,%item))
+        //                {
+        //                    if(%displayChance)
+        //                    {
+        //                        %percent = Number::Beautify(Crafting::CalculateSuccessChance(%clientId,%item) * 100,0,1);
+        //                        Client::sendMessage(%TrueClientId, $MsgWhite, "You have a "@%percent@"% chance to successfully craft a "@%item@".");
+        //                    }
+        //                    else
+        //                    {
+        //                        if(Crafting::ItemCheck(%TrueClientId,%item,%amnt))
+        //                        {
+        //                            if(%amnt == 1)
+        //                                Crafting::CraftItem(%TrueClientId,%item);
+        //                            else
+        //                            {
+        //                                %pos = Gamebase::getPosition(%TrueClientId);
+        //                                Crafting::RecursiveCraft(%TrueClientId,%item,%pos,%amnt);
+        //                            }
+        //                        }
+        //                        else
+        //                        {
+        //                            if(%amnt == 1)
+        //                                Client::sendMessage(%TrueClientId, $MsgRed, "You lack the necessary items to craft a "@ %item@".");
+        //                            else
+        //                            {
+        //                                Client::sendMessage(%TrueClientId, $MsgRed, "You lack the necessary items to craft "@ %amnt @" "@ %item@".");
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    Client::sendMessage(%TrueClientId, $MsgRed, "You lack the necessary skills to craft "@ %item @".");
+        //                }
+        //            }
+        //            else
+        //            {
+        //                Client::sendMessage(%TrueClientId, $MsgRed, "That is not an alchemical item.");
+        //            }
+        //        }
+        //    }
+        //}
+		//if(%w1 == "#smith")
+		//{
+		//	if(!%TrueClientId.IsSmithing)
+		//	{
+		//		%tempsmith = LTrim(fetchData(%TrueClientId, "TempSmith"));
+		//		if((%sc = GetSmithCombo(%tempsmith)) != 0)
+		//		{
+		//			%amt = floor(getWord(%cropped, 0));
+		//			if(%amt <= 0)
+		//				%amt = 1;
+		//			if(%amt > 100)
+		//				%amt = 100;
+        //
+		//			%cost = GetSmithComboCost(%TrueClientId, %sc) * %amt;
+        //
+		//			if(HasThisStuff(%TrueClientId, %tempsmith, %amt) && !IsDead(%TrueClientId))
+		//			{
+		//				if(%cost <= fetchData(%TrueClientId, "COINS"))
+		//				{
+		//					AI::sayLater(%TrueClientId, %TrueClientId.currentSmith, "Let me see what I can do...", True);
+	    //
+		//					for(%i = 0; (%w = GetWord(%tempsmith, %i)) != -1; %i+=2)
+		//					{
+		//						%w2 = GetWord(%tempsmith, %i+1) * %amt;
+		//						storeData(%TrueClientId, "BankStorage", SetStuffString(fetchData(%TrueClientId, "BankStorage"), %w, %w2));
+		//						Player::decItemCount(%TrueClientId, %w, %w2);
+		//					}
+		//			
+		//					playSound(SoundSmith, GameBase::getPosition(%TrueClientId));
+		//					schedule("CompleteSmith(" @ %TrueClientId @ ", " @ %cost @ ", " @ %sc @ ", \"" @ %tempsmith @ "\", " @ %amt @ ");", 5.5, %TrueClientId);
+		//					%TrueClientId.IsSmithing = True;
+		//					
+		//					return 1;
+		//				}
+		//				else
+		//				{
+		//					Client::sendMessage(%TrueClientId, $MsgRed, "You can't afford to smith this/these items.~wC_BuySell.wav");
+		//					return 0;
+		//				}
+		//			}
+		//		}
+		//	}
+		//}
 
 //============================
 //ADMIN COMMANDS =============
