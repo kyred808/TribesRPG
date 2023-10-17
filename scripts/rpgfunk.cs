@@ -2685,7 +2685,7 @@ function WhatIs(%item)
     %cr = "";
     if(%craftReqs != "")
         %cr = WhatSkills(Crafting::GetFullCraftCommand(%item));
-    %craftItems = Crafting::getRecipie(%item);
+    %craftItems = Crafting::getrecipe(%item);
     
 	if($LocationDesc[%t] != "")
 		%loc = " - Type: " @ $LocationDesc[%t];
@@ -2724,7 +2724,7 @@ function WhatIs(%item)
     if(%cr != "")
         %msg = %msg @ "\nCraft Skill: "@ %cr;
     if(%craftItems != "")
-        %msg = %msg @ "\nCraft Recipie: "@ %craftItems;
+        %msg = %msg @ "\nCraft recipe: "@ %craftItems;
 	if(%sr != "")
 		%msg = %msg @ "\nRecovery: " @ %sr @ " sec";
 	if(%sm != "")

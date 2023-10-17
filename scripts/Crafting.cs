@@ -13,7 +13,7 @@ function Crafting::AddCraftingType(%name,%desc,%command,%defaultSound,%skillId,%
 
 function Crafting::GetCraftingCommand(%craftedItem)
 {
-    return $Crafting::Type[$Crafting::Recipie[%craftedItem,Type],Command];
+    return $Crafting::Type[$Crafting::recipe[%craftedItem,Type],Command];
 }
 
 function Crafting::GetFullCraftCommand(%craftedItem)
@@ -23,10 +23,10 @@ function Crafting::GetFullCraftCommand(%craftedItem)
 
 function Crafting::GetSkill(%craftedItem)
 {
-    return $Crafting::Type[$Crafting::Recipie[%craftedItem,Type],Skill];
+    return $Crafting::Type[$Crafting::recipe[%craftedItem,Type],Skill];
 }
 
-function Crafting::AddRecipie(%type,%craftedItem,%requirements,%stuff,%amnt,%skillDifficulty)
+function Crafting::Addrecipe(%type,%craftedItem,%requirements,%stuff,%amnt,%skillDifficulty)
 {
     if(%amnt < 1)
         %amnt = 1;
@@ -35,35 +35,35 @@ function Crafting::AddRecipie(%type,%craftedItem,%requirements,%stuff,%amnt,%ski
     if(%skillDifficulty < 1)
         %skillDifficulty = $BaseCraftDifficulty;
         
-    $Crafting::Recipie[%craftedItem,Type] = %type;
-    $Crafting::Recipie[%craftedItem,Items] = %stuff;
-    $Crafting::Recipie[%craftedItem,SkillReqs] = %requirements;
-    $Crafting::Recipie[%craftedItem,ItemReqs] = %stuff;
-    $Crafting::Recipie[%craftedItem,Amount] = %amnt;
-    $Crafting::Recipie[%craftedItem,Difficulty] = %skillDifficulty; //For skill levelling
-    $Crafting::Recipie[%craftedItem,Sound] = $Crafting::Type[%type,DefaultSound];
+    $Crafting::recipe[%craftedItem,Type] = %type;
+    $Crafting::recipe[%craftedItem,Items] = %stuff;
+    $Crafting::recipe[%craftedItem,SkillReqs] = %requirements;
+    $Crafting::recipe[%craftedItem,ItemReqs] = %stuff;
+    $Crafting::recipe[%craftedItem,Amount] = %amnt;
+    $Crafting::recipe[%craftedItem,Difficulty] = %skillDifficulty; //For skill levelling
+    $Crafting::recipe[%craftedItem,Sound] = $Crafting::Type[%type,DefaultSound];
     
     $SkillRestriction[Crafting::GetFullCraftCommand(%craftedItem)] = %requirements;
 }
 
 function Crafting::getSkillReqs(%craftedItem)
 {
-    return $Crafting::Recipie[%craftedItem,SkillReqs];
+    return $Crafting::recipe[%craftedItem,SkillReqs];
 }
 
-function Crafting::getRecipie(%craftedItem)
+function Crafting::getrecipe(%craftedItem)
 {
-    return $Crafting::Recipie[%craftedItem,ItemReqs];
+    return $Crafting::recipe[%craftedItem,ItemReqs];
 }
 
 function Crafting::IsCraftableItem(%craftedItem,%type)
 {
-    return $Crafting::Recipie[%craftedItem,Type] == %type;
+    return $Crafting::recipe[%craftedItem,Type] == %type;
 }
 
 function Crafting::SetCraftSound(%craftedItem,%sound)
 {
-    $Crafting::Recipie[%craftedItem,Sound] = %sound;
+    $Crafting::recipe[%craftedItem,Sound] = %sound;
 }
 
 function Crafting::SkillCheck(%clientId,%craftedItem)
@@ -75,7 +75,7 @@ function Crafting::ItemCheck(%clientId,%craftedItem,%amnt)
 {
     if(%amnt < 1)
         %amnt = 1;
-    return HasThisStuff(%clientId,$Crafting::Recipie[%craftedItem,ItemReqs],%amnt);
+    return HasThisStuff(%clientId,$Crafting::recipe[%craftedItem,ItemReqs],%amnt);
 }
 
 function Crafting::AdditionalCheck(%clientId,%command,%craftedItem)
@@ -142,7 +142,7 @@ function Crafting::CalculateSuccessChance(%clientId,%craftedItem)
     %skillId = Crafting::GetSkill(%craftedItem);
     %skillLvl = CalculatePlayerSkill(%clientId, %skillId);
     %minSkill = GetSkillAmount(Crafting::GetFullCraftCommand(%craftedItem), %skillId);
-    %difficulty = $Crafting::Recipie[%craftedItem,Difficulty];
+    %difficulty = $Crafting::recipe[%craftedItem,Difficulty];
 
     echo("SkillLvl: "@%skillLvl@" MinSkill: "@%minSkill@" Diffi: "@ %difficulty);
     echo(" 0.5 + "@ (%difficulty/$BaseCraftingDifficulty) @" * "@ (%skillLvl/%minSkill) - 1);
@@ -172,20 +172,20 @@ function Crafting::RecursiveCraft(%clientId,%craftedItem,%lastPos,%cnt)
 function Crafting::CraftItem(%clientId,%craftedItem)
 {
     %percentSuccess = Crafting::CalculateSuccessChance(%clientId,%craftedItem);
-    TakeThisStuff(%clientId,$Crafting::Recipie[%craftedItem,Items]);
+    TakeThisStuff(%clientId,$Crafting::recipe[%craftedItem,Items]);
     %rand = getRandom();
     echo(%rand @" vs. "@ %percentSuccess);
     if(%rand <= %percentSuccess)
     {
-        playSound($Crafting::Recipie[%craftedItem,Sound], GameBase::getPosition(%clientId));
-        UseSkill(%clientId,Crafting::GetSkill(%craftedItem),true,true,$Crafting::Recipie[%craftedItem,Difficulty],true);
-        GiveThisStuff(%clientId,%craftedItem @" 1",false,$Crafting::Recipie[%craftedItem,Amount]);
-        echo($Crafting::Recipie[%craftedItem,Sound]);
-        Client::sendMessage(%clientId, $MsgWhite, "You successfully smithed "@ $Crafting::Recipie[%craftedItem,Amount] @" "@ %craftedItem @".");
+        playSound($Crafting::recipe[%craftedItem,Sound], GameBase::getPosition(%clientId));
+        UseSkill(%clientId,Crafting::GetSkill(%craftedItem),true,true,$Crafting::recipe[%craftedItem,Difficulty],true);
+        GiveThisStuff(%clientId,%craftedItem @" 1",false,$Crafting::recipe[%craftedItem,Amount]);
+        echo($Crafting::recipe[%craftedItem,Sound]);
+        Client::sendMessage(%clientId, $MsgWhite, "You successfully smithed "@ $Crafting::recipe[%craftedItem,Amount] @" "@ %craftedItem @".");
     }
     else
     {
         Client::sendMessage(%clientId, $MsgRed, "You failed smithing "@ %craftedItem @".");
-        UseSkill(%clientId,Crafting::GetSkill(%craftedItem),false,true,$Crafting::Recipie[%craftedItem,Difficulty],true);
+        UseSkill(%clientId,Crafting::GetSkill(%craftedItem),false,true,$Crafting::recipe[%craftedItem,Difficulty],true);
     }
 }
