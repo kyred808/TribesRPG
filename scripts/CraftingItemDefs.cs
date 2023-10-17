@@ -11,6 +11,7 @@ Crafting::AddCraftingType("smelting","Smelting","#smelt",SoundCanSmith2,$SkillSm
 //===================
 Crafting::AddRecipie("smithing","Knife",$SkillSmithing @" 15","Quartz 6",1,$BaseCraftingDifficulty);
 Crafting::AddRecipie("smithing","Broadsword",$SkillSmithing @" 40","Quartz 6 Jade 2");
+Crafting::AddRecipie("smithing","CrudeAxe",$SkillSmithing @" 0.1","SmallRock 3 Splint 5",1,1000);
 Crafting::SetCraftSound("Broadsword",SoundCanSmith2);
 
 

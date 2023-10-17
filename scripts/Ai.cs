@@ -998,16 +998,16 @@ function AI::onTargetDied(%aiName, %idNum)
 		AI::newDirectiveRemove(%aiName, 99);
 }                                 
 
-function AI::sayLater(%clientId, %guardId, %message, %look)
+function AI::sayLater(%clientId, %guardId, %message, %look,%sound)
 {
 	dbecho($dbechoMode, "AI::sayLater(" @ %clientId @ ", " @ %guardId @ ", " @ %message @ ", " @ %look @ ")");
 
 	%name = Client::getName(%clientId);
 
-	Client::sendMessage(%clientId, $MsgBeige, $BotInfo[%guardId.name, NAME] @ " tells you, \"" @ %message @ "\"");
+	Client::sendMessage(%clientId, $MsgBeige, $BotInfo[%guardId.name, NAME] @ " tells you, \"" @ %message @"~w"@%sound @ "\"");
 
-//	if(%look)
-//		AI::lookAtPlayer(%clientId, %guardId);
+	//if(%look)
+	//	AI::lookAtPlayer(%clientId, %guardId);
 }
 function AI::lookAtPlayer(%clientId, %guardId)
 {
@@ -1405,7 +1405,12 @@ function GatherBotInfo(%group)
 				$BotInfo[%aiName, NSAY, %n] = %info;
 			else if(%type2 == "NCUE")
 				$BotInfo[%aiName, NCUE, %n] = %info;
-
+            else if(%type2 == "NEED")
+                $BotInfo[%aiName, NEED, %n] = %info;
+            else if(%type2 == "SOUND")
+                $BotInfo[%aiName, SOUND, %n] = %info;
+            else if(%type2 == "SCRIPT")
+                $BotInfo[%aiName, SCRIPT, %n] = %info;
 			if(%n > %biggestn)
 				%biggestn = %n;
 		}

@@ -61,8 +61,12 @@ $PlayersFastHealInProtectedZones = true;
 $BotsCanPickupPlayerPacks = true;
 $MessagePlayerIfBotStolePack = true;
 
+//Toggle if you can craft anywhere or need to look at or have certain objects.
+$ExtraCraftingRequirements = true;
 $BaseCraftingDifficulty = 10;
 $MaxCraftingBatch = 100;
+
+$NewPlayerSpawnZone = "PROTECTED New Player Camp";
 
 // Once exceeded, the oldest gets deleted
 $MaxLootbagsPerPlayer = 15;

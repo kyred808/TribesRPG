@@ -25,11 +25,17 @@ function Game::pickPlayerSpawn(%clientId, %respawn)
 {
 	dbecho($dbechoMode2, "Game::pickPlayerSpawn(" @ %clientId @ ", " @ %respawn @ ")");
 
-	if(fetchData(%clientId, "lastzone") == "")
-		%group = nameToID("MissionGroup/Teams/team0/DropPoints");
-	else
-		%group = nameToID("MissionGroup/Zones/" @ Object::getName(fetchData(%clientId, "lastzone")) @ "/DropPoints");
-
+    if(%clientId.newPlayer)
+    {
+        %group = nameToID("MissionGroup/Zones/"@$NewPlayerSpawnZone@"/DropPoints");
+    }
+    else
+    {
+        if(fetchData(%clientId, "lastzone") == "")
+            %group = nameToID("MissionGroup/Teams/team0/DropPoints");
+        else
+            %group = nameToID("MissionGroup/Zones/" @ Object::getName(fetchData(%clientId, "lastzone")) @ "/DropPoints");
+    }
 	%count = Group::objectCount(%group);
 	if(!%count)
 		return -1;

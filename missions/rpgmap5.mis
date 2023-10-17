@@ -789,6 +789,23 @@ instant SimGroup "MissionGroup" {
 				rotation = "0 0 0";
 			};
 		};
+        instant SimGroup "PROTECTED New Player Camp" {
+            instant SimGroup "MUSIC AmbDay2.wav 6";
+			instant SimGroup "DropPoints" {
+				instant Marker "Marker1" {
+					dataBlock = "PathMarker";
+					name = "";
+					position = "-3705.22 2644.9 400";
+					rotation = "0 0 0";
+				};
+            };
+            instant Marker "40 40 100 0" {
+				dataBlock = "PathMarker";
+				name = "";
+				position = "-3705.22 2644.9 400";
+				rotation = "0 0 0";
+			};
+        };
 		instant SimGroup "PROTECTED Fort Ethren" {
 			instant SimGroup "DropPoints" {
 				instant Marker "Marker1" {
@@ -1674,6 +1691,79 @@ instant SimGroup "MissionGroup" {
 			locked = "0";
 		};
 	};
+    instant SimGroup "NewPlayerCamp" {
+        instant InteriorShape "NPCTent1" {
+            fileName = "tent.dis";
+            isContainer = "1";
+            position = "-3729.2 2653.12 399.88";
+            rotation = "0 -0 3.07994";
+            lightParams = "0 ";
+            locked = "0";
+        };
+        instant InteriorShape "NPCwoodfire1" {
+            fileName = "woodfire.dis";
+            isContainer = "0";
+            position = "-3716.65 2652.89 400";
+            rotation = "0 0 0";
+            lightParams = "1 1.250000 1 ";
+        };
+        instant InteriorShape "anvil11" {
+            fileName = "anvil.dis";
+            isContainer = "0";
+            position = "-3723.51 2647.35 399.614";
+            rotation = "0 -0 -0.819994";
+            lightParams = "0 ";
+        };
+        instant StaticShape "NPCTreeOne1" {
+            dataBlock = "TreeShape";
+            name = "";
+            position = "-3708.02 2673.73 399.599";
+            rotation = "-0.109716 -0.236188 0.426958";
+            destroyable = "True";
+            deleteOnDestroy = "False";
+        };
+        instant StaticShape "NPCTreeOne2" {
+            dataBlock = "TreeShape";
+            name = "";
+            position = "-3675.02 2675.42 400";
+            rotation = "0 -0 0.699995";
+            destroyable = "True";
+            deleteOnDestroy = "False";
+        };
+        instant StaticShape "NPCTreeOne3" {
+            dataBlock = "TreeShape";
+            name = "";
+            position = "-3680.55 2633.11 400";
+            rotation = "0.0494933 -0.0731299 -0.275698";
+            destroyable = "True";
+            deleteOnDestroy = "False";
+            locked = "0";
+        };
+        instant StaticShape "NPCTreeOne4" {
+            dataBlock = "TreeShape";
+            name = "";
+            position = "-3718.36 2606.68 400.403";
+            rotation = "0 0.199997 1.83998";
+            destroyable = "True";
+            deleteOnDestroy = "False";
+        };
+        instant StaticShape "NPCTreeOne5" {
+            dataBlock = "TreeShape";
+            name = "";
+            position = "-3733.46 2637.02 399.399";
+            rotation = "0 0 0";
+            destroyable = "True";
+            deleteOnDestroy = "False";
+        };
+        instant StaticShape "NPCCrystal1" {
+            dataBlock = "Crystal";
+            name = "";
+            position = "-3685.92 2655.73 399.999";
+            rotation = "0 0 0";
+            destroyable = "True";
+            deleteOnDestroy = "False";
+        };
+    };
 	instant SimGroup "FaroffMage" {
 		instant InteriorShape "npchut1" {
 			fileName = "npchut.1.dis";
@@ -3420,6 +3510,43 @@ instant SimGroup "MissionGroup" {
 			instant SimGroup "SHOP 18 19 20 21 36 39 40 47 48 55 56 63 64 65 131";
             instant SimGroup "BELTSHOP 17 27 29";
 		};
+        //New Player Guide
+        instant SimGroup "newquest55" {
+            instant Marker "Marker1" {
+                dataBlock = "PathMarker";
+                name = "";
+                position = "-3723.43 2654.39 400";
+                rotation = "0 0 0";
+                locked = "1";
+            };
+            instant SimGroup "NAME PlayerGuide";
+            instant SimGroup "ITEMS CLASS Ranger LVL 10 LCK 0 Dagger 1";
+            instant SimGroup "RACE MaleHuman";
+            instant SimGroup "SAY1 Hello! Glad to see you're awake. How's your HEAD?";
+            instant SimGroup "SOUND1 SoundMaleHumanHey";
+            instant SimGroup "CUE1 head";
+            instant SimGroup "SAY2 That goblin gave you a nasty blow in the ambush and took off with all your STUFF.";
+            instant SimGroup "CUE2 stuff";
+            instant SimGroup "SAY3 Well, I can't get your stuff back, but I can help you get STARTED again.";
+            instant SimGroup "SOUND3 SoundMaleHumanSorry";
+            instant SimGroup "CUE3 started";
+            instant SimGroup "SAY4 First you should make a Crude Axe [#w crudeaxe].  Use [#punch] on the trees and crystal to gather materials.";
+            instant SimGroup "CUE4 mats";
+            instant SimGroup "SAY5 Use [#w crudeaxe] to check what you need. Once you have that, you need to [#smith crudeaxe]. Feel free to use my anvil.";
+            instant SimGroup "CUE5 done";
+            instant SimGroup "SAY6 An axe is more suited for cutting trees. You'll find better stuff than punching it. For crystals, you'll want to find a pickaxe.";
+            instant SimGroup "CUE6 okay";
+            instant SimGroup "SAY7 You seem to have your wits about you. Let's test some magic. Try a flare spell use [#cast flare].";
+            instant SimGroup "CUE7 done";
+            instant SimGroup "SAY8 Good! You can always check spell info with [#w SpellNameWithNoSpaces].";
+            instant SimGroup "CUE8 okay";
+            instant SimGroup "SAY9 You should head off the Keldrin Town next. It's far to the South East of here. Normally, you can use #compass or #advcompass to try and find it, but you likely lack the Sense Heading skill.";
+            instant SimGroup "CUE9 lift";
+            instant SimGroup "SAY10 I can't give you a lift, but you can always use [#recall] to return to Keldrin. It normally takes a minute or two, but it should work faster than normal here.";
+            instant SimGroup "CUE10 okay";
+            instant SimGroup "SAY11 Best of luck to ya!";
+            instant SimGroup "SOUND11 SoundMaleHumanBye";
+        };
 		instant SimGroup "quest5" {
 			instant SimGroup "NAME Nevim";
 			instant SimGroup "ITEMS CLASS Ranger LVL 10 LCK 0 Dagger 1";

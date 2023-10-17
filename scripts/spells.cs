@@ -692,6 +692,24 @@ $Spell::effectType[38] = $SpellTypeCustom;
 $SkillType[batman] = $SkillNeutralCasting;
 $SkillRestriction[batman] = $SkillNeutralCasting @ " 0";
 
+$Spell::keyword[39] = "flare";
+$Spell::index[flare] = 39;
+$Spell::name[39] = "Flare";
+$Spell::description[39] = "Create a mote of light.";
+$Spell::delay[39] = 0.5;
+$Spell::recoveryTime[39] = 1;
+$Spell::damageValue[39] = 0;
+$Spell::manaCost[39] = 1;
+$Spell::startSound[39] = ActivateAB;
+$Spell::endSound[39] = LaunchFB;
+$Spell::endSoundLoc[1] = $SpellEndSoundLocationPlayer;
+$Spell::groupListCheck[39] = False;
+$Spell::refVal[39] = 0;
+$Spell::graceDistance[39] = 2;
+$Spell::effectType[39] = $SpellTypeProjectile;
+$Spell::projectileData[39] = Flare;
+$SkillType[flare] = $SkillNeutralCasting;
+$SkillRestriction[flare] = $SkillNeutralCasting @ " 0";
 //----------------------------------------------------------------------------------------------------------------
 
 function BeginCastSpell(%clientId, %keyword)

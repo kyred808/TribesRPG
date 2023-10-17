@@ -64,6 +64,34 @@ RocketData Thorn
 };
 
 //FireBall
+RocketData Flare
+{ 
+	bulletShapeName = "PlasmaBolt.dts"; 
+	explosionTag = bulletExp0; 
+	collisionRadius = 0.0; 
+	mass = 2.0;
+	damageClass = 1;
+	damageValue = 35; 
+	damageType = $SpellDamageType; //Energy gets translated to spell damage type in onDamage
+	explosionRadius = 8.0;
+	kickBackStrength = 0.1;
+	muzzleVelocity   = 5.0;
+	terminalVelocity = 5.0;
+	acceleration = 0.0;
+	totalTime = 5;
+	liveTime = 0.1;
+	lightRange = 40.0;
+	colors[0] = { 10.0, 0.75, 0.75 };
+	colors[1] = { 1.0, 0.25, 10.25 };
+	inheritedVelocityScale = 0.5;
+	trailType = 0; // needs a trail =X
+	trailString = "plasmaex.dts";
+	smokeDist = 2;
+	soundId = SoundJetHeavy;
+	rotationPeriod = 0.1;
+};
+
+//FireBall
 RocketData Fireball
 { 
 	bulletShapeName = "PlasmaBolt.dts"; 

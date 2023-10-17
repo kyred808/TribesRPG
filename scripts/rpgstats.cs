@@ -395,6 +395,7 @@ function processMenupickclass(%clientId, %opt)
 
 	//let the player enter the world
 	%clientId.choosingClass = "";
+    %clientId.newPlayer = true;
 	Game::playerSpawn(%clientId, false);
 
 	//######### set a few start-up variables ########
@@ -404,6 +405,10 @@ function processMenupickclass(%clientId, %opt)
 	for(%i = 1; %i <= GetNumSkills(); %i++)
 		AddSkillPoint(%clientId, %i, $autoStartupSP);
 	//###############################################
+    
+    %clientId.newPlayer = false;
+    %w = "hi";
+    schedule("Client::sendMessage("@%clientId@",0,\"Talk to the man with HI\");",1);
 
 	centerprint(%clientId, "<f1>Server powered by the RPG MOD version " @ $rpgver @ "<f0>\n\n" @ $loginMsg, 15);
 }

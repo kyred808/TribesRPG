@@ -707,6 +707,20 @@ ItemData Tent
 	shadowDetailMask = 4;
 	price = 0;
 };
+
+ItemData AnvilItem
+{
+	description = "Anvil";
+	className = "Accessory";
+	shapeFile = "grenade";
+	heading = "eMiscellany";
+	shadowDetailMask = 4;
+	price = 0;
+};
+$HardcodedItemCost[AnvilItem] = 5000;
+$AccessoryVar[AnvilItem, $Weight] = 20;
+$AccessoryVar[AnvilItem, $MiscInfo] = "An anvil for smthing and smelting. Use #anvil to setup and #unanvil to pickup.";
+
 //------------------------
 
 //===== MISC STUFF ===============================================================

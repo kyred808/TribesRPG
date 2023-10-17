@@ -13,6 +13,12 @@ SoundData SoundMaleHumanBye
    profile = Profile3dNear;
 };
 
+SoundData SoundMaleHumanSorry
+{
+    wavFileName = "male3.wsorry.wav";
+    profile = Profile3dNear;
+};
+
 SoundData SoundMaleHumanDoh
 {
    wavFileName = "Male3.woops1.wav";
@@ -803,7 +809,140 @@ return;
 			}
 			return;
 		}
-		if(%w1 == "#recall")
+        else if(%w1 == "#break")
+        {
+            %item = Getword(%cropped, 0);
+			%num = Getword(%cropped, 1);
+			if(String::findsubstr(%num, ".") != -1)
+				return;
+			if ( %num < 0 )
+				%num = 1;
+			if ( %item != "" )
+			{
+				if (HasThisStuff(%TrueClientId, %item @ " 1", %num))
+				{
+					%flag = 0;
+					for(%i = 10; %i > 1 && !%flag; %i--)
+					{
+						if(string::icompare(GetWord($ItemList[WoodCutting, %i], 0), %item) == 0)
+						{
+							%i--;
+							%nitem = GetWord($ItemList[WoodCutting, %i], 0);
+							Player::newdecItemCount(%TrueClientId, %item, %num);
+							RPG::incItemCount(%TrueClientId, %nitem, %num*2);
+							%flag = 1;
+						}
+					}
+					if ( %flag )
+					{
+						Client::sendMessage(%TrueClientId, $MsgWhite, %num @ " " @ %item @ "(s) has been broken into " @ %num*2 @ " " @ %nitem @ "(s).");
+					}
+					else
+					{
+						Client::sendMessage(%TrueClientId, $MsgWhite, %item @ " is not wood or was incorrect due to case-sensitivity. #w " @ %item @ " to find out how to spell it with the proper capitals");
+					}
+				}
+				else
+					Client::sendMessage(%TrueClientId, $MsgRed, "You do not have " @ %item @ ".");
+			}
+			else
+				Client::sendMessage(%TrueClientId, $MsgWhite, "#break itemname(wood) [amnt]");
+		}
+        else if(%w1 == "#punch" || %w1 == "#blunch")
+		{
+			%time = getIntegerTime(true) >> 5;
+			if(%time - %trueClientId.lastShoveTime > 1.5)
+			{
+				%trueClientId.lastShoveTime = %time;
+
+                %player = Client::getOwnedObject(%trueClientId);
+                $los::object = "";
+                if(GameBase::getLOSinfo(%player, 4))
+                {
+                    %obj = $los::object;
+                    if(%obj != "")
+                    {
+                        if(GetObjectType(%obj) == "Player")
+                        {
+                            %cl = Player::getClient($los::object);
+                            if(gamebase::getFakeTeam(%cl) == gamebase::getFakeTeam(%trueClientId))
+                            {
+                                //Friendly fire.  Check zone type.
+                            }
+                            else
+                            {
+                                //Do nothing.  Not implemented yet.
+                                //%b = GameBase::getRotation(%trueClientId);
+                                //%c1 = Cap(20 + 35, 0, 250);
+                                //%c2 = %c1 / 4;
+                                //%mom = Vector::getFromRot(%b, %c1, %c2 );
+                                //
+                                //Player::applyImpulse(%id, %mom);
+                                //UseSkill(%trueClientId, $SkillBashing, true, true);
+                                //PlaySound(SoundHitFlesh, gamebase::getposition(%id));
+                            }
+                        }
+                        else
+                        {
+                            %dataName = Gamebase::getDataName(%obj);
+                            if(%dataName == "TreeShape" || %dataName == "TreeShapeTwo")
+                            {
+                                GiveThisStuff(%trueClientId,"Splint 1",true);
+                                PlaySound(SoundHitLeather, GameBase::getPosition(%trueClientId));
+                            }
+                            else if(%dataName == "Crystal")
+                            {
+                                GiveThisStuff(%trueClientId,"SmallRock 1",true);
+                                playSound(SoundHitore2, GameBase::getPosition(%trueClientId));
+                            }
+                        }
+                    }
+                
+                    //Tvt code
+                    //if(($los::object != "" || $los::object != -1) && %id > 2047 && ((gamebase::getFakeTeam(%id) == gamebase::getFakeTeam(%trueClientId) && %id.teamlifts != true) || gamebase::getFakeTeam(%id) != gamebase::getFakeTeam(%trueClientId)))
+                    //{
+                    //
+                    //    %b = GameBase::getRotation(%trueClientId);
+                    //    %c1 = Cap(20 + 35, 0, 250);
+                    //    %c2 = %c1 / 4;
+                    //    %mom = Vector::getFromRot(%b, %c1, %c2 );
+                    //    
+                    //    Player::applyImpulse(%id, %mom);
+                    //    UseSkill(%trueClientId, $SkillBashing, true, true);
+                    //    
+                    //    //echo(%client);
+                    //    %hp = fetchdata(%id, "HP");
+                    //    %value = round(20 + $playerSkill[%trueClientId, $skillbashing]/20);
+                    //    if(%value > 100)
+                    //    %value = 100;
+                    //    %hp = %hp - %value;
+                    //    //echo(%hp);
+                    //    if(%hp <= 0)
+                    //    {
+                    //        player::kill($los::object);
+                    //    }
+                    //    else
+                    //    {
+                    //        storedata(%id, "HP", %hp);
+                    //    }
+                    //    %flash = Player::getDamageFlash($los::object) + %value * 2;
+                    //    if(%flash > 0.25)
+                    //    %flash = 0.25;	
+                    //    Player::setDamageFlash($los::object,%flash);
+                    //    PlaySound(SoundHitFlesh, gamebase::getposition(%id));								
+                    //
+                    //}
+                    //else
+                    //PlaySound(SoundSwing2, gamebase::getposition(%trueClientId));
+                    
+				}
+                else
+                    PlaySound(SoundSwing2, gamebase::getposition(%trueClientId));
+                Player::setAnimation(%trueClientId, 46);
+			}
+			return;
+		}
+		else if(%w1 == "#recall")
 		{
 			%zvel = floor(getWord(Item::getVelocity(%TrueClientId), 2));
 			Client::sendMessage(%TrueClientId, $MsgRed, "ATTEMPTING RECALL");
@@ -821,7 +960,11 @@ return;
 	
 			if(%zv != "PASS" && !fetchData(%TrueClientId, "tmprecall"))
 			{
-				%seconds = $recallDelay;
+                %seconds = 300;
+                if(Zone::getDesc(fetchData(%TrueClientId,"zone")) == "New Player Camp")
+                    %seconds = 5;
+                else
+                    %seconds = $recallDelay;
 				storeData(%TrueClientId, "tmprecall", True);
 				Client::sendMessage(%TrueClientId, $MsgBeige, "Stay at your current position for the next " @ %seconds @ " seconds to recall.");
 	
@@ -829,7 +972,7 @@ return;
 			}
 			return;
 		}
-		if(%w1 == "#track")
+		else if(%w1 == "#track")
 		{
 			%cropped = GetWord(%cropped, 0);
 	
@@ -1589,6 +1732,73 @@ return;
 			else
 				client::sendmessage(%TrueClientid, 0, "#set [1-9/b/g/h/m/c] [a message]");
 		}
+        else if(%w1 == "#anvil")
+        {
+            if(HasThisStuff(%TrueClientId,"anvilitem 1"))
+			{
+                %anvilSet = nameToId("MissionCleanup\\Anvils");
+                if(fetchData(%TrueClientId,"zone") == "")
+                {
+                    $los::position = "";
+                    %player = Client::getControlObject(%TrueClientId);
+                    %los = Gamebase::getLOSInfo(%player,5);
+                    if(%los)
+                    {
+                        %anvilPos = $los::position;
+                        %set = nameToId("MissionCleanup\\Anvils");
+                        if(%set == -1)
+                            addToSet("MissionCleanup",newObject("Anvils", SimGroup));
+                        
+                        %prevAnvil = -1;
+                        for(%i = 0; %i < Group::objectCount(%set); %i++)
+                        {
+                            %obj = Group::getObject(%set,%i);
+                            if(Object::getName(%obj) == "Anvil"@%TrueClientId)
+                            {
+                                %prevAnvil = %obj;
+                                break;
+                            }
+                        }
+                        
+                        if(%prevAnvil != -1)
+                        {
+                            Client::sendMessage(%TrueClientId, $MsgRed, "Replacing previous anvil.");
+                            deleteObject(%prevAnvil);
+                        }
+                        
+                        Client::sendMessage(%TrueClientId, $MsgBeige, "Setting up new anvil...");
+                        TakeThisStuff(%TrueClientId, "anvilitem 1");
+                        RefreshAll(%TrueClientId,false);
+                        %object = newObject("Anvil"@%TrueClientId,"InteriorShape", "anvil.dis");
+                        addToSet("MissionCleanup\\Anvils",%object);
+                        Gamebase::setPosition(%object,%anvilPos);
+                        Gamebase::setRotation(%object,Gamebase::getRotation(%player));
+                    }
+                    else
+                        Client::sendMessage(%TrueClientId, $MsgRed, "Cannot find location to place the anvil.");
+                }
+                else
+                    Client::sendMessage(%TrueClientId, $MsgRed, "You can't setup an anvil here.");
+            }
+            else
+				Client::sendMessage(%TrueClientId, $MsgRed, "You aren't carrying an anvil.");
+        }
+        else if(%w1 == "#unanvil")
+        {
+            %anvilSet = nameToId("MissionCleanup\\Anvils");
+            $los::object = "";
+            %los = Gamebase::getLOSInfo(Client::getControlObject(%TrueClientId),5);
+            if(%los)
+            {
+                %obj = $los::object;
+                if(getGroup(%obj) == %anvilSet)
+                {
+                    Client::sendMessage(%TrueClientId, $MsgBeige, "Picking up anvil...");
+                    GiveThisStuff(%TrueClientId,"anvilitem 1",true);
+                    deleteObject(%obj);
+                }
+            }
+        }
 		else if(%w1 == "#camp")
 		{
 			if(Player::getItemCount(%TrueClientId, Tent))
@@ -1724,36 +1934,49 @@ return;
                 
                 if(%doCraft)
                 {
+                    
                     if(Crafting::IsCraftableItem(%item,$Crafting::CommandToType[%w1]))
                     {
                         if(Crafting::SkillCheck(%TrueClientId,%item))
                         {
-                            if(%displayChance)
+                            if(Crafting::AdditionalCheck(%TrueClientId,%w1,%craftedItem))
                             {
-                                %percent = Number::Beautify(Crafting::CalculateSuccessChance(%clientId,%item) * 100,0,1);
-                                Client::sendMessage(%TrueClientId, $MsgWhite, "You have a "@%percent@"% chance to successfully craft a "@%item@".");
-                            }
-                            else
-                            {
-                                if(Crafting::ItemCheck(%TrueClientId,%item,%amnt))
+                                if(%displayChance)
                                 {
-                                    if(%amnt == 1)
-                                        Crafting::CraftItem(%TrueClientId,%item);
-                                    else
-                                    {
-                                        %pos = Gamebase::getPosition(%TrueClientId);
-                                        Crafting::RecursiveCraft(%TrueClientId,%item,%pos,%amnt);
-                                    }
+                                    %percent = Number::Beautify(Crafting::CalculateSuccessChance(%clientId,%item) * 100,0,1);
+                                    Client::sendMessage(%TrueClientId, $MsgWhite, "You have a "@%percent@"% chance to successfully craft a "@%item@".");
                                 }
                                 else
                                 {
-                                    if(%amnt == 1)
-                                        Client::sendMessage(%TrueClientId, $MsgRed, "You lack the necessary items to craft a "@ %item@".");
+                                    if(Crafting::ItemCheck(%TrueClientId,%item,%amnt))
+                                    {
+                                        if(%amnt == 1)
+                                            Crafting::CraftItem(%TrueClientId,%item);
+                                        else
+                                        {
+                                            %pos = Gamebase::getPosition(%TrueClientId);
+                                            Crafting::RecursiveCraft(%TrueClientId,%item,%pos,%amnt);
+                                        }
+                                    }
                                     else
                                     {
-                                        Client::sendMessage(%TrueClientId, $MsgRed, "You lack the necessary items to craft "@ %amnt @" "@ %item@".");
+                                        if(%amnt == 1)
+                                            Client::sendMessage(%TrueClientId, $MsgRed, "You lack the necessary items to craft a "@ %item@".");
+                                        else
+                                        {
+                                            Client::sendMessage(%TrueClientId, $MsgRed, "You lack the necessary items to craft "@ %amnt @" "@ %item@".");
+                                        }
                                     }
                                 }
+                            }
+                            else
+                            {
+                                if(%w1 == "#smith")
+                                    Client::sendMessage(%TrueClientId, $MsgRed, "You need to be at an anvil to smith that.");
+                                else if(%w1 == "#mix")
+                                    Client::sendMessage(%TrueClientId, $MsgRed, "You need to be at a fire to craft that.");
+                                else if(%w1 == "#smelt")
+                                    Client::sendMessage(%TrueClientId, $MsgRed, "You need to be at an anvil to smelt that.");
                             }
                         }
                         else
@@ -5737,6 +5960,44 @@ return;
 					}
 				}
 			}
+            else if(clipTrailingNumbers(%aiName) == "newquest")
+            {
+                if(%initTalk || $state[%closestId, %TrueClientId] == "")
+				{
+                    if($state[%closestId, %TrueClientId] == "")
+                    {
+                        AI::sayLater(%TrueClientId, %closestId, $BotInfo[%aiName, SAY, 1] @ " [" @ $BotInfo[%aiName, CUE, 1] @ "]", True);
+                        if($BotInfo[%aiName, SOUND, 1] != "")
+                            playSound($BotInfo[%aiName, SOUND, 1], GameBase::getPosition(%TrueClientId));
+                        $state[%closestId, %TrueClientId] = 2;
+                    }
+                }
+                else
+                {
+                    %state = $state[%closestId, %TrueClientId];
+                    %lastCue = $BotInfo[%aiName, CUE, %state-1];
+                    %need = $BotInfo[%aiName, NEED,%state];
+                    %sound = $BotInfo[%aiName, SOUND, %state];
+                    
+                    echo("State: "@ %state);
+                    echo("NextCue: "@ $BotInfo[%aiName, CUE, %state]);
+                    if(%sound != "")
+                        playSound(%sound, GameBase::getPosition(%TrueClientId));
+                    if(String::findSubStr(%message,%lastCue) != -1)
+                    {
+                        if($BotInfo[%aiName, CUE, %state] == "")
+                        {
+                            AI::sayLater(%TrueClientId, %closestId, $BotInfo[%aiName, SAY, %state]@"~w"@%sound,True);
+                            $state[%closestId, %TrueClientId] = "";
+                        }
+                        else
+                        {
+                            AI::sayLater(%TrueClientId, %closestId, $BotInfo[%aiName, SAY, %state] @ " [" @ $BotInfo[%aiName, CUE, %state] @ "]~w"@%sound, True);
+                            $state[%closestId, %TrueClientId]++;
+                        }
+                    }
+                }
+            }
 			else if(clipTrailingNumbers(%aiName) == "manager")
 			{
 				//process manager code

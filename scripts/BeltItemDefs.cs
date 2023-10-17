@@ -36,6 +36,7 @@ BeltItem::AddBeltItemGroup("EquipItems","Equip",5);
 BeltItem::AddBeltItemGroup("PotionItems","Potions",6);
 BeltItem::AddBeltItemGroup("OreItems","Ores",7);
 BeltItem::AddBeltItemGroup("MetalItems","Metals",8);
+BeltItem::AddBeltItemGroup("WoodItems","Wood",9);
 // =============================
 // End Belt Groups
 // =============================
@@ -122,6 +123,51 @@ BeltItem::Add("Cobalt","cobalt","MetalItems",1,3000,306);
 BeltItem::Add("Mythril","mythrite","MetalItems",1,3000,307);
 BeltItem::Add("Adamantium","adamantium","MetalItems",1,3000,308);
 
+//Wood Items
+BeltItem::Add("Splint","splint","WoodItems",0.1,0,400);
+BeltItem::Add("Twig","twig","WoodItems",0.2,0,401);
+BeltItem::Add("Stick","Stick","WoodItems",0.4,0,402);
+BeltItem::Add("Rod","rod","WoodItems",0.8,64,403);
+BeltItem::Add("Long Rod","longrod","WoodItems",1.6,128,404);
+BeltItem::Add("Lumber","lumber","WoodItems",3.2,256,405);
+BeltItem::Add("Oak Wood","oakwood","WoodItems",6.4,512,406);
+BeltItem::Add("Pine Wood","pinewood","WoodItems",12.8,1024,407);
+BeltItem::Add("Bire Wood","birewood","WoodItems",25.6,2048,408);
+BeltItem::Add("Worm Wood","wormwood","WoodItems",51.2,4096,409);
+
+$AccessoryVar[Splint, $MiscInfo] = "Splint";
+$AccessoryVar[Twig, $MiscInfo] = "Twig";
+$AccessoryVar[Stick, $MiscInfo] = "Stick";
+$AccessoryVar[Rod, $MiscInfo] = "Rod";
+$AccessoryVar[LongRod, $MiscInfo] = "LongRod";
+$AccessoryVar[Lumber, $MiscInfo] = "Lumber";
+$AccessoryVar[OakWood, $MiscInfo] = "OakWood";
+$AccessoryVar[PineWood, $MiscInfo] = "PineWood";
+$AccessoryVar[BireWood, $MiscInfo] = "BireWood";
+$AccessoryVar[WormWood, $MiscInfo] = "WormWood";
+
+%woodCuttingMod[Splint] = 8;
+%woodCuttingMod[Twig] = 50;
+%woodCuttingMod[Stick] = 180;
+%woodCuttingMod[Rod] = 380;
+%woodCuttingMod[LongRod] = 850;
+%woodCuttingMod[Lumber] = 1200;
+%woodCuttingMod[OakWood] = 2604;
+%woodCuttingMod[PineWood] = 4930;
+%woodCuttingMod[BireWood] = 8680;
+%woodCuttingMod[WormWood] = 19702;
+
+%f = 43;
+$ItemList[WoodCutting, 1] = "Splint " @ round(%woodCuttingMod[Splint] / %f)+2;
+$ItemList[WoodCutting, 2] = "Twig " @ round(%woodCuttingMod[Twig] / %f)+2;
+$ItemList[WoodCutting, 3] = "Stick " @ round(%woodCuttingMod[Stick] / %f)+2;
+$ItemList[WoodCutting, 4] = "Rod " @ round(%woodCuttingMod[Rod] / %f)+2;
+$ItemList[WoodCutting, 5] = "LongRod " @ round(%woodCuttingMod[LongRod] / %f)+2;
+$ItemList[WoodCutting, 6] = "Lumber " @ round(%woodCuttingMod[Lumber] / %f)+2;
+$ItemList[WoodCutting, 7] = "OakWood " @ round(%woodCuttingMod[OakWood] / %f)+2;
+$ItemList[WoodCutting, 8] = "PineWood " @ round(%woodCuttingMod[PineWood] / %f)+2;
+$ItemList[WoodCutting, 9] = "BireWood " @ round(%woodCuttingMod[BireWood] / %f)+2;
+$ItemList[WoodCutting, 10] = "WormWood " @ round(%woodCuttingMod[WormWood] / %f)+2;
 
 // Equip Items
 BeltEquip::AddEquipmentItem("Ring of Minor Power","ringofminpower","EquipItems",0.2,5000,13,"ATK 5","finger");
@@ -215,6 +261,7 @@ BeltItem::Add("Black Statue","BlackStatue","RareItems",3,1);
 BeltItem::Add("Skeleton Bone","SkeletonBone","RareItems",1,1);
 BeltItem::Add("Enchanted Stone","EnchantedStone","RareItems",2,1);
 BeltItem::Add("Dragon Scale","DragonScale","RareItems",8,245310);
+//BeltItem::Add("Testing Anvil","Anvil","RareItems",20,5000);
 
 $AccessoryVar[blackstatue, $MiscInfo] = "A strage black statue.";
 $AccessoryVar[skeletonbone, $MiscInfo] = "A bone from an old skeleton.";

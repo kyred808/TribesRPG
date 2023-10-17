@@ -78,9 +78,43 @@ function Crafting::ItemCheck(%clientId,%craftedItem,%amnt)
     return HasThisStuff(%clientId,$Crafting::Recipie[%craftedItem,ItemReqs],%amnt);
 }
 
-function Crafting::AdditionalCheck(%clientId,%craftedItem)
+function Crafting::AdditionalCheck(%clientId,%command,%craftedItem)
 {
-    return true;
+    %craftType = $Crafting::CommandToType[%command];
+    if($ExtraCraftingRequirements)
+    {
+        //Temp until fire is a thing
+        if(%craftType == "alchemy")
+            return true;
+        $los::object = "";
+        %los = Gamebase::getLOSInfo(Client::getControlObject(%clientId),5);
+        if(%los)
+        {
+            %obj = $los::object;
+            
+            if(%craftType == "smithing" || %craftType == "smelting")
+            {
+                return String::ICompare(clipTrailingNumbers(Object::getName(%obj)),"anvil") == 0;
+                //%anvilSet = nameToID("MissionCleanup\\Anvils");
+                //%objSet = getGroup(%obj);
+                //echo(%objSet @" vs. "@ %anvilSet);
+                //
+                //return %objSet == %anvilSet;
+            }
+            else if(%craftType == "alchemy")
+            {
+                return true;
+            }
+            else
+                return false; //dunno how we got here, but return false.
+        }
+        else
+        {
+            return false;
+        }
+    }
+    else
+        return true;
 }
 
 function Crafting::RollCrafting(%clientId,%craftedItem)
@@ -95,7 +129,7 @@ function Crafting::RollCrafting(%clientId,%craftedItem)
 //  %success at minLevel:       50%
 //  %success at 1.5*minLevel:  100%
 //
-// A higher difficulty lowers these values, but increases skill more on success
+// A lower difficulty lowers these values, but increases skill more on success
 //
 // Formula:  Assume ub = 1.5*min
 //

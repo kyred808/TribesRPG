@@ -42,7 +42,7 @@ $CostFactorTable[$ShortBladeAccessoryType] = "1.0";
 $CostFactorTable[$PickAxeAccessoryType] = "1.0";
 
 //****************************************************************************************************
-
+$AccessoryVar[CrudeAxe, $AccessoryType] = $AxeAccessoryType;
 $AccessoryVar[Hatchet, $AccessoryType] = $AxeAccessoryType;
 $AccessoryVar[BroadSword, $AccessoryType] = $SwordAccessoryType;
 $AccessoryVar[WarAxe, $AccessoryType] = $AxeAccessoryType;
@@ -94,6 +94,7 @@ $AccessoryVar[CeraphumsFeather, $AccessoryType] = $ProjectileAccessoryType;
 $AccessoryVar[BoneClub, $AccessoryType] = $BludgeonAccessoryType;
 $AccessoryVar[SpikedBoneClub, $AccessoryType] = $BludgeonAccessoryType;
 
+$AccessoryVar[CrudeAxe, $SpecialVar] = "6 10";	
 $AccessoryVar[Hatchet, $SpecialVar] = "6 20";			//12 (5)
 $AccessoryVar[BroadSword, $SpecialVar] = "6 35";		//21 (5)
 $AccessoryVar[WarAxe, $SpecialVar] = "6 70";			//30 (7)
@@ -150,7 +151,7 @@ $AccessoryVar[MetalFeather, $SpecialVar] = "6 60";
 $AccessoryVar[Talon, $SpecialVar] = "6 80";
 $AccessoryVar[CeraphumsFeather, $SpecialVar] = "6 105";
 //.................................................................................
-
+$AccessoryVar[CrudeAxe, $Weight] = 1;
 $AccessoryVar[Hatchet, $Weight] = 5;
 $AccessoryVar[BroadSword, $Weight] = 5;
 $AccessoryVar[WarAxe, $Weight] = 7;
@@ -206,6 +207,7 @@ $AccessoryVar[MetalFeather, $Weight] = "0.1";
 $AccessoryVar[Talon, $Weight] = "0.2";
 $AccessoryVar[CeraphumsFeather, $Weight] = "0.08";
 
+$AccessoryVar[CrudeAxe, $MiscInfo] = "A crude axe built out of twigs and rocks";
 $AccessoryVar[Hatchet, $MiscInfo] = "A hatchet";
 $AccessoryVar[BroadSword, $MiscInfo] = "A broad sword";
 $AccessoryVar[WarAxe, $MiscInfo] = "A war axe";
@@ -258,7 +260,7 @@ $AccessoryVar[BoneClub, $MiscInfo] = "A club made made of skeleton bones";
 $AccessoryVar[SpikedBoneClub, $MiscInfo] = "A spiked club made of skeleton bones";
 
 //NOTE: See shopping.cs for the shopIndexes
-
+$SkillType[CrudeAxe] = $SkillSlashing;
 $SkillType[Hatchet] = $SkillSlashing;
 $SkillType[BroadSword] = $SkillSlashing;
 $SkillType[WarAxe] = $SkillSlashing;
@@ -568,6 +570,111 @@ function PickAxeSwing(%player, %length, %weapon)
 	PostAttack(%clientId, %weapon);
 }
 
+function WoodAxeSwing(%player, %length, %weapon)
+{
+	dbecho($dbechoMode, "PickAxeSwing(" @ %player @ ", " @ %length @ ")");
+	//echo("crap");
+	%clientId = Player::getClient(%player);
+	if(%clientId == "")
+		%clientId = 0;
+		//if (%clientid.sleepMode == 1)
+		//	return;
+		//else if (%clientid.sleepMode == 2)
+		//	return;
+		//else if (Client::getGuiMode(%clientId) == $GuiModeInventory)
+		//	return;
+	//==== ANTI-SPAM CHECK, CAUSE FOR SPAM UNKNOWN ==========
+	%time = getIntegerTime(true) >> 5;
+	if(%time - %clientId.lastFireTime <= $fireTimeDelay)
+		return;
+	%clientId.lastFireTime = %time;
+	//=======================================================
+	$los::object = "";
+	if(GameBase::getLOSinfo(%player, %length))
+	{
+		%target = $los::object;
+		%obj = getObjectType(%target);
+		%type = GameBase::getDataName(%target);
+        if(%type == "TreeShape" || %type == "TreeShapeTwo")
+		{
+            PlaySound(SoundHitLeather, GameBase::getPosition(%clientId));
+            
+            if(Player::isAIcontrolled(%clientId)) return;
+            
+            %score = tree::chop(%clientId, %player, %target);
+            if(%score != "")
+            {
+                GiveThisStuff(%clientId, %score @" 1", this);
+                RefreshAll(%clientId,false);
+                Client::sendMessage(%clientId, 0, "You found " @ $beltitem[%score, "Name"] @ ".");
+
+                useskill(%clientId, $SkillWoodCutting, True, True);
+            }
+            else
+                useskill(%clientId, $SkillWoodCutting, False, True);
+		}
+		
+		if(%obj == "Player")
+			GameBase::virtual(%target, "onDamage", "", 1.0, "0 0 0", "0 0 0", "0 0 0", "torso", "", %clientId, %weapon);
+	}
+	PostAttack(%clientId, %weapon);
+}
+
+function DoRandomMining(%clientId, %crystal)
+{
+	dbecho($dbechoMode, "DoRandomMining(" @ %clientId @ ", " @ %crystal @ ")");
+
+	%lastscore = "";
+	for(%i = 1; $ItemList[Mining, %i] != ""; %i++)
+	{
+		%w1 = GetWord($ItemList[Mining, %i], 1) - %crystal.bonus[%i];
+		%n = Cap( (%w1 * getRandom()) + (%w1 / 2), 0, %w1);
+		%r = 1 + (CalculatePlayerSkill(%clientId, $SkillMining) * (1/10)) * getRandom();
+
+		if(%n > %r)
+			return %lastscore;
+
+		%lastscore = GetWord($ItemList[Mining, %i], 0);
+	}
+	return %lastscore;
+}
+
+function tree::chop(%client, %player, %obj, %harvest)
+{
+    %skill = CalculatePlayerSkill(%client, $SkillWoodCutting);
+    
+    
+    
+    %r2 = %skill / ( %skill + 10 )/100*getRandom()/2 + getRandom()*2;
+    if ( %r2 > 1 )
+    {
+        if(%obj.bonuscut >= 0)
+            %r = 1+ (%skill+%obj.bonuscut) * (1/5) * getRandom();
+        else
+            %r = 1+ %skill * (1/5) * getRandom();
+        %hit = GetWord($ItemList[WoodCutting, 1], 0);
+        for(%i = 1; $ItemList[WoodCutting, %i] != ""; %i++)
+        {
+            %w1 = GetWord($ItemList[WoodCutting, %i], 1);
+            %n = Cap( (%w1 * getRandom()) + (%w1 / 2), 0, %w1);
+            //%r = 1 + ($PlayerSkill[%client, $SkillWoodCutting] * (1/5)) * getRandom();
+
+            if(%n > %r)
+            {
+                return %hit;
+            }
+            %hit = GetWord($ItemList[WoodCutting, %i], 0);
+        }
+
+        return %hit;
+    }
+    else
+    {
+        Client::sendMessage(%client, 0, "You fail to split the wood with your axe.");	
+        return "";
+    }
+}
+
 $MeteorMiningListLength = 5;
 $MeteorMiningList[1] = "Sapphire";
 $MeteorMiningList[2] = "Gold";
@@ -615,25 +722,6 @@ function PostAttack(%clientId, %weapon)
 
 		%clientId.castingBladeBeat = %x;
 	}
-}
-
-function DoRandomMining(%clientId, %crystal)
-{
-	dbecho($dbechoMode, "DoRandomMining(" @ %clientId @ ", " @ %crystal @ ")");
-
-	%lastscore = "";
-	for(%i = 1; $ItemList[Mining, %i] != ""; %i++)
-	{
-		%w1 = GetWord($ItemList[Mining, %i], 1) - %crystal.bonus[%i];
-		%n = Cap( (%w1 * getRandom()) + (%w1 / 2), 0, %w1);
-		%r = 1 + (CalculatePlayerSkill(%clientId, $SkillMining) * (1/10)) * getRandom();
-
-		if(%n > %r)
-			return %lastscore;
-
-		%lastscore = GetWord($ItemList[Mining, %i], 0);
-	}
-	return %lastscore;
 }
 
 function GetRange(%weapon)
@@ -706,6 +794,75 @@ function GenerateItemCost(%item)
 	%f = floor(%e + %extracost);
 
 	return %f;
+}
+
+
+
+//WIP Entry items
+ItemImageData ShivImage
+{
+	shapeFile  = "dagger";
+	mountPoint = 0;
+
+	weaponType = 0;
+	reloadTime = 0;
+	fireTime = GetDelay(Shiv);
+	minEnergy = 0;
+	maxEnergy = 0;
+
+	accuFire = true;
+
+	sfxFire = SoundSwing1;
+	sfxActivate = AxeSlash2;
+};
+ItemData Shiv
+{
+	heading = "bWeapons";
+	description = "Shiv";
+	className = "Weapon";
+	shapeFile  = "dagger";
+	hudIcon = "dagger";
+	shadowDetailMask = 4;
+	imageType = ShivImage;
+	price = 0;
+	showWeaponBar = true;
+};
+function ShivImage::onFire(%player, %slot)
+{
+	MeleeAttack(%player, GetRange(Shiv), Shiv);
+}
+
+ItemImageData CrudeAxeImage
+{
+	shapeFile  = "hatchet";
+	mountPoint = 0;
+
+	weaponType = 0;
+	reloadTime = 0;
+	fireTime = GetDelay(CrudeAxe);
+	minEnergy = 0;
+	maxEnergy = 0;
+
+	accuFire = true;
+
+	sfxFire = SoundSwing1;
+	sfxActivate = AxeSlash2;
+};
+ItemData CrudeAxe
+{
+	heading = "bWeapons";
+	description = "Crude Axe";
+	className = "Weapon";
+	shapeFile  = "hatchet";
+	hudIcon = "axe";
+	shadowDetailMask = 4;
+	imageType = CrudeAxeImage;
+	price = 0;
+	showWeaponBar = true;
+};
+function CrudeAxeImage::onFire(%player, %slot)
+{
+	WoodAxeSwing(%player, GetRange(CrudeAxe), CrudeAxe);
 }
 
 //****************************************************************************************************
@@ -1112,7 +1269,7 @@ ItemData Hatchet
 };
 function HatchetImage::onFire(%player, %slot)
 {
-	MeleeAttack(%player, GetRange(Hatchet), Hatchet);
+	WoodAxeSwing(%player, GetRange(Hatchet), Hatchet);
 }
 
 //****************************************************************************************************
