@@ -238,6 +238,10 @@ function Item::onCollision(%this,%object)
 				deleteObject(%this);
 			}
 		}
+        else if(%item == "LaserRifle")
+        {
+        
+        }
 		else if(%item.className == "TownBot")
 		{
 			//do nothing.

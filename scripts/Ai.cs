@@ -253,6 +253,48 @@ function AI::Periodic(%aiName)
 				}
 			}
 		}
+        
+        if($AIsmartFOVBotsNEW)
+        {
+            //find all clients that COULD be in the bot's FOV and that are not on the same team.
+			%flag = "";
+            %b = $AImaxRange * 2;
+            %set = newObject("set", SimSet);
+            %n = containerBoxFillSet(%set, $SimPlayerObjectType, %aiPos, %b, %b, %b, 0);
+            for(%i = 0; %i < Group::objectCount(%set); %i++)
+            {
+                %id = Player::getClient(Group::getObject(%set, %i));
+                if(GameBase::getTeam(%id) != %aiTeam && !fetchData(%id, "invisible"))
+                {
+                    %eye = Vector::getEyeTransform(%aiId);
+                    %aiEyePos = getWord(%eye,9) @" "@ getWord(%eye,10) @" "@ getWord(%eye,11);
+					%vec = Vector::sub(GameBase::getPosition(%id), %aiEyePos);//%aiPos);
+                    %vecRotFull = Vector::getRotation(%vec);
+					%vecRot = GetWord(%vecRotFull, 2);
+                    
+					if(%vecRot >= %aiRot - $AIFOVPan && %vecRot <= %aiRot + $AIFOVPan)
+					{
+                        //An LOS check is a bit tricky
+                        //%losRot = Vector::Sub("0 0 "@%vecRot,GameBase::getRotation(%aiId));
+                        //Gamebase::getLOSInfo(Client::getControlObject(%aiId),$AImaxRange,%losRot);
+						%idList[%c++] = %id;
+					}
+                    //%vec = Vector::Normalize(Vector::Sub(GameBase::getPosition(%id), %aiPos));
+                    //%eyeVec = Vector::getEyeTransform(%aiId);
+                    //%eyeRot = getWord(%eyeVec,4);
+                    //%rr = getWord(%vec,1);
+                    //%simpleEyeRot = "0 "@ %eyeRot @" 0";
+                    //%erLeft = Vector::rotate(%simpleEyeRot,"0 "@ 0.5*$AIFOV @" 0");
+                    //%erRight = Vector::rotate(%simpleEyeRot,"0 "@ -0.5*$AIFOV @" 0");
+                    //%dist = Vector::getDistance(%aiPos, GameBase::getPosition(%id));
+                    //if(%dist < %closest)
+                    //{
+                    //    %closest = %dist;
+                    //    %closestId = %id;
+                    //}
+                }
+            }
+        }
 
 		if(%idList[1] != "" && $AIsmartFOVbots)
 		{
