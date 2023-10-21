@@ -90,7 +90,7 @@ $AImaxRange = 40;
 $AIminrad = 10;
 $AImaxrad = 100;
 
-$AIFOV = deg2rad(45);
+$AIFOV = deg2rad(85);
 
 //$addedShopMsg = "  I also have a few things you might want to BUY.";
 $addedShopMsg = "";
@@ -131,6 +131,20 @@ $SlashingDamageType	= 1;
 $PiercingDamageType	= 2;
 $BludgeoningDamageType	= 4;
 
+
+
+function NewIsInFOV(%client,%obj)
+{
+    RaycastCheck(Client::getOwnedObject(%client),Gamebase::getEyeTransform(%client),%obj,5,"0 0 1.5");
+    
+    echo($RayCast::Rotation);
+    
+    if($RayCast::Rotation < $AIFOV && $RayCast::Rotation >= -1*$AIFOV)
+    {
+        echo("Is in FOV!");
+    }
+}
+
 function LosOb(%client)
 {
     $los::object = "";
@@ -152,17 +166,12 @@ function TossLaser(%client)
         %obj = newObject("",StaticShape,"LaserObj",true);//newObject("","Item","LaserRifle",1,false);
         addToSet("MissionCleanup", %obj);
         Gamebase::setPosition(%obj,$los::position);
-        
+        $AIMarker = %obj;
         return %obj;
     }
     return "";
 }
-$HoldLaser = false;
-function DoHoldLaser(%client,%obj,%pointObj)
-{
-    $HoldLaser = true;
-    HoldLaser(%client,%obj,%pointObj);
-}
+
 
 StaticShapeData LaserObj
 {
@@ -174,51 +183,11 @@ StaticShapeData LaserObj
 	mapIcon = "M_generator";
 };
 
+
+
 function ScaleVector(%vec,%amnt)
 {
     return getWord(%vec,0) * %amnt @" "@ getWord(%vec,1) * %amnt @" "@ getWord(%vec,2) * %amnt;
-}
-
-function HoldLaser(%client,%laserObj,%pointObj)
-{
-    %eyeTrans = Gamebase::getEyeTransform(%client);
-    %eyePos = Word::getSubWord(%eyeTrans,9,3);
-    %eyeDir = Word::getSubWord(%eyeTrans,3,3);
-    
-    %eyeOffset = ScaleVector(%eyeDir,3);
-    
-    %offset = Vector::add(%eyePos,%eyeOffset);
-    
-    %eyeRot = Vector::getRotation(%eyeDir);
-    
-    %fixEyeRot = getWord(%eyeRot,0) + $pi/2 @" "@ getWord(%eyeRot,1) @" "@ getWord(%eyeRot,2);
-    //%rot = Gamebase::getRotation(%client);
-    //%offset = Vector::Add(%eyePos,Vector::Rotate("0 3 0",%rot));
-    %rot = %fixEyeRot;
-    
-    if(%pointObj != "")
-    {
-        %euler = EulerAngles(%eyeTrans);
-        %calcRot = CalcVecRotToObj(%client,%pointObj);
-        %rot = getWord(%calcRot,0) + $pi/2 @" "@ getWord(%calcRot,1) @" "@ getWord(%calcRot,2);
-        %losRot = Vector::sub(%rot,%eyeRot);
-        
-        //echo("Eye: "@%eyeRot@" Calc: "@%calcRot@" LOS:"@%losRot);
-        $los::object = "";
-        $los::position = "";
-        //%pitch = getWord(Vector::getRotation(%eyeDir),0);
-        echo(getWord(%losRot,0));
-        
-        Gamebase::getLOSInfo(Client::getControlObject(%client),500,Rotation::Rotate(getWord(%losRot,0) * 0 + getWord(%calcRot,0) + $pi/2 @" "@getWord(%losRot,1) @" "@getWord(%losRot,2),getWord(%euler,0)*-1 @" 0 0"));
-        
-        //Gamebase::getLOSInfo(Client::getControlObject(%client),500,getWord(%losRot,0) @" "@getWord(%losRot,1) @" "@getWord(%losRot,2));
-        %offset = $los::position;
-        echo($los::object @" vs "@ %pointObj);
-    }
-    Gamebase::setRotation(%laserObj,%rot);
-    Gamebase::setPosition(%laserObj,%offset);
-    if($HoldLaser)
-        schedule("HoldLaser("@%client@","@%laserObj@","@%pointObj@");",0.2);
 }
 
 function abs(%num)
@@ -226,67 +195,4 @@ function abs(%num)
     if(%num > 0)
         %num = -1*%num;
     return %num;
-}
-
-function EulerAngles(%transform)
-{
-    //%transform = Gamebase::getEyeTransform(Client::getControlObject(%client));
-
-    %m0_0 = getWord(%transform, 0);
-    %m0_1 = getWord(%transform, 1);
-    %m0_2 = getWord(%transform, 2);
-    %m1_0 = getWord(%transform, 3);
-    %m1_1 = getWord(%transform, 4);
-    %m1_2 = getWord(%transform, 5);
-    %m2_2 = getWord(%transform, 8);
-
-    %x = asin(%m1_2);
-    if(abs(%x - 1) < 0.000001 || abs(%x + 1) < 0.000001) {
-        %y = 0;
-        %z = atan(%m0_0, %m0_1);
-    }
-    else {
-        %y = atan(%m2_2, -%m0_2);
-        %z = atan(%m1_1, -%m1_0);
-    }
-    
-    echo("X:"@ %x @" Y:"@ %y @" Z:"@%z);
-    
-    return %x @" "@ %y @" "@ %z-$pi/2;
-}
-
-function CalcVecRotToObj(%client,%obj)
-{
-    %eyeTrans = Gamebase::getEyeTransform(%client);
-    %eyePos = Word::getSubWord(%eyeTrans,9,3);
-    //%eyeDir = Word::getSubWord(%eyeTrans,3,3);
-    
-    %player = Client::getControlObject(%client);
-    
-    %objPos = Vector::add(Gamebase::getPosition(%obj),"0 0 1"); //GetBoxCenter(%obj);
-    
-    %vec = Vector::Normalize(Vector::sub(%objPos, %eyePos));
-    %vecRot = Vector::getRotation(%vec);
-    return %vecRot;
-}
-
-function EyeTrace(%client,%obj)
-{
-    %eyeTrans = Gamebase::getEyeTransform(%client);
-    %eyePos = Word::getSubWord(%eyeTrans,9,3);
-    %eyeDir = Word::getSubWord(%eyeTrans,3,3);
-    %pitch = getWord(Vector::getRotation(%eyeDir),0) + $pi/2;
-    %player = Client::getControlObject(%client);
-    
-    
-    
-    %objPos = Gamebase::getPosition(%obj);//GetBoxCenter(%obj);
-    %vec = Vector::sub(%objPos, %eyePos);
-    %vecRot = Vector::getRotation(%vec);
-    %losRot = Vector::sub(%pitch @" 0 "@ getWord(%vecRot,2),Gamebase::getRotation(%client));
-    
-    $los::object = "";
-    Gamebase::getLOSInfo(%player,500,%losRot);
-    echo(%vecRot @" "@ $los::object @" vs "@ %obj);
-    
 }

@@ -207,6 +207,47 @@ function AI::setWeapons(%aiName, %loadout)
 	AI::SelectBestWeapon(%aiId);	//this way the bot spawns and has a weapon in hand
 }
 
+function CalcVecRotToObj(%startPos,%obj,%offset)
+{
+    if(%offset == "")
+        %offset = "0 0 0";
+    //%objPos = Vector::add(Gamebase::getPosition(%obj),%offset); //GetBoxCenter(%obj);
+    //
+    //%vec = Vector::sub(%objPos, %startPos);
+    //%vecRot = Vector::getRotation(%vec);
+    return Vector::getRotation(Vector::Normalize(Vector::sub(Vector::add(Gamebase::getPosition(%obj),%offset), %startPos)));
+}
+
+function RaycastCheck(%player,%eyeTrans,%otherObj,%range,%offset)
+{
+    $RayCast::Rotation = "";
+    if(%eyeTrans == "")
+        %eyeTrans = Gamebase::getEyeTransform(%player);
+    echo(%player @" Eye: "@ %eyeTrans);
+    %eyePos = Word::getSubWord(%eyeTrans,9,3);
+    %eyeDir = Word::getSubWord(%eyeTrans,3,3);
+    %eyeRot = Vector::getRotation(%eyeDir);
+    //%fixEyeRot = Vector::add(%eyeRot,$pi/2 @" 0 0");
+    //%player = Client::getControlObject(%client);
+    
+    %pitch = Player::getPitch(%player);
+    %calcRot = CalcVecRotToObj(%eyePos,%otherObj,%offset);
+    %fixRot = Vector::add(%calcRot,$pi/2 @" 0 0");
+    %losRot = Vector::sub(%fixRot,%eyeRot);
+    $RayCast::Rotation = fixVecRotation(getWord(%losRot,2));
+    
+    %losRotFinal = Rotation::rotate(getWord(%fixRot,0) @" "@Word::getSubWord(%losRot,1,2),%pitch * -1 @" 0 0");
+    return Gamebase::getLOSInfo(%player,%range,%losRotFinal);
+}
+
+function fixVecRotation(%rot)
+{
+    if(%rot > $pi)
+        %rot = %rot - 2*$pi;
+    else if(%rot < -1*$pi)
+        %rot = %rot + 2*$pi;
+    return %rot;
+}
 
 function AI::Periodic(%aiName)
 {
@@ -263,40 +304,37 @@ function AI::Periodic(%aiName)
             %n = containerBoxFillSet(%set, $SimPlayerObjectType, %aiPos, %b, %b, %b, 0);
             for(%i = 0; %i < Group::objectCount(%set); %i++)
             {
-                %id = Player::getClient(Group::getObject(%set, %i));
+                %otherPlayer = Group::getObject(%set, %i);
+                echo("Target: "@%otherPlayer);
+                %id = Player::getClient(%otherPlayer);
                 if(GameBase::getTeam(%id) != %aiTeam && !fetchData(%id, "invisible"))
                 {
-                    %eye = Vector::getEyeTransform(%aiId);
-                    %aiEyePos = getWord(%eye,9) @" "@ getWord(%eye,10) @" "@ getWord(%eye,11);
-					%vec = Vector::sub(GameBase::getPosition(%id), %aiEyePos);//%aiPos);
-                    %vecRotFull = Vector::getRotation(%vec);
-					%vecRot = GetWord(%vecRotFull, 2);
-                    
-					if(%vecRot >= %aiRot - $AIFOVPan && %vecRot <= %aiRot + $AIFOVPan)
+                    //%vec = Vector::sub(GameBase::getPosition(%id), %aiPos);
+					//%vecRot = GetWord(Vector::getRotation(%vec), 2);
+                    $los::object = "";
+                    %cast = RaycastCheck(Client::getOwnedObject(%aiId),"",%otherPlayer,$AImaxRange,"0 0 1.5"); //Offset by 1.5 so we aren't checking feet
+                    %vecRot = $RayCast::Rotation;
+                    //echo("Cast Check: "@ %cast);
+					if(%vecRot < $AIFOV && %vecRot >= -1*$AIFOV)
 					{
-                        //An LOS check is a bit tricky
-                        //%losRot = Vector::Sub("0 0 "@%vecRot,GameBase::getRotation(%aiId));
-                        //Gamebase::getLOSInfo(Client::getControlObject(%aiId),$AImaxRange,%losRot);
-						%idList[%c++] = %id;
+                        if($AIMarker)
+                            Gamebase::setPosition($AIMarker,$los::position);
+                        echo("LOS Obj: "@$los::object @" vs "@ Client::getOwnedObject(%aiId));
+                        if(%cast && $los::object == %otherPlayer)
+                        {
+                            echo("Target Found: "@ $los::object);
+                            %idList[%c++] = %id;
+                        }
 					}
-                    //%vec = Vector::Normalize(Vector::Sub(GameBase::getPosition(%id), %aiPos));
-                    //%eyeVec = Vector::getEyeTransform(%aiId);
-                    //%eyeRot = getWord(%eyeVec,4);
-                    //%rr = getWord(%vec,1);
-                    //%simpleEyeRot = "0 "@ %eyeRot @" 0";
-                    //%erLeft = Vector::rotate(%simpleEyeRot,"0 "@ 0.5*$AIFOV @" 0");
-                    //%erRight = Vector::rotate(%simpleEyeRot,"0 "@ -0.5*$AIFOV @" 0");
-                    //%dist = Vector::getDistance(%aiPos, GameBase::getPosition(%id));
-                    //if(%dist < %closest)
-                    //{
-                    //    %closest = %dist;
-                    //    %closestId = %id;
-                    //}
                 }
             }
+            deleteObject(%set);
         }
-
-		if(%idList[1] != "" && $AIsmartFOVbots)
+        
+        if(%idList[1] == "")
+            %flag = true;
+        
+		if(%idList[1] != "")
 		{
 			%closest = 500000;
 			for(%i = 1; %idList[%i] != ""; %i++)
@@ -312,14 +350,18 @@ function AI::Periodic(%aiName)
 	
 			if(%closest <= $AImaxRange)
 			{
-				//echo(%aiId @ ": targeting (moving towards) " @ %closestId @ ", " @ %closest @ " meters away");
+				echo(%aiId @ ": targeting (moving towards) " @ %closestId @ ", " @ %closest @ " meters away");
 				if(%closest <= 10)
 					AI::newDirectiveWaypoint(%aiName, GameBase::getPosition(%closestId), 99);
 				else
 					AI::newDirectiveFollow(%aiName, %closestId, 0, 99);
+                    
+                playSound(RandomRaceSound(fetchData(%aiId, "RACE"), Acquired), GameBase::getPosition(%aiId));
 			}
+            else
+                %flag = true;
 		}
-		else
+		else 
 		{
 			//==============================================================
 			// I'm making it so bots can "smell" their target. Basically,
@@ -329,38 +371,41 @@ function AI::Periodic(%aiName)
 
 			if(fetchData(%aiId, "SpellCastStep") != 1 && !fetchData(%aiId, "noBotSniff"))
 			{
-				%closest = 500000;
+                if(!$AIsmartFOVBotsNEW)
+                {
+                    %closest = 500000;
 
-				%flag = "";
-				%b = $AImaxRange * 2;
-				%set = newObject("set", SimSet);
-				%n = containerBoxFillSet(%set, $SimPlayerObjectType, %aiPos, %b, %b, %b, 0);
-				for(%i = 0; %i < Group::objectCount(%set); %i++)
-				{
-					%id = Player::getClient(Group::getObject(%set, %i));
-					if(GameBase::getTeam(%id) != %aiTeam && !fetchData(%id, "invisible"))
-					{
-						%dist = Vector::getDistance(%aiPos, GameBase::getPosition(%id));
-						if(%dist < %closest)
-						{
-							%closest = %dist;
-							%closestId = %id;
-						}
-					}
-				}
-				deleteObject(%set);
+                    %flag = "";
+                    %b = $AImaxRange * 2;
+                    %set = newObject("set", SimSet);
+                    %n = containerBoxFillSet(%set, $SimPlayerObjectType, %aiPos, %b, %b, %b, 0);
+                    for(%i = 0; %i < Group::objectCount(%set); %i++)
+                    {
+                        %id = Player::getClient(Group::getObject(%set, %i));
+                        if(GameBase::getTeam(%id) != %aiTeam && !fetchData(%id, "invisible"))
+                        {
+                            %dist = Vector::getDistance(%aiPos, GameBase::getPosition(%id));
+                            if(%dist < %closest)
+                            {
+                                %closest = %dist;
+                                %closestId = %id;
+                            }
+                        }
+                    }
+                    deleteObject(%set);
 
-				if(%closest <= $AImaxRange)
-				{
-					if(%closest <= 10)
-						AI::newDirectiveWaypoint(%aiName, GameBase::getPosition(%closestId), 99);
-					else
-						AI::newDirectiveFollow(%aiName, %closestId, 0, 99);
+                    if(%closest <= $AImaxRange)
+                    {
+                        if(%closest <= 10)
+                            AI::newDirectiveWaypoint(%aiName, GameBase::getPosition(%closestId), 99);
+                        else
+                            AI::newDirectiveFollow(%aiName, %closestId, 0, 99);
 
-					PlaySound(RandomRaceSound(fetchData(%aiId, "RACE"), Acquired), GameBase::getPosition(%aiId));
-				}
-				else
-					%flag = True;
+                        PlaySound(RandomRaceSound(fetchData(%aiId, "RACE"), Acquired), GameBase::getPosition(%aiId));
+                    }
+                    else
+                        %flag = True;
+                }
 			}
 			
 			if(%flag || fetchData(%aiId, "noBotSniff"))
